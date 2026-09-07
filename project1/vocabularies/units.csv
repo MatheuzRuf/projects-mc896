@@ -1,0 +1,13 @@
+term,aliases,type,source,code
+mg/L,milligrams per liter|mg/l,Unit,manual,
+U/L,u/l|units per liter,Unit,manual,
+cm,centimeter|centimeters|centimetre|centimetres,Unit,manual,
+mm,millimeter|millimeters|millimetre|millimetres,Unit,manual,
+mL,milliliter|milliliters|millilitre|millilitres,Unit,manual,
+L,liter|liters|litre|litres,Unit,manual,
+mg,milligram|milligrams,Unit,manual,
+g,gram|grams,Unit,manual,
+kg,kilogram|kilograms,Unit,manual,
+days,day,Unit,manual,
+hours,hour,Unit,manual,
+minutes,minute,Unit,manual,

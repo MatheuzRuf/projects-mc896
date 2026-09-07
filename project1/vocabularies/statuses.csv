@@ -1,0 +1,6 @@
+term,aliases,type,source,code
+pre-existing,preexisting|previously existing,Status,manual,
+excluded,ruled out|not present,Status,manual,
+confirmed,confirmed diagnosis,Status,manual,
+suspected,possible|probable,Status,manual,
+recurrent,recurring,Status,manual,

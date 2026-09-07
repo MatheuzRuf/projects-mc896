@@ -13,6 +13,7 @@ class NodeType(str, Enum):
     EXAM = "Exam"
     EXAM_RESULT = "ExamResult"
     DIAGNOSIS = "Diagnosis"
+    MEDICATION = "Medication"
     TREATMENT = "Treatment"
     OUTCOME = "Outcome"
 
