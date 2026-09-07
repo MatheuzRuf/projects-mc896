@@ -1,4 +1,4 @@
-# projects-mc896
+# Projetos MC896
 
 Projetos de mc896 2s2026.
 
