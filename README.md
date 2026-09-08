@@ -9,3 +9,5 @@ Matheus Rufino da Silva - RA 221756
 Gabriel Thomas Dias de Freitas - RA 235071
 
 Daniel de Sousa Cipriano - RA 233228
+
+Eduardo dos SAntos Neres - RA 188732
