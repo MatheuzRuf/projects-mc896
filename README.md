@@ -10,4 +10,4 @@ Gabriel Thomas Dias de Freitas - RA 235071
 
 Daniel de Sousa Cipriano - RA 233228
 
-Eduardo dos SAntos Neres - RA 188732
+Eduardo dos Santos Neres - RA 188732
