@@ -15,10 +15,12 @@ Extração de informações clínicas do dataset **MultiCaRe** e representação
 │   ├── retrieval/
 │   ├── extraction/
 │   ├── graph/
+│   ├── vocab/
 │   └── visualization/
 ├── output/
 │   ├── nodes.csv
 │   └── edges.csv
+├── vocabularies/
 ├── notebooks/
 ├── requirements.txt
 └── README.md

@@ -2,6 +2,7 @@ import csv
 from pathlib import Path
 
 from .vocabulary import VocabularyEntry
+from ..graph import NodeType
 
 
 def load_vocabulary(path: str | Path) -> list[VocabularyEntry]:
@@ -13,6 +14,12 @@ def load_vocabulary(path: str | Path) -> list[VocabularyEntry]:
         term,aliases,type,source,code
 
     Onde aliases são separados por '|'.
+
+    O campo `type` é validado contra `graph.schema.NodeType`: qualquer
+    valor que não corresponda a um tipo de nó existente faz com que o
+    carregamento falhe imediatamente, em vez de gerar uma entrada com
+    um tipo inválido/inconsistente que só seria percebida mais tarde,
+    na construção do grafo.
     """
 
     path = Path(path)
@@ -29,11 +36,22 @@ def load_vocabulary(path: str | Path) -> list[VocabularyEntry]:
                 if alias.strip()
             )
 
+            raw_type = row["type"].strip()
+
+            try:
+                NodeType(raw_type)
+            except ValueError as error:
+                raise ValueError(
+                    f"Tipo inválido '{raw_type}' para o termo "
+                    f"'{row['term'].strip()}' em {path}. "
+                    f"Tipos válidos: {[t.value for t in NodeType]}."
+                ) from error
+
             entries.append(
                 VocabularyEntry(
                     term=row["term"].strip(),
                     aliases=aliases,
-                    type=row["type"].strip(),
+                    type=raw_type,
                     source=row.get("source", "manual").strip(),
                     code=row.get("code", "").strip(),
                 )

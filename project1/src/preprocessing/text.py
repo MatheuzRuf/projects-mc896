@@ -84,6 +84,7 @@ def tokenize(text: str) -> list[str]:
         96 mg/L       -> ["96", "mg/l"]
         5-day         -> ["5-day"]
         4 cm          -> ["4", "cm"]
+        92%           -> ["92%"]
 
     Também preserva palavras com hífen.
     """
@@ -91,6 +92,8 @@ def tokenize(text: str) -> list[str]:
     # Ordem dos padrões é importante.
     token_pattern = re.compile(
         r"""
+        \d+(?:\.\d+)?%                  # 92%, 12.5%
+        |
         \d+(?:\.\d+)?(?:-\w+)?          # 5-day, 4, 850, 12.5
         |
         [a-zA-Z]+(?:/[a-zA-Z]+)+         # U/L, mg/L, kg/m2
