@@ -20,9 +20,14 @@
         <button id="reload-button" type="button">Carregar</button>
       </div>
       <label class="checkbox-label">
-        <input id="edge-labels" type="checkbox" checked>
+        <input id="edge-labels" type="checkbox">
         Mostrar relações
       </label>
+      <div class="zoom-controls" aria-label="Controles de zoom">
+        <button id="zoom-out" type="button" title="Diminuir zoom">−</button>
+        <button id="zoom-reset" type="button">Ajustar</button>
+        <button id="zoom-in" type="button" title="Aumentar zoom">+</button>
+      </div>
     </div>
   </header>
 
@@ -31,6 +36,7 @@
       <span id="status">Carregando casos...</span>
       <span id="stats"></span>
     </section>
+    <p class="navigation-help">Use a roda do mouse para aplicar zoom e arraste o fundo para navegar.</p>
     <section class="graph-card">
       <svg id="graph" viewBox="0 0 1400 900" role="img" aria-label="Knowledge graph do caso selecionado">
         <defs>

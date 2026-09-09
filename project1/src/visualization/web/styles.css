@@ -64,7 +64,8 @@ h2 {
   font-weight: 700;
 }
 
-.control-row {
+.control-row,
+.zoom-controls {
   display: flex;
   gap: 8px;
 }
@@ -104,6 +105,16 @@ button:hover {
   font-size: 13px;
 }
 
+.zoom-controls {
+  margin-top: 10px;
+}
+
+.zoom-controls button {
+  min-width: 40px;
+  min-height: 32px;
+  padding: 0 10px;
+}
+
 main {
   padding: 22px 40px 36px;
 }
@@ -116,8 +127,14 @@ main {
   font-size: 14px;
 }
 
+.navigation-help {
+  margin: -5px 0 12px;
+  color: #7b7d7d;
+  font-size: 12px;
+}
+
 .graph-card {
-  overflow: auto;
+  overflow: hidden;
   min-height: 620px;
   border: 1px solid #d5d8dc;
   border-radius: 10px;
@@ -129,13 +146,21 @@ main {
   display: block;
   width: 100%;
   min-width: 1000px;
+  height: 72vh;
   min-height: 620px;
+  cursor: grab;
+  user-select: none;
+}
+
+#graph.dragging {
+  cursor: grabbing;
 }
 
 .edge {
   stroke: #a6acaf;
   stroke-width: 1.4;
   marker-end: url(#arrow);
+  transition: opacity 120ms ease;
 }
 
 #arrow path {
@@ -149,6 +174,11 @@ main {
   stroke: white;
   stroke-width: 3px;
   stroke-linejoin: round;
+  transition: opacity 120ms ease;
+}
+
+.node {
+  transition: opacity 120ms ease;
 }
 
 .node circle {
