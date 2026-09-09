@@ -1,4 +1,5 @@
 import re
+import math
 
 interpretacoes = [
     ##Gerado por IA
@@ -6,12 +7,17 @@ interpretacoes = [
     "normal",
     "abnormal",
     "within normal limits",
+    "WNL",
     "within normal range",
     "within reference range",
     "outside normal limits",
     "outside normal range",
     "outside reference range",
     "out of range",
+    "positive",
+    "pos",
+    "negative",
+    "neg",
 
     # Elevado
     "elevated",
@@ -239,4 +245,43 @@ rangeInteiro = r"(\d+[-]\d+[%]|\d+[-]\d+\s?[^\s.,!?;:]+)"
 decimal = r"(\d+\.\d+[%]|\d+\.\d+\s?[^\s.,!?;:]+)"
 rangeDecimal = r"(\d+\.\d+[-]\d+\.\d+[%]|\d+\.\d+[-]\d+\.\d+\s?[^\s.,!?;:]+)"
 
-padraoFinal = r"\d+(?:\.\d+)?(?:-\d+(?:\.\d+)?)?(?:%|\s?[^\s.,!?;:]+)"
+padraoFinal = r"\d+(?:\,\d+)?(?:\.\d+)?(?:\s?-\s?\d+(?:\.\d+)?)?(?:%|\s?[^\s.,!?;:)\]}]+)"
+valor = r"\d+(?:\,\d+)?(?:\.\d+)?(?:\s?-\s?\d+(?:\.\d+)?)?"
+
+def extract_measurements(texto, entities):
+    resultado = []
+    mentions = []
+
+    exam_findings = [
+    entity
+    for entity in entities
+    if entity.type in {"Exam", "Finding"}
+    ]
+
+    for entity in exam_findings:
+        for start, end in entity.positions:
+            mentions.append([entity, start+(end-start)/2])
+
+    for match in re.finditer(padraoFinal, texto):
+        numero = re.search(valor, match.group())
+        unidade = match.group()[numero.end():].strip()
+        value = math.inf
+        reference = None
+        for mention in mentions:
+            newvalue = abs(match.start()-mention[1])
+            if (newvalue < value):
+                value = newvalue
+                reference = mention[0]
+        resultado.append([match.group(), numero.group(), unidade, reference])
+
+    for match in re.finditer(regex_interpretacoes, texto):
+            value = math.inf
+            reference = None
+            for mention in mentions:
+                newvalue = abs(match.start()-mention[1])
+                if (newvalue < value):
+                    value = newvalue
+                    reference = mention[0]
+            resultado.append([match.group(), None, None, reference])
+
+    return resultado
