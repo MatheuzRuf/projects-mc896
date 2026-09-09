@@ -1,7 +1,7 @@
 import csv
 from pathlib import Path
 
-from .schema import Node, Edge
+from src.graph.schema import Node, Edge
 
 
 NODE_COLUMNS = [

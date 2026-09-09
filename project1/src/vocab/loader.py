@@ -1,8 +1,8 @@
 import csv
 from pathlib import Path
 
-from .vocabulary import VocabularyEntry
-from ..graph import NodeType
+from src.vocab.vocabulary import VocabularyEntry
+from src.graph.schema import NodeType
 
 
 def load_vocabulary(path: str | Path) -> list[VocabularyEntry]:

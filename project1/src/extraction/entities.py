@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass, field
 
-from ..vocab import VocabularyEntry
+from src.vocab import VocabularyEntry
 
 
 @dataclass
