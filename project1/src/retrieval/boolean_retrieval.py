@@ -4,8 +4,7 @@ from src.retrieval.cases_linked_list import build_cases_list_from_cases
 def NOT(inverted_index, term, cases_list) -> set[str]:
     """
     Operacao booleana NOT.
-    Retorna o complemento (U \ postings) usando dois ponteiros ordenados.
-    """
+    Retorna o complemento do conjunto de documentos contendo o termo"""
     index = inverted_index.get(term)
     current_term = index.postings_head if index else None
     current_universe = cases_list.cases_head

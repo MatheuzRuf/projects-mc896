@@ -36,23 +36,32 @@ class InvertedIndex:
             )
             current = current.next
 
-    def get_postings(self) -> list[tuple[str, int]]:
-        """Retorna a lista de (case_id, tf) presentes na lista ligada."""
+    def get_postings(self) -> list[str]:
+        """
+        Retorna apenas a lista de identificadores (case_id) presentes 
+        na lista ligada, preservando a ordem crescente.
+        """
         result = []
         current = self.postings_head
         while current is not None:
-            result.append((current.data[0], current.data[1]))
+            # current.data armazena a tupla (case_id, tf)
+            result.append(current.data[0])
             current = current.next
         return result
 
-    def search(self, case_id: str) -> bool:
-        """Verifica se um case_id está presente na lista ligada."""
+    def get_postings_with_frequencies(self) -> list[tuple[str, int]]:
+        """
+        Retorna uma lista de tuplas (case_id, tf) com os identificadores 
+        e suas respectivas frequências no documento.
+        Utilizado no cálculo de pesos para TF-IDF / Ranked Retrieval.
+        """
+        result = []
         current = self.postings_head
         while current is not None:
-            if current.data[0] == case_id:
-                return True
+            # current.data armazena a tupla (case_id, tf)
+            result.append((current.data[0], current.data[1]))
             current = current.next
-        return False
+        return result
 
 
 def build_index_from_cases(path: str | Path) -> dict[str, InvertedIndex]:
