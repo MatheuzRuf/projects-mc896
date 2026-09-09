@@ -1,16 +1,20 @@
+import sys
 from pathlib import Path
 
+base_dir = Path(__file__).resolve().parent.parent
+if str(base_dir) not in sys.path:
+    sys.path.insert(0, str(base_dir))
+
 from src.graph.build import export_graph_from_cases, load_entity_vocabulary
-from src.preprocessing.dataset import load_cases
+from src.preprocessing.dataset import preprocess_cases
 
 
 def main() -> None:
-    base_dir = Path(__file__).resolve().parent.parent
     cases_path = base_dir / "sample" / "cases.csv"
     vocab_dir = base_dir / "vocabularies"
     out_dir = base_dir / "output"
 
-    cases = load_cases(cases_path)
+    cases = preprocess_cases(cases_path)
     vocabulary = load_entity_vocabulary(vocab_dir)
 
     export_graph_from_cases(
