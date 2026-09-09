@@ -466,7 +466,7 @@ PMC4835621_01:antibodies,Unit,antibodies,
 PMC4835621_01:result 28,ExamResult,result 28,text=slightly;start=2332;end=2340
 PMC4835621_01:slightly,Interpretation,slightly,
 PMC4835621_01:result 29,ExamResult,result 29,text=significant;start=2399;end=2410
-PMC4835621_01:result 30,ExamResult,result 30,text=3.5 cm;start=2724;end=2730
+PMC4835621_01:measurement 30,Measurement,measurement 30,text=3.5 cm;start=2724;end=2730
 PMC4835621_01:3.5,Value,3.5,
 PMC4835621_01:cm,Unit,cm,
 PMC4835621_01:measurement 31,Measurement,measurement 31,text=increased;start=2955;end=2964
@@ -4244,7 +4244,7 @@ PMC11722600_01:1,Value,1,
 PMC11722600_01:a,Unit,A,
 PMC11722600_01:result 16,ExamResult,result 16,text=1B;start=941;end=943
 PMC11722600_01:b,Unit,B,
-PMC11722600_01:result 17,ExamResult,result 17,text=8 mm;start=991;end=995
+PMC11722600_01:measurement 17,Measurement,measurement 17,text=8 mm;start=991;end=995
 PMC11722600_01:8,Value,8,
 PMC11722600_01:mm,Unit,mm,
 PMC11722600_01:measurement 18,Measurement,measurement 18,text=4 cm;start=1074;end=1078
@@ -4306,7 +4306,7 @@ PMC11722600_02:mg/l,Unit,mg/L,
 PMC11722600_02:result 11,ExamResult,result 11,text=5 mg/dL;start=763;end=770
 PMC11722600_02:5,Value,5,
 PMC11722600_02:mg/dl,Unit,mg/dL,
-PMC11722600_02:result 12,ExamResult,result 12,text=17 mm;start=906;end=911
+PMC11722600_02:measurement 12,Measurement,measurement 12,text=17 mm;start=906;end=911
 PMC11722600_02:17,Value,17,
 PMC11722600_02:mm,Unit,mm,
 PMC11722600_02:result 13,ExamResult,result 13,text=marked;start=929;end=935

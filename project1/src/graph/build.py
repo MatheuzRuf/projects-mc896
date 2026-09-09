@@ -1,6 +1,11 @@
 from pathlib import Path
 
-from src.Regex.measurement_adapter import extract_structured_measurements
+from src.Regex.measurement_adapter import (
+    DURATION_UNITS,
+    SIZE_UNITS,
+    extract_structured_measurements,
+    is_dose_unit,
+)
 from src.extraction import Entity, extract_entities
 from src.extraction.relations import _dedupe_edges, extract_case_relations
 from src.graph.export import save_edges, save_nodes
@@ -20,26 +25,6 @@ ENTITY_FILES = [
     "courses.csv",
     "outcomes.csv",
 ]
-
-DURATION_UNITS = {
-    "day",
-    "days",
-    "week",
-    "weeks",
-    "month",
-    "months",
-    "year",
-    "years",
-    "hour",
-    "hours",
-}
-
-SIZE_UNITS = {
-    "mm",
-    "cm",
-    "m",
-}
-
 
 def _node_id(case_id: str, label: str) -> str:
     clean = " ".join(label.strip().lower().split())
@@ -101,6 +86,11 @@ def _build_measurement_graph(
                 relation = Relation.HAS_SIZE
             elif measurement.entity.type == "Exam":
                 relation = Relation.HAS_RESULT
+            elif (
+                measurement.entity.type in {"Medication", "Treatment"}
+                and is_dose_unit(unit)
+            ):
+                relation = Relation.HAS_DOSE
             else:
                 relation = None
 

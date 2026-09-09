@@ -55,7 +55,7 @@ Tipos principais: `Patient`, `Disease`, `Symptom`, `Exam`, `Finding`, `Treatment
 | `relation`   | Relação entre os nós   |
 | `attributes` | Informações adicionais |
 
-Exemplos de relações: `PRESENTS_WITH`, `UNDERWENT_EXAM`, `DIAGNOSED_WITH`, `TREATED_BY`, `HAS_RESULT`, `HAS_VALUE`, `HAS_UNIT`.
+Exemplos de relações: `PRESENTS_WITH`, `UNDERWENT_EXAM`, `DIAGNOSED_WITH`, `TREATED_BY`, `HAS_RESULT`, `HAS_DOSE`, `HAS_VALUE`, `HAS_UNIT`.
 
 ## Pipeline
 

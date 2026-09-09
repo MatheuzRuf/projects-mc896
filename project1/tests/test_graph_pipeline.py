@@ -59,6 +59,44 @@ def test_build_case_graph_integrates_measurements():
     )
 
 
+def test_build_case_graph_links_doses_to_medications_and_treatments():
+    vocabulary = [
+        VocabularyEntry(
+            term="ibuprofen",
+            aliases=(),
+            type="Medication",
+        ),
+        VocabularyEntry(
+            term="radiotherapy",
+            aliases=(),
+            type="Treatment",
+        ),
+    ]
+    text = "Ibuprofen 400 mg was prescribed. Radiotherapy 50 Gy was delivered."
+
+    nodes, edges = build_case_graph(
+        case_id="case_001",
+        case_text=text,
+        vocabulary=vocabulary,
+    )
+
+    dose_sources = {
+        edge.source_id
+        for edge in edges
+        if edge.relation == Relation.HAS_DOSE
+    }
+    node_ids = {node.node_id for node in nodes}
+
+    assert dose_sources == {
+        "case_001:ibuprofen",
+        "case_001:radiotherapy",
+    }
+    assert all(
+        edge.source_id in node_ids and edge.target_id in node_ids
+        for edge in edges
+    )
+
+
 def test_export_graph_from_cases_writes_valid_csv_files(tmp_path):
     nodes_path = tmp_path / "nodes.csv"
     edges_path = tmp_path / "edges.csv"

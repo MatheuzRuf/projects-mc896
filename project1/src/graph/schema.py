@@ -54,6 +54,7 @@ class Relation(str, Enum):
     # Relações de atributos
     HAS_DURATION = "HAS_DURATION"
     HAS_SIZE = "HAS_SIZE"
+    HAS_DOSE = "HAS_DOSE"
     LOCATED_IN = "LOCATED_IN"
     HAS_VALUE = "HAS_VALUE"
     HAS_UNIT = "HAS_UNIT"
