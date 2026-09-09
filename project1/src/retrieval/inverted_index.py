@@ -20,7 +20,6 @@ class InvertedIndex:
         current = self.postings_head
         while current is not None:
             if current.case_id == case_id:
-                current.frequency += 1
                 return
             current = current.next
 
@@ -36,17 +35,6 @@ class InvertedIndex:
         current = self.postings_head
         while current is not None:
             result.append(current.case_id)
-            current = current.next
-
-        return result
-
-    def get_postings_with_frequencies(self) -> list[tuple[str, int]]:
-        """Retorna pares (case_id, frequência) presentes no índice."""
-
-        result = []
-        current = self.postings_head
-        while current is not None:
-            result.append((current.case_id, current.frequency))
             current = current.next
 
         return result
