@@ -1,7 +1,7 @@
 import csv
 from pathlib import Path
 
-from .text import PreprocessedText, preprocess_text
+from src.preprocessing.text import PreprocessedText, preprocess_text
 
 
 def load_cases(path: str | Path) -> list[dict]:

@@ -1,4 +1,4 @@
-from .schema import Node, NodeType, Edge, Relation
+from src.graph.schema import Node, NodeType, Edge, Relation
 
 __all__ = [
     "Node",

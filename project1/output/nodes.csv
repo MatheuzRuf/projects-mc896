@@ -1,0 +1,505 @@
+node_id,type,label,attributes
+PMC5137649_01:abdominal pain,Symptom,abdominal pain,source=manual;code=
+PMC5137649_01:nausea,Symptom,nausea,source=manual;code=
+PMC5137649_01:constipation,Symptom,constipation,source=manual;code=
+PMC5137649_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC5137649_01:stomach,AnatomicalSite,stomach,source=manual;code=
+PMC5137649_01:pancreas,AnatomicalSite,pancreas,source=manual;code=
+PMC5137649_01:endoscopic ultrasound,Exam,endoscopic ultrasound,source=manual;code=
+PMC5137649_01:carcinoembryonic antigen,Exam,carcinoembryonic antigen,source=manual;code=
+PMC5137649_01:pancreatectomy,Treatment,pancreatectomy,source=manual;code=
+PMC5137649_01:endoscopy,Exam,endoscopy,source=manual;code=
+PMC5137649_01:gastroscopy,Exam,gastroscopy,source=manual;code=
+PMC5137649_01:bleeding,Symptom,bleeding,source=manual;code=
+PMC9387390_01:diarrhea,Symptom,diarrhea,source=manual;code=
+PMC9387390_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC9387390_01:abdomen,AnatomicalSite,abdomen,source=manual;code=
+PMC9387390_01:pancreas,AnatomicalSite,pancreas,source=manual;code=
+PMC9387390_01:duodenum,AnatomicalSite,duodenum,source=manual;code=
+PMC9387390_01:biopsy,Exam,biopsy,source=manual;code=
+PMC9387390_01:adenocarcinoma,Diagnosis,adenocarcinoma,source=manual;code=
+PMC9387390_01:chemotherapy,Treatment,chemotherapy,source=manual;code=
+PMC9387390_01:nausea,Symptom,nausea,source=manual;code=
+PMC9387390_01:vomiting,Symptom,vomiting,source=manual;code=
+PMC9387390_01:pancreatic neoplasm,Diagnosis,pancreatic neoplasm,source=manual;code=
+PMC9387390_01:gastrojejunostomy,Treatment,gastrojejunostomy,source=manual;code=
+PMC9387390_01:stomach,AnatomicalSite,stomach,source=manual;code=
+PMC9387390_01:small intestine,AnatomicalSite,small intestine,source=manual;code=
+PMC9387390_01:drainage,Treatment,drainage,source=manual;code=
+PMC9387390_01:gastroscopy,Exam,gastroscopy,source=manual;code=
+PMC9387390_01:endoscopy,Exam,endoscopy,source=manual;code=
+PMC9387390_01:stent placement,Treatment,stent placement,source=manual;code=
+PMC3437073_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC3437073_01:abdomen,AnatomicalSite,abdomen,source=manual;code=
+PMC3437073_01:spleen,AnatomicalSite,spleen,source=manual;code=
+PMC3437073_01:lung,AnatomicalSite,lung,source=manual;code=
+PMC3437073_01:ultrasound,Exam,ultrasound,source=manual;code=
+PMC3437073_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC3437073_01:chest wall,AnatomicalSite,chest wall,source=manual;code=
+PMC7102447_01:hypertension,Diagnosis,hypertension,source=manual;code=
+PMC7102447_01:electrocardiogram,Exam,electrocardiogram,source=manual;code=
+PMC7102447_01:anticoagulation,Treatment,anticoagulation,source=manual;code=
+PMC7102447_01:heparin,Medication,heparin,source=manual;code=
+PMC7102447_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC7102447_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC7102447_01:echocardiography,Exam,echocardiography,source=manual;code=
+PMC7102447_01:surgery,Treatment,surgery,source=manual;code=
+PMC7102447_01:warfarin,Medication,warfarin,source=manual;code=
+PMC6354154_01:ultrasound,Exam,ultrasound,source=manual;code=
+PMC6354154_01:uterus,AnatomicalSite,uterus,source=manual;code=
+PMC6354154_01:ovary,AnatomicalSite,ovary,source=manual;code=
+PMC6354154_01:laparoscopy,Treatment,laparoscopy,source=manual;code=
+PMC6354154_01:surgery,Treatment,surgery,source=manual;code=
+PMC6354154_01:bleeding,Symptom,bleeding,source=manual;code=
+PMC4782471_01:hypertension,Diagnosis,hypertension,source=manual;code=
+PMC4782471_01:shortness of breath,Symptom,shortness of breath,source=manual;code=
+PMC4782471_01:fever,Symptom,fever,source=manual;code=
+PMC4782471_01:heart,AnatomicalSite,heart,source=manual;code=
+PMC4782471_01:c-reactive protein,Exam,C-reactive protein,source=manual;code=
+PMC4782471_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC4782471_01:blood transfusion,Treatment,blood transfusion,source=manual;code=
+PMC4782471_01:echocardiography,Exam,echocardiography,source=manual;code=
+PMC4782471_01:infective endocarditis,Diagnosis,infective endocarditis,source=manual;code=
+PMC4782471_01:heart failure,Diagnosis,heart failure,source=manual;code=
+PMC4782471_01:sepsis,Diagnosis,sepsis,source=manual;code=
+PMC4782471_01:antibiotic therapy,Treatment,antibiotic therapy,source=manual;code=
+PMC4782471_01:surgery,Treatment,surgery,source=manual;code=
+PMC4835621_01:fatigue,Symptom,fatigue,source=manual;code=
+PMC4835621_01:fever,Symptom,fever,source=manual;code=
+PMC4835621_01:hematuria,Symptom,hematuria,source=manual;code=
+PMC4835621_01:diarrhea,Symptom,diarrhea,source=manual;code=
+PMC4835621_01:nausea,Symptom,nausea,source=manual;code=
+PMC4835621_01:vomiting,Symptom,vomiting,source=manual;code=
+PMC4835621_01:hypertension,Diagnosis,hypertension,source=manual;code=
+PMC4835621_01:heart,AnatomicalSite,heart,source=manual;code=
+PMC4835621_01:abdomen,AnatomicalSite,abdomen,source=manual;code=
+PMC4835621_01:melena,Symptom,melena,source=manual;code=
+PMC4835621_01:hematochezia,Symptom,hematochezia,source=manual;code=
+PMC4835621_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC4835621_01:bleeding,Symptom,bleeding,source=manual;code=
+PMC4835621_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC4835621_01:liver,AnatomicalSite,liver,source=manual;code=
+PMC4835621_01:bone marrow,AnatomicalSite,bone marrow,source=manual;code=
+PMC4835621_01:biopsy,Exam,biopsy,source=manual;code=
+PMC4835621_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC4835621_01:stomach,AnatomicalSite,stomach,source=manual;code=
+PMC4835621_01:esophagus,AnatomicalSite,esophagus,source=manual;code=
+PMC4835621_01:heparin,Medication,heparin,source=manual;code=
+PMC4835621_01:colonoscopy,Exam,colonoscopy,source=manual;code=
+PMC4835621_01:antibiotic therapy,Treatment,antibiotic therapy,source=manual;code=
+PMC8627357_01:shortness of breath,Symptom,shortness of breath,source=manual;code=
+PMC8627357_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC8627357_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC8627357_01:surgery,Treatment,surgery,source=manual;code=
+PMC8627357_01:echocardiography,Exam,echocardiography,source=manual;code=
+PMC8627357_01:antibiotic therapy,Treatment,antibiotic therapy,source=manual;code=
+PMC8627357_01:chest tube placement,Treatment,chest tube placement,source=manual;code=
+PMC8627357_01:lung,AnatomicalSite,lung,source=manual;code=
+PMC5833205_01:anemia,Diagnosis,anemia,source=manual;code=
+PMC5833205_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC5833205_01:gastroscopy,Exam,gastroscopy,source=manual;code=
+PMC5833205_01:colonoscopy,Exam,colonoscopy,source=manual;code=
+PMC5833205_01:esophagus,AnatomicalSite,esophagus,source=manual;code=
+PMC5833205_01:duodenum,AnatomicalSite,duodenum,source=manual;code=
+PMC5833205_01:colon,AnatomicalSite,colon,source=manual;code=
+PMC5833205_01:rectum,AnatomicalSite,rectum,source=manual;code=
+PMC5833205_01:blood transfusion,Treatment,blood transfusion,source=manual;code=
+PMC5833205_01:diarrhea,Symptom,diarrhea,source=manual;code=
+PMC3917415_01:systemic lupus erythematosus,Diagnosis,systemic lupus erythematosus,source=manual;code=
+PMC3917415_01:headache,Symptom,headache,source=manual;code=
+PMC3917415_01:kidney,AnatomicalSite,kidney,source=manual;code=
+PMC3917415_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC3917415_01:magnetic resonance imaging,Exam,magnetic resonance imaging,source=manual;code=
+PMC7718649_01:systemic lupus erythematosus,Diagnosis,systemic lupus erythematosus,source=manual;code=
+PMC7718649_01:prednisone,Medication,prednisone,source=manual;code=
+PMC7718649_01:hydroxychloroquine,Medication,hydroxychloroquine,source=manual;code=
+PMC7718649_01:covid-19,Diagnosis,COVID-19,source=manual;code=
+PMC7718649_01:fever,Symptom,fever,source=manual;code=
+PMC7718649_01:fatigue,Symptom,fatigue,source=manual;code=
+PMC7718649_01:nausea,Symptom,nausea,source=manual;code=
+PMC7718649_01:diarrhea,Symptom,diarrhea,source=manual;code=
+PMC7718649_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC7718649_01:kidney,AnatomicalSite,kidney,source=manual;code=
+PMC7718649_01:liver,AnatomicalSite,liver,source=manual;code=
+PMC7718649_01:antibody testing,Exam,antibody testing,source=manual;code=
+PMC7718649_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC7718649_01:blood glucose,Exam,blood glucose,source=manual;code=
+PMC7718649_01:c-reactive protein,Exam,C-reactive protein,source=manual;code=
+PMC7718649_01:wrist,AnatomicalSite,wrist,source=manual;code=
+PMC6134951_01:lung,AnatomicalSite,lung,source=manual;code=
+PMC6134951_01:adenocarcinoma,Diagnosis,adenocarcinoma,source=manual;code=
+PMC6134951_01:alectinib,Medication,alectinib,source=manual;code=
+PMC6134951_01:chest pain,Symptom,chest pain,source=manual;code=
+PMC6134951_01:prednisone,Medication,prednisone,source=manual;code=
+PMC6134951_01:antibiotic therapy,Treatment,antibiotic therapy,source=manual;code=
+PMC6134951_01:fever,Symptom,fever,source=manual;code=
+PMC6134951_01:biopsy,Exam,biopsy,source=manual;code=
+PMC6134951_01:brigatinib,Medication,brigatinib,source=manual;code=
+PMC6343374_01:echocardiography,Exam,echocardiography,source=manual;code=
+PMC6343374_01:aorta,AnatomicalSite,aorta,source=manual;code=
+PMC6343374_01:stent placement,Treatment,stent placement,source=manual;code=
+PMC6343374_01:surgery,Treatment,surgery,source=manual;code=
+PMC6343374_01:heart,AnatomicalSite,heart,source=manual;code=
+PMC6343374_01:ultrasound,Exam,ultrasound,source=manual;code=
+PMC9529523_01:systemic lupus erythematosus,Diagnosis,systemic lupus erythematosus,source=manual;code=
+PMC9529523_01:drainage,Treatment,drainage,source=manual;code=
+PMC9529523_01:echocardiography,Exam,echocardiography,source=manual;code=
+PMC9529523_01:infective endocarditis,Diagnosis,infective endocarditis,source=manual;code=
+PMC9529523_01:c-reactive protein,Exam,C-reactive protein,source=manual;code=
+PMC9529523_01:hydroxychloroquine,Medication,hydroxychloroquine,source=manual;code=
+PMC9529523_01:weight loss,Symptom,weight loss,source=manual;code=
+PMC9529523_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC9529523_01:kidney,AnatomicalSite,kidney,source=manual;code=
+PMC9529523_01:biopsy,Exam,biopsy,source=manual;code=
+PMC9529523_01:hypertension,Diagnosis,hypertension,source=manual;code=
+PMC9529523_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC9529523_01:lung,AnatomicalSite,lung,source=manual;code=
+PMC9529523_01:sepsis,Diagnosis,sepsis,source=manual;code=
+PMC9529523_01:magnetic resonance imaging,Exam,magnetic resonance imaging,source=manual;code=
+PMC9529523_01:shortness of breath,Symptom,shortness of breath,source=manual;code=
+PMC9529523_01:electrocardiogram,Exam,electrocardiogram,source=manual;code=
+PMC9529523_01:heart,AnatomicalSite,heart,source=manual;code=
+PMC9529523_01:catheter placement,Treatment,catheter placement,source=manual;code=
+PMC9529523_01:prednisone,Medication,prednisone,source=manual;code=
+PMC9532611_01:hypertension,Diagnosis,hypertension,source=manual;code=
+PMC9532611_01:surgery,Treatment,surgery,source=manual;code=
+PMC5875137_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC5875137_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC5875137_01:aorta,AnatomicalSite,aorta,source=manual;code=
+PMC5875137_01:surgery,Treatment,surgery,source=manual;code=
+PMC5875137_01:heart,AnatomicalSite,heart,source=manual;code=
+PMC5875137_01:echocardiography,Exam,echocardiography,source=manual;code=
+PMC6949661_01:fever,Symptom,fever,source=manual;code=
+PMC6949661_01:headache,Symptom,headache,source=manual;code=
+PMC6949661_01:chest pain,Symptom,chest pain,source=manual;code=
+PMC6949661_01:shortness of breath,Symptom,shortness of breath,source=manual;code=
+PMC6949661_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC6949661_01:complete blood count,Exam,complete blood count,source=manual;code=
+PMC6949661_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC6949661_01:electrocardiogram,Exam,electrocardiogram,source=manual;code=
+PMC6949661_01:echocardiography,Exam,echocardiography,source=manual;code=
+PMC6949661_01:melena,Symptom,melena,source=manual;code=
+PMC6949661_01:nausea,Symptom,nausea,source=manual;code=
+PMC6949661_01:vomiting,Symptom,vomiting,source=manual;code=
+PMC6949661_01:liver,AnatomicalSite,liver,source=manual;code=
+PMC6949661_01:abdomen,AnatomicalSite,abdomen,source=manual;code=
+PMC6949661_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC6949661_01:intravenous fluids,Treatment,intravenous fluids,source=manual;code=
+PMC6949661_01:gastroscopy,Exam,gastroscopy,source=manual;code=
+PMC6949661_01:duodenum,AnatomicalSite,duodenum,source=manual;code=
+PMC6949661_01:bleeding,Symptom,bleeding,source=manual;code=
+PMC6949661_01:colonoscopy,Exam,colonoscopy,source=manual;code=
+PMC6949661_01:small intestine,AnatomicalSite,small intestine,source=manual;code=
+PMC6949661_01:kidney,AnatomicalSite,kidney,source=manual;code=
+PMC6949661_01:laparoscopy,Treatment,laparoscopy,source=manual;code=
+PMC6949661_01:endoscopy,Exam,endoscopy,source=manual;code=
+PMC6949661_01:laparotomy,Treatment,laparotomy,source=manual;code=
+PMC6949661_01:surgery,Treatment,surgery,source=manual;code=
+PMC10405809_01:dysphagia,Symptom,dysphagia,source=manual;code=
+PMC10405809_01:radiotherapy,Treatment,radiotherapy,source=manual;code=
+PMC10405809_01:lymph node,AnatomicalSite,lymph node,source=manual;code=
+PMC10405809_01:abdomen,AnatomicalSite,abdomen,source=manual;code=
+PMC10405809_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC10405809_01:esophagus,AnatomicalSite,esophagus,source=manual;code=
+PMC10405809_01:weight loss,Symptom,weight loss,source=manual;code=
+PMC10405809_01:anemia,Diagnosis,anemia,source=manual;code=
+PMC10405809_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC10405809_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC10405809_01:gastroscopy,Exam,gastroscopy,source=manual;code=
+PMC10405809_01:biopsy,Exam,biopsy,source=manual;code=
+PMC10405809_01:endoscopy,Exam,endoscopy,source=manual;code=
+PMC7519975_01:insulin,Medication,insulin,source=manual;code=
+PMC7519975_01:vomiting,Symptom,vomiting,source=manual;code=
+PMC7519975_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC7519975_01:abdomen,AnatomicalSite,abdomen,source=manual;code=
+PMC7519975_01:small intestine,AnatomicalSite,small intestine,source=manual;code=
+PMC7519975_01:brain,AnatomicalSite,brain,source=manual;code=
+PMC7519975_01:bleeding,Symptom,bleeding,source=manual;code=
+PMC7519975_01:surgery,Treatment,surgery,source=manual;code=
+PMC7519975_01:laparotomy,Treatment,laparotomy,source=manual;code=
+PMC7519975_01:heart,AnatomicalSite,heart,source=manual;code=
+PMC7519975_01:electrocardiogram,Exam,electrocardiogram,source=manual;code=
+PMC7519975_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC7519975_01:blood glucose,Exam,blood glucose,source=manual;code=
+PMC7519975_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC7519975_01:colon,AnatomicalSite,colon,source=manual;code=
+PMC3950436_01:shortness of breath,Symptom,shortness of breath,source=manual;code=
+PMC3950436_01:dysphagia,Symptom,dysphagia,source=manual;code=
+PMC3950436_01:radiotherapy,Treatment,radiotherapy,source=manual;code=
+PMC3950436_01:chemotherapy,Treatment,chemotherapy,source=manual;code=
+PMC3950436_01:surgery,Treatment,surgery,source=manual;code=
+PMC3950436_01:heart,AnatomicalSite,heart,source=manual;code=
+PMC3950436_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC3950436_01:ketamine,Medication,ketamine,source=manual;code=
+PMC3950436_01:dexmedetomidine,Medication,dexmedetomidine,source=manual;code=
+PMC3950436_01:electrocardiogram,Exam,electrocardiogram,source=manual;code=
+PMC3950436_01:ultrasound,Exam,ultrasound,source=manual;code=
+PMC10434843_01:magnetic resonance imaging,Exam,magnetic resonance imaging,source=manual;code=
+PMC10434843_01:wrist,AnatomicalSite,wrist,source=manual;code=
+PMC10434843_01:shoulder,AnatomicalSite,shoulder,source=manual;code=
+PMC10434843_01:ultrasound,Exam,ultrasound,source=manual;code=
+PMC10434843_01:brain,AnatomicalSite,brain,source=manual;code=
+PMC10434843_01:abdomen,AnatomicalSite,abdomen,source=manual;code=
+PMC10434843_01:thyroid,AnatomicalSite,thyroid,source=manual;code=
+PMC10434843_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC2700431_01:bone fracture,Diagnosis,bone fracture,source=manual;code=
+PMC2700431_01:pneumothorax,Diagnosis,pneumothorax,source=manual;code=
+PMC2700431_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC2700431_01:spleen,AnatomicalSite,spleen,source=manual;code=
+PMC2700431_01:liver,AnatomicalSite,liver,source=manual;code=
+PMC2700431_01:antibiotic therapy,Treatment,antibiotic therapy,source=manual;code=
+PMC2700431_01:fever,Symptom,fever,source=manual;code=
+PMC2700431_01:lung,AnatomicalSite,lung,source=manual;code=
+PMC10106591_01:chest pain,Symptom,chest pain,source=manual;code=
+PMC10106591_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC10106591_01:shortness of breath,Symptom,shortness of breath,source=manual;code=
+PMC10106591_01:hypertension,Diagnosis,hypertension,source=manual;code=
+PMC10106591_01:heart,AnatomicalSite,heart,source=manual;code=
+PMC10106591_01:abdomen,AnatomicalSite,abdomen,source=manual;code=
+PMC10106591_01:electrocardiogram,Exam,electrocardiogram,source=manual;code=
+PMC10106591_01:echocardiography,Exam,echocardiography,source=manual;code=
+PMC10106591_01:aspirin,Medication,aspirin,source=manual;code=
+PMC10106591_01:diltiazem,Medication,diltiazem,source=manual;code=
+PMC10106591_01:liver,AnatomicalSite,liver,source=manual;code=
+PMC10106591_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC10106591_01:thyroid,AnatomicalSite,thyroid,source=manual;code=
+PMC4073451_01:surgery,Treatment,surgery,source=manual;code=
+PMC4073451_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC4073451_01:biopsy,Exam,biopsy,source=manual;code=
+PMC9969157_01:hypertension,Diagnosis,hypertension,source=manual;code=
+PMC9969157_01:echocardiography,Exam,echocardiography,source=manual;code=
+PMC9969157_01:triheptanoin,Medication,triheptanoin,source=manual;code=
+PMC9969157_01:vomiting,Symptom,vomiting,source=manual;code=
+PMC9969157_01:hematochezia,Symptom,hematochezia,source=manual;code=
+PMC4828947_01:temporal lobe,AnatomicalSite,temporal lobe,source=manual;code=
+PMC4828947_01:surgery,Treatment,surgery,source=manual;code=
+PMC4828947_01:fever,Symptom,fever,source=manual;code=
+PMC4828947_01:magnetic resonance imaging,Exam,magnetic resonance imaging,source=manual;code=
+PMC4828947_01:seizure,Symptom,seizure,source=manual;code=
+PMC7086412_01:blood glucose,Exam,blood glucose,source=manual;code=
+PMC7086412_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC7086412_01:complete blood count,Exam,complete blood count,source=manual;code=
+PMC7086412_01:thyroid,AnatomicalSite,thyroid,source=manual;code=
+PMC7086412_01:systemic lupus erythematosus,Diagnosis,systemic lupus erythematosus,source=manual;code=
+PMC7086412_01:shoulder,AnatomicalSite,shoulder,source=manual;code=
+PMC7086412_02:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC7086412_02:shoulder,AnatomicalSite,shoulder,source=manual;code=
+PMC3557982_01:lung,AnatomicalSite,lung,source=manual;code=
+PMC9815523_01:bleeding,Symptom,bleeding,source=manual;code=
+PMC9815523_01:anticoagulation,Treatment,anticoagulation,source=manual;code=
+PMC9815523_01:blood transfusion,Treatment,blood transfusion,source=manual;code=
+PMC9815523_01:surgery,Treatment,surgery,source=manual;code=
+PMC9815523_01:stent placement,Treatment,stent placement,source=manual;code=
+PMC9815523_01:heparin,Medication,heparin,source=manual;code=
+PMC9815523_01:bone fracture,Diagnosis,bone fracture,source=manual;code=
+PMC9815523_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC4310058_01:skull,AnatomicalSite,skull,source=manual;code=
+PMC4310058_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC4310058_01:magnetic resonance imaging,Exam,magnetic resonance imaging,source=manual;code=
+PMC3859158_01:epigastric pain,Symptom,epigastric pain,source=manual;code=
+PMC3859158_01:nausea,Symptom,nausea,source=manual;code=
+PMC3859158_01:pancreatitis,Diagnosis,pancreatitis,source=manual;code=
+PMC3859158_01:fever,Symptom,fever,source=manual;code=
+PMC3859158_01:weight loss,Symptom,weight loss,source=manual;code=
+PMC3859158_01:abdomen,AnatomicalSite,abdomen,source=manual;code=
+PMC3859158_01:epigastrium,AnatomicalSite,epigastrium,source=manual;code=
+PMC3859158_01:complete blood count,Exam,complete blood count,source=manual;code=
+PMC3859158_01:lipase,Exam,lipase,source=manual;code=
+PMC3859158_01:carcinoembryonic antigen,Exam,carcinoembryonic antigen,source=manual;code=
+PMC3859158_01:carbohydrate antigen 19-9,Exam,carbohydrate antigen 19-9,source=manual;code=
+PMC3859158_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC3859158_01:adrenal gland,AnatomicalSite,adrenal gland,source=manual;code=
+PMC3859158_01:pancreas,AnatomicalSite,pancreas,source=manual;code=
+PMC3859158_01:retroperitoneum,AnatomicalSite,retroperitoneum,source=manual;code=
+PMC3859158_01:laparoscopy,Treatment,laparoscopy,source=manual;code=
+PMC3859158_01:pancreatic tail,AnatomicalSite,pancreatic tail,source=manual;code=
+PMC3859158_01:lymph node,AnatomicalSite,lymph node,source=manual;code=
+PMC3859158_01:spleen,AnatomicalSite,spleen,source=manual;code=
+PMC3859158_01:pancreatic neoplasm,Diagnosis,pancreatic neoplasm,source=manual;code=
+PMC3859158_01:surgery,Treatment,surgery,source=manual;code=
+PMC5804616_01:surgery,Treatment,surgery,source=manual;code=
+PMC5804616_01:chemotherapy,Treatment,chemotherapy,source=manual;code=
+PMC5804616_01:radiotherapy,Treatment,radiotherapy,source=manual;code=
+PMC5804616_01:aorta,AnatomicalSite,aorta,source=manual;code=
+PMC5804616_01:hypertension,Diagnosis,hypertension,source=manual;code=
+PMC5804616_01:bladder,AnatomicalSite,bladder,source=manual;code=
+PMC5804616_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC5804616_01:lung,AnatomicalSite,lung,source=manual;code=
+PMC5804616_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC5804616_01:pneumothorax,Diagnosis,pneumothorax,source=manual;code=
+PMC5804616_01:drainage,Treatment,drainage,source=manual;code=
+PMC5804616_01:chest tube placement,Treatment,chest tube placement,source=manual;code=
+PMC5804616_01:esophagus,AnatomicalSite,esophagus,source=manual;code=
+PMC3897989_01:abdominal pain,Symptom,abdominal pain,source=manual;code=
+PMC3897989_01:aspirin,Medication,aspirin,source=manual;code=
+PMC3897989_01:heart,AnatomicalSite,heart,source=manual;code=
+PMC3897989_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC3897989_01:magnetic resonance imaging,Exam,magnetic resonance imaging,source=manual;code=
+PMC3897989_01:pancreas,AnatomicalSite,pancreas,source=manual;code=
+PMC3897989_01:bile duct,AnatomicalSite,bile duct,source=manual;code=
+PMC3897989_01:gallbladder,AnatomicalSite,gallbladder,source=manual;code=
+PMC3897989_01:kidney,AnatomicalSite,kidney,source=manual;code=
+PMC3897989_01:carcinoembryonic antigen,Exam,carcinoembryonic antigen,source=manual;code=
+PMC3897989_01:drainage,Treatment,drainage,source=manual;code=
+PMC3897989_01:liver,AnatomicalSite,liver,source=manual;code=
+PMC3897989_01:biopsy,Exam,biopsy,source=manual;code=
+PMC3897989_01:corticosteroid therapy,Treatment,corticosteroid therapy,source=manual;code=
+PMC3897989_01:methylprednisolone,Medication,methylprednisolone,source=manual;code=
+PMC3897989_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC3897989_01:lung,AnatomicalSite,lung,source=manual;code=
+PMC2817501_01:shortness of breath,Symptom,shortness of breath,source=manual;code=
+PMC2817501_01:heart,AnatomicalSite,heart,source=manual;code=
+PMC2817501_01:echocardiography,Exam,echocardiography,source=manual;code=
+PMC11131390_01:weight loss,Symptom,weight loss,source=manual;code=
+PMC11131390_01:thyroid,AnatomicalSite,thyroid,source=manual;code=
+PMC11131390_01:hypothyroidism,Diagnosis,hypothyroidism,source=manual;code=
+PMC10521634_01:dizziness,Symptom,dizziness,source=manual;code=
+PMC10521634_01:hematochezia,Symptom,hematochezia,source=manual;code=
+PMC10521634_01:diarrhea,Symptom,diarrhea,source=manual;code=
+PMC10521634_01:fever,Symptom,fever,source=manual;code=
+PMC10521634_01:abdominal pain,Symptom,abdominal pain,source=manual;code=
+PMC10521634_01:colonoscopy,Exam,colonoscopy,source=manual;code=
+PMC10521634_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC10521634_01:c-reactive protein,Exam,C-reactive protein,source=manual;code=
+PMC10521634_01:heparin,Medication,heparin,source=manual;code=
+PMC10521634_01:bleeding,Symptom,bleeding,source=manual;code=
+PMC10521634_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC10521634_01:colon,AnatomicalSite,colon,source=manual;code=
+PMC10521634_01:rectum,AnatomicalSite,rectum,source=manual;code=
+PMC10521634_01:surgery,Treatment,surgery,source=manual;code=
+PMC10521634_01:drainage,Treatment,drainage,source=manual;code=
+PMC10521634_01:endoscopy,Exam,endoscopy,source=manual;code=
+PMC10488652_01:fever,Symptom,fever,source=manual;code=
+PMC10488652_01:headache,Symptom,headache,source=manual;code=
+PMC10488652_01:myalgia,Symptom,myalgia,source=manual;code=
+PMC10488652_01:diarrhea,Symptom,diarrhea,source=manual;code=
+PMC10488652_01:vomiting,Symptom,vomiting,source=manual;code=
+PMC10488652_01:systemic lupus erythematosus,Diagnosis,systemic lupus erythematosus,source=manual;code=
+PMC10488652_01:kidney,AnatomicalSite,kidney,source=manual;code=
+PMC10488652_01:biopsy,Exam,biopsy,source=manual;code=
+PMC10488652_01:anemia,Diagnosis,anemia,source=manual;code=
+PMC10488652_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC10488652_01:hydroxychloroquine,Medication,hydroxychloroquine,source=manual;code=
+PMC10488652_01:prednisone,Medication,prednisone,source=manual;code=
+PMC11420039_01:antibody testing,Exam,antibody testing,source=manual;code=
+PMC11420039_01:methylprednisolone,Medication,methylprednisolone,source=manual;code=
+PMC11420039_01:fatigue,Symptom,fatigue,source=manual;code=
+PMC11420039_01:shortness of breath,Symptom,shortness of breath,source=manual;code=
+PMC11420039_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC11420039_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC11420039_01:magnetic resonance imaging,Exam,magnetic resonance imaging,source=manual;code=
+PMC11420039_01:sepsis,Diagnosis,sepsis,source=manual;code=
+PMC11420039_01:sjogren syndrome,Diagnosis,Sjogren syndrome,source=manual;code=
+PMC11420039_01:lung,AnatomicalSite,lung,source=manual;code=
+PMC11259348_01:fever,Symptom,fever,source=manual;code=
+PMC11259348_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC11259348_01:blood transfusion,Treatment,blood transfusion,source=manual;code=
+PMC11259348_02:blood transfusion,Treatment,blood transfusion,source=manual;code=
+PMC11368112_01:thorax,AnatomicalSite,thorax,source=manual;code=
+PMC11368112_01:fever,Symptom,fever,source=manual;code=
+PMC11368112_01:surgery,Treatment,surgery,source=manual;code=
+PMC11368112_01:hypertension,Diagnosis,hypertension,source=manual;code=
+PMC11368112_01:shortness of breath,Symptom,shortness of breath,source=manual;code=
+PMC11368112_01:c-reactive protein,Exam,C-reactive protein,source=manual;code=
+PMC11368112_01:ultrasound,Exam,ultrasound,source=manual;code=
+PMC11368112_01:electrocardiogram,Exam,electrocardiogram,source=manual;code=
+PMC11368112_01:pulmonary embolism,Diagnosis,pulmonary embolism,source=manual;code=
+PMC11368112_01:echocardiography,Exam,echocardiography,source=manual;code=
+PMC11368112_01:biopsy,Exam,biopsy,source=manual;code=
+PMC11368112_01:methylprednisolone,Medication,methylprednisolone,source=manual;code=
+PMC11368112_01:warfarin,Medication,warfarin,source=manual;code=
+PMC11345641_01:ultrasound,Exam,ultrasound,source=manual;code=
+PMC11345641_01:abdominal pain,Symptom,abdominal pain,source=manual;code=
+PMC11345641_01:carbohydrate antigen 19-9,Exam,carbohydrate antigen 19-9,source=manual;code=
+PMC11345641_01:carcinoembryonic antigen,Exam,carcinoembryonic antigen,source=manual;code=
+PMC11345641_01:uterus,AnatomicalSite,uterus,source=manual;code=
+PMC11345641_01:magnetic resonance imaging,Exam,magnetic resonance imaging,source=manual;code=
+PMC11345641_01:biopsy,Exam,biopsy,source=manual;code=
+PMC11345641_01:surgery,Treatment,surgery,source=manual;code=
+PMC11345641_01:rectum,AnatomicalSite,rectum,source=manual;code=
+PMC11345641_01:laparotomy,Treatment,laparotomy,source=manual;code=
+PMC11345641_01:colon,AnatomicalSite,colon,source=manual;code=
+PMC11345641_01:bleeding,Symptom,bleeding,source=manual;code=
+PMC11345641_01:peritoneum,AnatomicalSite,peritoneum,source=manual;code=
+PMC11345641_01:small intestine,AnatomicalSite,small intestine,source=manual;code=
+PMC11345641_01:appendix,AnatomicalSite,appendix,source=manual;code=
+PMC11345641_01:chemotherapy,Treatment,chemotherapy,source=manual;code=
+PMC11723754_01:bladder,AnatomicalSite,bladder,source=manual;code=
+PMC11723754_01:sepsis,Diagnosis,sepsis,source=manual;code=
+PMC11723754_01:blood transfusion,Treatment,blood transfusion,source=manual;code=
+PMC11723754_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC11723754_01:liver,AnatomicalSite,liver,source=manual;code=
+PMC11723754_01:hip,AnatomicalSite,hip,source=manual;code=
+PMC11723754_01:knee,AnatomicalSite,knee,source=manual;code=
+PMC11723754_01:ankle,AnatomicalSite,ankle,source=manual;code=
+PMC11783470_01:dysphagia,Symptom,dysphagia,source=manual;code=
+PMC11783470_01:nausea,Symptom,nausea,source=manual;code=
+PMC11783470_01:vomiting,Symptom,vomiting,source=manual;code=
+PMC11783470_01:abdominal pain,Symptom,abdominal pain,source=manual;code=
+PMC11783470_01:melena,Symptom,melena,source=manual;code=
+PMC11783470_01:hematochezia,Symptom,hematochezia,source=manual;code=
+PMC11783470_01:weight loss,Symptom,weight loss,source=manual;code=
+PMC11783470_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC11783470_01:gastroscopy,Exam,gastroscopy,source=manual;code=
+PMC11783470_01:colonoscopy,Exam,colonoscopy,source=manual;code=
+PMC11783470_01:biopsy,Exam,biopsy,source=manual;code=
+PMC11783470_01:bleeding,Symptom,bleeding,source=manual;code=
+PMC11783470_01:endoscopy,Exam,endoscopy,source=manual;code=
+PMC11783470_01:anemia,Diagnosis,anemia,source=manual;code=
+PMC11722600_01:abdominal pain,Symptom,abdominal pain,source=manual;code=
+PMC11722600_01:fever,Symptom,fever,source=manual;code=
+PMC11722600_01:c-reactive protein,Exam,C-reactive protein,source=manual;code=
+PMC11722600_01:ultrasound,Exam,ultrasound,source=manual;code=
+PMC11722600_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC11722600_01:appendix,AnatomicalSite,appendix,source=manual;code=
+PMC11722600_01:ovary,AnatomicalSite,ovary,source=manual;code=
+PMC11722600_01:laparoscopic appendectomy,Treatment,laparoscopic appendectomy,source=manual;code=
+PMC11722600_01:bleeding,Symptom,bleeding,source=manual;code=
+PMC11722600_02:abdominal pain,Symptom,abdominal pain,source=manual;code=
+PMC11722600_02:epigastrium,AnatomicalSite,epigastrium,source=manual;code=
+PMC11722600_02:fever,Symptom,fever,source=manual;code=
+PMC11722600_02:c-reactive protein,Exam,C-reactive protein,source=manual;code=
+PMC11722600_02:acute appendicitis,Diagnosis,acute appendicitis,source=manual;code=
+PMC11722600_02:computed tomography,Exam,computed tomography,source=manual;code=
+PMC11722600_02:appendix,AnatomicalSite,appendix,source=manual;code=
+PMC11722600_02:surgery,Treatment,surgery,source=manual;code=
+PMC11722600_02:antibiotic therapy,Treatment,antibiotic therapy,source=manual;code=
+PMC11722600_02:laparoscopy,Treatment,laparoscopy,source=manual;code=
+PMC11722600_02:peritoneum,AnatomicalSite,peritoneum,source=manual;code=
+PMC11722600_02:drainage,Treatment,drainage,source=manual;code=
+PMC11722600_02:laparoscopic appendectomy,Treatment,laparoscopic appendectomy,source=manual;code=
+PMC11722600_02:bleeding,Symptom,bleeding,source=manual;code=
+PMC12215201_01:fatigue,Symptom,fatigue,source=manual;code=
+PMC12215201_01:abdomen,AnatomicalSite,abdomen,source=manual;code=
+PMC12215201_01:weight loss,Symptom,weight loss,source=manual;code=
+PMC12215201_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC12215201_01:ultrasound,Exam,ultrasound,source=manual;code=
+PMC12215201_01:liver,AnatomicalSite,liver,source=manual;code=
+PMC12215201_01:spleen,AnatomicalSite,spleen,source=manual;code=
+PMC12215201_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC12215201_01:lung,AnatomicalSite,lung,source=manual;code=
+PMC12215201_01:kidney,AnatomicalSite,kidney,source=manual;code=
+PMC12215201_01:anemia,Diagnosis,anemia,source=manual;code=
+PMC12215201_01:colonoscopy,Exam,colonoscopy,source=manual;code=
+PMC12215201_01:gastroscopy,Exam,gastroscopy,source=manual;code=
+PMC12215201_01:duodenum,AnatomicalSite,duodenum,source=manual;code=
+PMC12215201_01:endoscopy,Exam,endoscopy,source=manual;code=
+PMC12215201_01:stomach,AnatomicalSite,stomach,source=manual;code=
+PMC12215201_01:small intestine,AnatomicalSite,small intestine,source=manual;code=
+PMC12215201_01:biopsy,Exam,biopsy,source=manual;code=
+PMC12215201_01:catheter placement,Treatment,catheter placement,source=manual;code=
+PMC12215201_01:drainage,Treatment,drainage,source=manual;code=
+PMC12832199_01:abdominal pain,Symptom,abdominal pain,source=manual;code=
+PMC12832199_01:vomiting,Symptom,vomiting,source=manual;code=
+PMC12832199_01:knee,AnatomicalSite,knee,source=manual;code=
+PMC12832199_01:abdomen,AnatomicalSite,abdomen,source=manual;code=
+PMC12832199_01:anemia,Diagnosis,anemia,source=manual;code=
+PMC12832199_01:hemoglobin,Exam,hemoglobin,source=manual;code=
+PMC12832199_01:kidney,AnatomicalSite,kidney,source=manual;code=
+PMC12832199_01:computed tomography,Exam,computed tomography,source=manual;code=
+PMC12832199_01:gastric outlet obstruction,Diagnosis,gastric outlet obstruction,source=manual;code=
+PMC12832199_01:intravenous fluids,Treatment,intravenous fluids,source=manual;code=
+PMC12832199_01:antibiotic therapy,Treatment,antibiotic therapy,source=manual;code=
+PMC12832199_01:colon,AnatomicalSite,colon,source=manual;code=
+PMC12832199_01:stomach,AnatomicalSite,stomach,source=manual;code=
+PMC12832199_01:endoscopy,Exam,endoscopy,source=manual;code=

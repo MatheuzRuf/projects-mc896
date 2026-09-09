@@ -1,4 +1,4 @@
-from .text import (
+from src.preprocessing.text import (
     PreprocessedText,
     normalize_text,
     tokenize,
@@ -6,7 +6,7 @@ from .text import (
     preprocess_text,
 )
 
-from .dataset import (
+from src.preprocessing.dataset import (
     load_cases,
     preprocess_cases,
 )
