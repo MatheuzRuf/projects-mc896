@@ -1,10 +1,15 @@
 import math
 import numpy as np
 
-def RankedSearch(query, vectorizedDocs):
+from ..preprocessing import preprocess_text
+
+def RankedSearch(vectorizedDocs):
     ranking = []
+    query = vectorizedDocs["query"]
     for nome, vetor in vectorizedDocs.items():
-        score = np.dot(query, vetor)
+        if nome == "query":
+            continue
+        score = np.dot(np.array(query), np.array(vetor))
         ranking.append((score, nome))
 
     ranking.sort(reverse=True)
@@ -12,28 +17,31 @@ def RankedSearch(query, vectorizedDocs):
     return ranking
     
 
-def TF_IDF(indexInvertido, totalDocuments):
-    result = {}
-    for palavra, valores in indexInvertido.items():
+def TF_IDF(indexInvertido, totalDocuments, query):
+    documentNames = set()
+    for invertedIndex in indexInvertido.values():
+        documentNames.update(invertedIndex.get_postings())
+
+    result = {name: [] for name in documentNames}
+    result["query"] = []
+    if isinstance(query, str):
+        query = preprocess_text(query).retrieval_tokens
+
+    for palavra, invertedIndex in indexInvertido.items():
+        valores = invertedIndex.get_postings_with_frequencies()
+        frequencies = dict(valores)
         numDoc = len(valores)
 
-        for documento in valores:
-            if (documento[1]==0):
-                numDoc = numDoc - 1
+        for nome_documento in documentNames:
+            frequencia = frequencies.get(nome_documento, 0)
+            result[nome_documento].append(TermFrequency(frequencia)*InverseDocumentFrequency(numDoc, totalDocuments))
 
-        for documento in valores:
-            nome_documento = documento[0]
-            frequencia = documento[1]
-            if nome_documento not in result:
-                result[nome_documento] = np.array()
-
-            result[nome_documento] = np.append(result[nome_documento], 
-            TermFrequency(frequencia, numDoc)*InverseDocumentFrequency(numDoc, totalDocuments))
+        result["query"].append(TermFrequency(query.count(palavra))*InverseDocumentFrequency(numDoc, totalDocuments))
             
     return result
 
-def TermFrequency(termRepetition, numberDocumentsHasTerm):
-    return termRepetition/numberDocumentsHasTerm
+def TermFrequency(termFrequency):
+    return math.log(1+termFrequency)
 
 def InverseDocumentFrequency(numberDocumentsHasTerm, totalDocuments):
     return math.log(totalDocuments/numberDocumentsHasTerm)
