@@ -5,11 +5,14 @@ from src.preprocessing import preprocess_text
 
 def RankedSearch(vectorizedDocs):
     ranking = []
-    query = vectorizedDocs["query"]
+    query = np.array(vectorizedDocs["query"])
     for nome, vetor in vectorizedDocs.items():
+        vetor = np.array(vetor)
+        norma = np.sqrt(np.sum(vetor ** 2))
+        vetor_normalizado = vetor/norma
         if nome == "query":
             continue
-        score = np.dot(np.array(query), np.array(vetor))
+        score = np.dot(query, vetor_normalizado)
         ranking.append((score, nome))
 
     ranking.sort(reverse=True)

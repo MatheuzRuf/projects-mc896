@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.extraction import extract_entities
+from src.extraction import Entity, extract_entities
 from src.extraction.relations import extract_case_relations
 from src.graph.export import save_edges, save_nodes
 from src.graph.schema import Node, NodeType
@@ -42,7 +42,12 @@ def load_entity_vocabulary(vocabulary_dir: str | Path = "vocabularies") -> list:
 
 
 def build_case_graph(case_id: str, case_text: str, vocabulary: list) -> tuple[list[Node], list]:
-    entities = extract_entities(case_text, vocabulary)
+    patient = Entity(
+        label="patient",
+        type=NodeType.PATIENT.value,
+        source="case",
+    )
+    entities = [patient, *extract_entities(case_text, vocabulary)]
 
     node_map: dict[str, Node] = {}
     nodes: list[Node] = []
