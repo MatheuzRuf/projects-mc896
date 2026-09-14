@@ -103,9 +103,6 @@ A proposta combina técnicas clássicas de Processamento de Línguas Naturais (P
 
 O repositório trabalha com a amostra disponível em `sample/`, não com a totalidade do MultiCaRe. A entrega concentra-se em métodos clássicos e interpretáveis: normalização, tokenização, remoção de stopwords para recuperação, índice invertido, operadores booleanos, TF-IDF, similaridade vetorial, casamento por dicionário, expressões regulares e regras determinísticas de relação. O projeto não se propõe, nesta etapa, a produzir diagnóstico médico ou substituir avaliação clínica.
 
-## Slides
-
-O PDF da apresentação ainda não está versionado neste diretório. Quando estiver disponível, ele deverá ser colocado em `assets/slides/` e o link correspondente deverá ser acrescentado aqui.
 
 ## Organização do Projeto
 
@@ -142,7 +139,7 @@ project1/
 └── tests/                             # testes automatizados do pipeline
 ```
 
-Essa organização separa dados de entrada, vocabulários, código-fonte, scripts executáveis, resultados e testes. Ela segue a intenção da estrutura sugerida para a disciplina, ainda que utilize os nomes `sample/` e `output/` já consolidados na implementação em vez de renomeá-los para `data/`, pois nenhuma reorganização destrutiva foi realizada nesta atualização.
+Essa organização separa dados de entrada, vocabulários, código-fonte, scripts executáveis, resultados e testes. Ela segue a intenção da estrutura sugerida para a disciplina, ainda que utilize os nomes `sample/` e `output/` já consolidados na implementação em vez de renomeá-los para `data/`.
 
 ## Dados e Vocabulários
 
@@ -452,27 +449,17 @@ Os resultados devem ser interpretados considerando as limitações do método. C
 
 O pipeline executável documentado neste repositório não depende de modelos de linguagem generativos: a recuperação e a extração são implementadas com métodos clássicos, vocabulários, expressões regulares e regras.
 
-Não há, nos arquivos do projeto, um registro consolidado que permita atribuir com segurança usos de modelos de linguagem durante planejamento, programação, revisão ou redação. Caso tenham sido utilizados, a equipe deve completar esta seção antes da entrega, informando de maneira transparente:
+A extração dos termos em csv. foram feitas usando auxiliarmente modelos de linguagem.
 
-- qual ferramenta e versão foram usadas;
-- em quais tarefas houve assistência;
-- quais partes foram verificadas ou modificadas pela equipe;
-- quais limitações ou erros foram encontrados;
-- se dados clínicos foram enviados a algum serviço externo.
-
-Independentemente da ferramenta, toda sugestão gerada deve ser revisada pelos autores, e dados sensíveis não devem ser compartilhados com serviços externos sem base legal, autorização e medidas adequadas de proteção.
+Este README também foi feito usando LLM, com posterior revisão, detalhamento e alterações.
 
 ## Limitações e Próximos Passos
 
-- ampliar e revisar os vocabulários controlados;
 - incorporar explicitamente os metadados e termos MeSH ao grafo;
-- avaliar entidades e relações contra um conjunto de referência anotado;
 - aprofundar o tratamento de negação, incerteza, temporalidade e correferência;
 - separar dados brutos, intermediários e processados conforme a estrutura completa sugerida pela disciplina, caso a equipe aprove essa migração;
-- produzir o PNG definitivo do modelo lógico em `assets/images/`;
-- adicionar o PDF e o link dos slides em `assets/slides/`;
 - registrar métricas quantitativas e exemplos comentados na versão final do relatório;
-- documentar autoria, integrantes da equipe e responsabilidades, caso exigidos na entrega.
+- adaptação das etapas que estão hardcoded.
 
 ## Referências Bibliográficas
 
