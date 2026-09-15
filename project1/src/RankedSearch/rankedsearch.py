@@ -19,18 +19,23 @@ def RankedSearch(vectorizedDocs):
 
     return ranking
     
-
 def TF_IDF(indexInvertido, totalDocuments, query):
     documentNames = set()
     for invertedIndex in indexInvertido.values():
+        if getattr(invertedIndex, "is_stopword", False): # verifica se o termo é uma stopword
+            continue
         documentNames.update(invertedIndex.get_postings())
 
     result = {name: [] for name in documentNames}
     result["query"] = []
     if isinstance(query, str):
-        query = preprocess_text(query).retrieval_tokens
+        query = preprocess_text(query).tokens
 
     for palavra, invertedIndex in indexInvertido.items():
+        # sempre pula termos marcados como stopword
+        if getattr(invertedIndex, "is_stopword", False):
+            continue
+
         valores = invertedIndex.get_postings_with_frequencies()
         frequencies = dict(valores)
         numDoc = len(valores)

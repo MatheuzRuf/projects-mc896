@@ -3,7 +3,6 @@ from pathlib import Path
 
 from src.preprocessing.text import PreprocessedText, preprocess_text
 
-
 def load_cases(path: str | Path) -> list[dict]:
     """
     Lê cases.csv e retorna uma lista de casos.
@@ -14,7 +13,6 @@ def load_cases(path: str | Path) -> list[dict]:
     with path.open("r", encoding="utf-8", newline="") as file:
         reader = csv.DictReader(file)
         return list(reader)
-
 
 def preprocess_cases(path: str | Path) -> list[dict]:
     """
@@ -42,8 +40,8 @@ def preprocess_cases(path: str | Path) -> list[dict]:
             # Tokens completos
             "tokens": result.tokens,
 
-            # Para retrieval
-            "retrieval_tokens": result.retrieval_tokens,
+            # Para retrieval, com stopwords filtradas em hard coded
+            #"retrieval_tokens": result.retrieval_tokens,
         }
 
         processed_cases.append(processed_case)

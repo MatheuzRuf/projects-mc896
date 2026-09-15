@@ -1,7 +1,6 @@
 import csv
 from pathlib import Path
 
-
 NODE_COLORS = {
     "Patient": "#e74c3c",
     "Diagnosis": "#8e44ad",
@@ -24,12 +23,10 @@ NODE_COLORS = {
 
 DEFAULT_NODE_COLOR = "#cccccc"
 
-
 def _read_csv(path: str | Path) -> list[dict]:
     path = Path(path)
     with path.open("r", encoding="utf-8", newline="") as file:
         return list(csv.DictReader(file))
-
 
 def load_case_graph(
     nodes_path: str | Path,
@@ -65,7 +62,6 @@ def load_case_graph(
     ]
 
     return case_id, nodes, edges
-
 
 def visualize_case(
     nodes_path: str | Path,

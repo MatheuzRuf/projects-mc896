@@ -2,15 +2,14 @@ import argparse
 import sys
 from pathlib import Path
 
-
 base_dir = Path(__file__).resolve().parent.parent
 if str(base_dir) not in sys.path:
     sys.path.insert(0, str(base_dir))
 
 from src.visualization import visualize_case
 
-
 def main() -> None:
+    """Gera uma visualizacao basica de um caso clinico e salva em PNG."""
     parser = argparse.ArgumentParser(
         description="Generate a basic PNG visualization for one clinical case."
     )
@@ -44,7 +43,6 @@ def main() -> None:
 
     print(f"Visualized case: {case_id}")
     print(f"Graph saved at: {args.output}")
-
 
 if __name__ == "__main__":
     main()

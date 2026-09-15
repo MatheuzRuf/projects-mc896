@@ -2,19 +2,17 @@ import re
 import unicodedata
 from dataclasses import dataclass
 
-
 # Stopwords básicas para textos clínicos em inglês.
 # Mantemos uma lista explícita para não adicionar dependências externas.
-STOPWORDS = {
-    "a", "an", "and", "are", "as", "at", "be", "been", "being",
-    "but", "by", "for", "from", "had", "has", "have", "he", "her",
-    "hers", "him", "his", "i", "if", "in", "into", "is", "it",
-    "its", "itself", "me", "my", "of", "on", "or", "our", "ours",
-    "she", "so", "that", "the", "their", "theirs", "them", "they",
-    "this", "those", "to", "was", "we", "were", "what", "when",
-    "where", "which", "who", "whom", "with", "you", "your", "yours"
-}
-
+# STOPWORDS = {
+#     "a", "an", "and", "are", "as", "at", "be", "been", "being",
+#     "but", "by", "for", "from", "had", "has", "have", "he", "her",
+#     "hers", "him", "his", "i", "if", "in", "into", "is", "it",
+#     "its", "itself", "me", "my", "of", "on", "or", "our", "ours",
+#     "she", "so", "that", "the", "their", "theirs", "them", "they",
+#     "this", "those", "to", "was", "we", "were", "what", "when",
+#     "where", "which", "who", "whom", "with", "you", "your", "yours"
+# }
 
 @dataclass
 class PreprocessedText:
@@ -37,7 +35,7 @@ class PreprocessedText:
     original: str
     normalized: str
     tokens: list[str]
-    retrieval_tokens: list[str]
+    #retrieval_tokens: list[str]
 
 
 def normalize_text(text: str) -> str:
@@ -110,19 +108,19 @@ def tokenize(text: str) -> list[str]:
     return token_pattern.findall(text)
 
 
-def remove_stopwords(tokens: list[str]) -> list[str]:
-    """
-    Remove stopwords sem remover números ou unidades.
+# def remove_stopwords(tokens: list[str]) -> list[str]:
+#     """
+#     Remove stopwords sem remover números ou unidades.
 
-    Stopwords são removidas apenas quando o token inteiro corresponde
-    a uma stopword.
-    """
+#     Stopwords são removidas apenas quando o token inteiro corresponde
+#     a uma stopword.
+#     """
 
-    return [
-        token
-        for token in tokens
-        if token not in STOPWORDS
-    ]
+#     return [
+#         token
+#         for token in tokens
+#         if token not in STOPWORDS
+#     ]
 
 
 def preprocess_text(text: str) -> PreprocessedText:
@@ -138,11 +136,11 @@ def preprocess_text(text: str) -> PreprocessedText:
 
     tokens = tokenize(normalized)
 
-    retrieval_tokens = remove_stopwords(tokens)
+    #retrieval_tokens = remove_stopwords(tokens)
 
     return PreprocessedText(
         original=original,
         normalized=normalized,
         tokens=tokens,
-        retrieval_tokens=retrieval_tokens,
+        #retrieval_tokens=retrieval_tokens,
     )

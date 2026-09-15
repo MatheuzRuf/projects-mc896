@@ -2,7 +2,6 @@
 
 from src.RankedSearch.rankedsearch import RankedSearch, TF_IDF
 
-
 def ranked_search(
     inverted_index,
     total_documents: int,
@@ -50,6 +49,5 @@ def ranked_search(
         for score, document_name in normalized_ranking
         if score > 0
     ]
-
 
 __all__ = ["ranked_search"]
