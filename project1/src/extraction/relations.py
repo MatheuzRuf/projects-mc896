@@ -3,7 +3,6 @@ import re
 from src.graph.schema import Edge, Relation
 from src.extraction.entities import Entity
 
-
 NEGATION_PATTERN = re.compile(
     r"(?:\bno\b|\bwithout\b|\bdenied\b|\babsence of\b|\bnegative for\b)"
     r"(?:\s+\w+){0,5}\s*$",
@@ -21,12 +20,10 @@ CONFIRM_PATTERNS = [
     "confirming",
 ]
 
-
 def _node_id(case_id: str, label: str) -> str:
     """Cria um identificador estavel do no mantendo a label legivel."""
     normalized = " ".join(label.strip().lower().split())
     return f"{case_id}:{normalized}"
-
 
 def _dedupe_edges(edges: list[Edge]) -> list[Edge]:
     """Remove arestas duplicadas preservando ordem."""
@@ -42,11 +39,9 @@ def _dedupe_edges(edges: list[Edge]) -> list[Edge]:
 
     return unique
 
-
 def _is_negated_position(case_text: str, position: int) -> bool:
     context = case_text[max(0, position - 80):position]
     return NEGATION_PATTERN.search(context) is not None
-
 
 def _has_positive_mention(case_text: str, entity: Entity) -> bool:
     if not case_text or not entity.positions:
@@ -57,7 +52,6 @@ def _has_positive_mention(case_text: str, entity: Entity) -> bool:
         for start, _ in entity.positions
     )
 
-
 def _has_negated_mention(case_text: str, entity: Entity) -> bool:
     if not case_text:
         return False
@@ -66,7 +60,6 @@ def _has_negated_mention(case_text: str, entity: Entity) -> bool:
         _is_negated_position(case_text, start)
         for start, _ in entity.positions
     )
-
 
 def _has_context_before(
     case_text: str,
@@ -82,7 +75,6 @@ def _has_context_before(
             return True
 
     return False
-
 
 def extract_case_relations(
     case_id: str,
@@ -340,7 +332,6 @@ def extract_case_relations(
             )
 
     return _dedupe_edges(edges)
-
 
 __all__ = [
     "_node_id",

@@ -2,15 +2,14 @@ import argparse
 import sys
 from pathlib import Path
 
-
 base_dir = Path(__file__).resolve().parent.parent
 if str(base_dir) not in sys.path:
     sys.path.insert(0, str(base_dir))
 
 from src.visualization.web_server import serve_graph_interface
 
-
 def main() -> None:
+    """Inicia servidor web para visualização do grafo de conhecimento."""
     parser = argparse.ArgumentParser(
         description="Run the knowledge graph interface on localhost."
     )
@@ -35,7 +34,6 @@ def main() -> None:
         host=args.host,
         port=args.port,
     )
-
 
 if __name__ == "__main__":
     main()

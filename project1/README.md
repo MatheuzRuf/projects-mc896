@@ -6,10 +6,14 @@ Extração de informações clínicas do dataset **MultiCaRe** e representação
 
 ```text
 .
-├── sample/
-│   ├── cases.csv
-│   ├── metadata.csv
-│   └── data_dictionary.csv
+├── data/
+│   ├── raw/
+│   │   ├── cases.csv
+│   │   ├── metadata.csv
+│   │   └── data_dictionary.csv
+│   └── processed/
+│       ├── nodes.csv
+│       └── edges.csv
 ├── src/
 │   ├── preprocessing/
 │   ├── retrieval/
@@ -17,9 +21,6 @@ Extração de informações clínicas do dataset **MultiCaRe** e representação
 │   ├── graph/
 │   ├── vocab/
 │   └── visualization/
-├── output/
-│   ├── nodes.csv
-│   └── edges.csv
 ├── vocabularies/
 ├── notebooks/
 ├── requirements.txt
@@ -28,7 +29,7 @@ Extração de informações clínicas do dataset **MultiCaRe** e representação
 
 ## Dados
 
-O arquivo principal é `sample/cases.csv`. Cada linha representa um caso clínico e o campo `case_text` contém o texto a ser processado.
+O arquivo principal é `data/raw/cases.csv`. Cada linha representa um caso clínico e o campo `case_text` contém o texto a ser processado.
 
 `metadata.csv` fornece informações adicionais sobre os artigos, incluindo termos MeSH.
 
@@ -101,7 +102,7 @@ A proposta combina técnicas clássicas de Processamento de Línguas Naturais (P
 
 ### Escopo da primeira entrega
 
-O repositório trabalha com a amostra disponível em `sample/`, não com a totalidade do MultiCaRe. A entrega concentra-se em métodos clássicos e interpretáveis: normalização, tokenização, remoção de stopwords para recuperação, índice invertido, operadores booleanos, TF-IDF, similaridade vetorial, casamento por dicionário, expressões regulares e regras determinísticas de relação. O projeto não se propõe, nesta etapa, a produzir diagnóstico médico ou substituir avaliação clínica.
+O repositório trabalha com a amostra disponível em `data/raw`, não com a totalidade do MultiCaRe. A entrega concentra-se em métodos clássicos e interpretáveis: normalização, tokenização, remoção de stopwords para recuperação, índice invertido, operadores booleanos, TF-IDF, similaridade vetorial, casamento por dicionário, expressões regulares e regras determinísticas de relação. O projeto não se propõe, nesta etapa, a produzir diagnóstico médico ou substituir avaliação clínica.
 
 
 ## Organização do Projeto
@@ -115,10 +116,14 @@ project1/
 ├── VISUALIZATION.md                  # instruções da visualização estática
 ├── pyproject.toml                    # metadados e requisito de versão do Python
 ├── requirements.txt                  # dependências Python
-├── sample/
-│   ├── cases.csv                     # textos e identificadores dos casos clínicos
-│   ├── metadata.csv                  # metadados dos artigos de origem
-│   └── data_dictionary.csv           # descrição dos campos da amostra
+├── data/
+│   ├── raw/
+│   │   ├── cases.csv                 # textos e identificadores dos casos clínicos
+│   │   ├── metadata.csv              # metadados dos artigos de origem
+│   │   └── data_dictionary.csv       # descrição dos campos da amostra
+│   └── processed/                    # saída do pipeline (nodes.csv, edges.csv)
+│       ├── nodes.csv                     # nós extraídos
+│       └── edges.csv                     # relações extraídas
 ├── vocabularies/                     # termos e aliases clínicos controlados
 ├── src/
 │   ├── preprocessing/                # leitura, normalização e tokenização
@@ -133,19 +138,15 @@ project1/
 │   ├── export_knowledge_graph.py     # gera nodes.csv e edges.csv
 │   ├── visualize_knowledge_graph.py  # gera uma imagem PNG de um caso
 │   └── serve_graph_interface.py      # inicia a interface web local
-├── output/
-│   ├── nodes.csv                     # nós extraídos
-│   └── edges.csv                     # relações extraídas
 └── tests/                             # testes automatizados do pipeline
 ```
 
-Essa organização separa dados de entrada, vocabulários, código-fonte, scripts executáveis, resultados e testes. Ela segue a intenção da estrutura sugerida para a disciplina, ainda que utilize os nomes `sample/` e `output/` já consolidados na implementação em vez de renomeá-los para `data/`.
-
+Essa organização separa dados de entrada, vocabulários, código-fonte, scripts executáveis, resultados e testes. Ela segue a intenção da estrutura sugerida para a disciplina.
 ## Dados e Vocabulários
 
 ### Casos clínicos
 
-O arquivo `sample/cases.csv` é a entrada principal do pipeline. Os campos essenciais consumidos pelo código são:
+O arquivo `data/raw/cases.csv` é a entrada principal do pipeline. Os campos essenciais consumidos pelo código são:
 
 | Campo | Uso no projeto |
 | --- | --- |
@@ -156,11 +157,11 @@ O módulo de pré-processamento mantém o texto original e acrescenta três repr
 
 ### Metadados
 
-`sample/metadata.csv` reúne informações complementares dos artigos, incluindo termos MeSH. Na implementação atual, a construção do grafo parte diretamente de `cases.csv`; os metadados permanecem disponíveis para análises, enriquecimento semântico e rastreabilidade futura.
+`data/raw/metadata.csv` reúne informações complementares dos artigos, incluindo termos MeSH. Na implementação atual, a construção do grafo parte diretamente de `cases.csv`; os metadados permanecem disponíveis para análises, enriquecimento semântico e rastreabilidade futura.
 
 ### Dicionário de dados
 
-`sample/data_dictionary.csv` documenta os campos fornecidos pela amostra. Ele deve ser consultado antes de incluir novas colunas ou alterar qualquer etapa de leitura dos dados.
+`data/raw/data_dictionary.csv` documenta os campos fornecidos pela amostra. Ele deve ser consultado antes de incluir novas colunas ou alterar qualquer etapa de leitura dos dados.
 
 ### Vocabulários controlados
 
@@ -178,23 +179,23 @@ Durante a extração, o casamento é feito de forma insensível a maiúsculas e 
 
 `src/preprocessing/text.py` aplica normalização Unicode NFKC, uniformiza aspas e hífens, reduz sequências de espaços e converte a cópia destinada à recuperação para letras minúsculas. A expressão de tokenização foi projetada para preservar elementos frequentes no domínio clínico, como porcentagens, números decimais, unidades compostas e palavras hifenizadas.
 
-Exemplos de unidades e formas mantidas como tokens incluem `mg/L`, `U/L`, `92%` e `5-day`. A remoção de stopwords ocorre somente na representação usada para recuperação; números, unidades e o texto clínico original não são descartados.
+Exemplos de unidades e formas mantidas como tokens incluem `mg/L`, `U/L`, `92%` e `5-day`.
 
 ```python
 result = preprocess_text(case["case_text"])
 tokens = result.tokens
-retrieval_tokens = result.retrieval_tokens
 ```
 
 ### 3. Recuperação booleana
 
-O projeto constrói um índice invertido em que cada termo aponta para uma lista ligada de ocorrências por documento. Cada posting armazena o `case_id` e a frequência local do termo. Os documentos são ordenados por uma chave numérica derivada de seu identificador, permitindo percorrer as listas de maneira determinística.
+O projeto constrói um índice invertido em que cada termo aponta para uma lista ligada de ocorrências por documento. Cada posting armazena o `case_id` e a frequência local do termo. Os documentos são ordenados por uma chave numérica derivada de seu identificador (construído utilizando a parte numérica do `case_id` + seu sufixo), permitindo percorrer as listas de maneira ordenada. O índice mantém todos os tokens (não remove fisicamente stopwords) e oferece uma rotina de finalização que marca termos como stopwords usando critérios baseados em IDF ou fração de documentos (DF), permitindo calibrar a filtragem sem reconstruir o índice.
 
 As operações disponíveis são:
 
 - `AND`: interseção dos documentos que contêm os dois termos;
 - `OR`: união dos documentos que contêm pelo menos um dos termos;
 - `NOT`: complemento em relação ao universo conhecido de casos.
+
 
 ### 4. Recuperação ranqueada
 
@@ -206,7 +207,7 @@ IDF(t)    = log(N / df(t))
 TF-IDF    = TF(t, d) × IDF(t)
 ```
 
-Depois da vetorização, os documentos são normalizados e ordenados pelo produto escalar com o vetor da consulta, que corresponde à base do modelo de espaço vetorial. Consultas sem termos presentes no índice retornam uma lista vazia; por padrão, documentos com pontuação zero são omitidos.
+Depois da vetorização, os documentos são normalizados e ordenados pelo produto escalar com o vetor da consulta, que corresponde à base do modelo de espaço vetorial. A implementação utiliza a mesma fórmula de IDF no módulo `RankedSearch` e, durante a vetorização, ignora termos marcados como stopwords no índice (ou seja, a marcação de stopwords é considerada na construção dos vetores). Consultas sem termos presentes no índice retornam uma lista vazia; por padrão, documentos com pontuação zero são omitidos.
 
 ### 5. Extração de entidades clínicas
 
@@ -237,14 +238,14 @@ As relações são deduplicadas e somente são exportadas quando os nós de orig
 
 `src/graph/build.py` coordena a extração de entidades, relações e medições. Os identificadores são determinísticos e combinam o `case_id` com uma versão normalizada do rótulo. O resultado é gravado por `src/graph/export.py` em dois arquivos:
 
-- `output/nodes.csv`, com os nós e seus atributos;
-- `output/edges.csv`, com origem, destino, relação e atributos.
+- `data/processed/nodes.csv`, com os nós e seus atributos;
+- `data/processed/edges.csv`, com origem, destino, relação e atributos.
 
 O fluxo completo pode ser resumido assim:
 
 ```mermaid
 flowchart TD
-    A["sample/cases.csv"] --> B["Leitura e preservação do texto"]
+    A["data/raw/cases.csv"] --> B["Leitura e preservação do texto"]
     B --> C["Normalização e tokenização"]
     C --> D["Índice invertido"]
     D --> E["Busca booleana"]
@@ -256,8 +257,8 @@ flowchart TD
     I --> K["Regras de relações"]
     J --> K
     K --> L["Validação e deduplicação"]
-    L --> M["output/nodes.csv"]
-    L --> N["output/edges.csv"]
+    L --> M["data/processed/nodes.csv"]
+    L --> N["data/processed/edges.csv"]
     M --> O["Visualização PNG ou interface web"]
     N --> O
 ```
@@ -311,91 +312,9 @@ graph LR
 
 Para a versão final, o diagrama também pode ser exportado como PNG para `assets/images/`, conforme o modelo sugerido pela disciplina.
 
-## Instalação
-
-### Pré-requisitos
-
-- Python 3.10 ou superior;
-- `pip` disponível no ambiente;
-- navegador moderno, apenas para a interface web local.
-
-Na raiz de `project1`, crie e ative um ambiente virtual.
-
-No Windows (PowerShell):
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-No Linux ou macOS:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
-As dependências declaradas incluem Pandas, NumPy, scikit-learn, NetworkX, Matplotlib e pytest. O servidor da interface local utiliza a biblioteca padrão do Python e a visualização no navegador usa HTML, CSS, JavaScript e SVG, sem exigir um framework web adicional.
-
-## Execução
-
-Todos os comandos abaixo devem ser executados na raiz de `project1`.
-
-### Gerar o grafo
-
-```bash
-python scripts/export_knowledge_graph.py
-```
-
-O script lê `sample/cases.csv`, carrega os arquivos de `vocabularies/` e atualiza `output/nodes.csv` e `output/edges.csv`.
-
-### Gerar uma visualização PNG
-
-Para visualizar o primeiro caso disponível:
-
-```bash
-python scripts/visualize_knowledge_graph.py
-```
-
-Para selecionar um caso e um arquivo de saída:
-
-```bash
-python scripts/visualize_knowledge_graph.py --case-id PMC5137649_01 --output output/case_graph.png
-```
-
-Os tipos de nós são diferenciados por cor e as arestas exibem os nomes das relações. Consulte também `VISUALIZATION.md`.
-
-### Abrir a interface web local
-
-```bash
-python scripts/serve_graph_interface.py
-```
-
-Depois, acesse `http://127.0.0.1:8000`. A página permite selecionar um `case_id`, visualizar nós por tipo e mostrar ou ocultar rótulos das relações. Uma porta diferente pode ser informada com `--port`:
-
-```bash
-python scripts/serve_graph_interface.py --port 8080
-```
-
-Para encerrar o servidor, pressione `Ctrl+C`. Consulte também `LOCAL_INTERFACE.md`.
-
-### Executar os testes
-
-```bash
-python -m pytest
-```
-
-Os testes em `tests/` cobrem pré-processamento, entidades, relações, regras de relação, esquema, construção do grafo, medições, busca ranqueada, visualização e interface web. Existe ainda um teste específico do carregamento de vocabulários em `src/vocab/test_vocabulary.py`.
-
 ## Trabalhos Estudados
 
 O trabalho central é o artigo de apresentação do MultiCaRe, que descreve a aquisição, a organização e o pré-processamento de um conjunto multimodal de relatos de caso de acesso aberto publicados no PubMed Central entre 1990 e 2023. Neste projeto, utiliza-se apenas uma amostra textual desse universo para investigar a passagem de narrativas clínicas não estruturadas para um grafo consultável.
-
-Também foi considerada a proposta do Cookiecutter Data Science como referência de organização de projetos. A separação entre dados, código, processos, artefatos e documentação favorece reprodutibilidade, revisão e evolução incremental, princípios refletidos na divisão atual entre `sample/`, `src/`, `scripts/`, `output/` e `tests/`.
 
 ## Análises que Podem ser Realizadas
 
@@ -433,7 +352,7 @@ A escolha por métodos clássicos torna as decisões mais auditáveis: termos re
 
 ## Resultados
 
-O estado atual do repositório inclui os dois artefatos de grafo esperados, `output/nodes.csv` e `output/edges.csv`, além dos mecanismos para regenerá-los a partir da amostra. O resultado materializa:
+O estado atual do repositório inclui os dois artefatos de grafo esperados, `data/processed/nodes.csv` e `data/processed/edges.csv`, além dos mecanismos para regenerá-los a partir da amostra. O resultado materializa:
 
 - entidades clínicas normalizadas como nós;
 - atributos de proveniência e código quando fornecidos pelo vocabulário;

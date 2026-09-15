@@ -6,7 +6,6 @@ from urllib.parse import parse_qs, urlparse
 
 from src.visualization.graph import load_case_graph
 
-
 def list_case_ids(nodes_path: str | Path) -> list[str]:
     """Lista os case_ids na mesma ordem em que aparecem em nodes.csv."""
 
@@ -21,7 +20,6 @@ def list_case_ids(nodes_path: str | Path) -> list[str]:
                 case_ids.append(case_id)
 
     return case_ids
-
 
 def create_request_handler(
     nodes_path: str | Path,
@@ -101,7 +99,6 @@ def create_request_handler(
 
     return GraphRequestHandler
 
-
 def serve_graph_interface(
     nodes_path: str | Path,
     edges_path: str | Path,
@@ -123,7 +120,6 @@ def serve_graph_interface(
         print("\nStopping graph interface.")
     finally:
         server.server_close()
-
 
 __all__ = [
     "list_case_ids",

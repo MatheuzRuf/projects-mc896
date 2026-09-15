@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 
 from src.vocab import VocabularyEntry
 
-
 @dataclass
 class Entity:
     """
@@ -45,7 +44,6 @@ class Entity:
         """
         return len(self.positions)
 
-
 def _build_pattern(
     vocabulary: list[VocabularyEntry],
 ) -> tuple[re.Pattern, dict[str, VocabularyEntry]]:
@@ -77,7 +75,6 @@ def _build_pattern(
     pattern = re.compile(rf"\b(?:{alternation})\b", re.IGNORECASE)
 
     return pattern, surface_to_entry
-
 
 def extract_entities(text: str, vocabulary: list[VocabularyEntry]) -> list[Entity]:
     """

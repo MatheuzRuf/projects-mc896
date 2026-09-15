@@ -72,7 +72,7 @@ def OR(inverted_index, term_a, term_b) -> set[str]:
     return answer
  
 if __name__ == "__main__":
-    PATH = "sample/cases.csv"
+    PATH = "data/raw/cases.csv"
     cases_list = build_cases_list_from_cases(path=PATH)
     inverted_index = build_index_from_cases(path=PATH)
 
