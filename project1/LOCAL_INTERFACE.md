@@ -18,9 +18,6 @@ Depois abra no navegador:
 http://127.0.0.1:8000
 ```
 
-A pagina permite selecionar um `case_id`, visualizar os nos por cor e mostrar
-ou esconder os nomes das relacoes.
-
 Para usar outra porta:
 
 ```bash

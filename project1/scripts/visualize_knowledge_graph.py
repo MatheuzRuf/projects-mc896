@@ -19,17 +19,17 @@ def main() -> None:
     )
     parser.add_argument(
         "--nodes",
-        default=base_dir / "output" / "nodes.csv",
+        default=base_dir / "data" / "processed" / "nodes.csv",
         type=Path,
     )
     parser.add_argument(
         "--edges",
-        default=base_dir / "output" / "edges.csv",
+        default=base_dir / "data" / "processed" / "edges.csv",
         type=Path,
     )
     parser.add_argument(
         "--output",
-        default=base_dir / "output" / "graph.png",
+        default=base_dir / "assets" / "images" / "graph.png",
         type=Path,
     )
     args = parser.parse_args()

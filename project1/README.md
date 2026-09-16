@@ -188,7 +188,7 @@ tokens = result.tokens
 
 ### 3. Recuperação booleana
 
-O projeto constrói um índice invertido em que cada termo aponta para uma lista ligada de ocorrências por documento. Cada posting armazena o `case_id` e a frequência local do termo. Os documentos são ordenados por uma chave numérica derivada de seu identificador (construído utilizando a parte numérica do `case_id` + seu sufixo), permitindo percorrer as listas de maneira ordenada. O índice mantém todos os tokens (não remove fisicamente stopwords) e oferece uma rotina de finalização que marca termos como stopwords usando critérios baseados em IDF ou fração de documentos (DF), permitindo calibrar a filtragem sem reconstruir o índice.
+O projeto constrói um índice invertido em que cada termo proveniente dos tokens gerados pelo texto, aponta para uma lista ligada de ocorrências por documento. Cada posting armazena o `case_id` e a frequência do termo no documento. Os documentos são ordenados por uma chave numérica derivada de seu identificador (construído utilizando a parte numérica do `case_id` + seu sufixo), permitindo a inserção nas listas de maneira ordenada de forma crescente (por ordenação de tuplas em python), o que garante a possibilidade de aplicação dos algoritmos de boolean retrieval. O índice mantém todos os tokens, porém, utiliza uma flag para marcar termos como stopwords, usando critérios baseados em IDF ou fração de documentos (DF), permitindo calibrar a filtragem em rotinas como do módulo TF-IDF, sem necessidade de reconstrução da lista de índices.
 
 As operações disponíveis são:
 
@@ -366,11 +366,9 @@ Os resultados devem ser interpretados considerando as limitações do método. C
 
 ## Como Modelos de Linguagem Foram Usados
 
-O pipeline executável documentado neste repositório não depende de modelos de linguagem generativos: a recuperação e a extração são implementadas com métodos clássicos, vocabulários, expressões regulares e regras.
+O pipeline base documentado neste repositório não depende de modelos de linguagem generativos, a recuperação e a extração são implementadas com métodos clássicos, vocabulários, expressões regulares e regras. Foram usados modelos de linguagem para auxilio na elaboração de regex complexos. A extração dos termos em csv também foram feitas usando auxiliarmente modelos de linguagem. 
 
-A extração dos termos em csv. foram feitas usando auxiliarmente modelos de linguagem.
-
-Este README também foi feito usando LLM, com posterior revisão, detalhamento e alterações.
+Este README também foi feito em parte usando LLM, com posterior revisão, detalhamento e alterações.
 
 ## Limitações e Próximos Passos
 
@@ -379,9 +377,11 @@ Este README também foi feito usando LLM, com posterior revisão, detalhamento e
 - separar dados brutos, intermediários e processados conforme a estrutura completa sugerida pela disciplina, caso a equipe aprove essa migração;
 - registrar métricas quantitativas e exemplos comentados na versão final do relatório;
 - adaptação das etapas que estão hardcoded.
+- otimização do módulo boolean retrieval para operar com operações que exigem precedência.
 
 ## Referências Bibliográficas
 
 1. NIEVAS OFFIDANI, Mauro Andrés; DELRIEUX, Claudio Augusto. *Dataset of clinical cases, images, image labels and captions from open access case reports from PubMed Central (1990–2023).* Data in Brief, v. 52, art. 110008, 2024. DOI: [10.1016/j.dib.2023.110008](https://doi.org/10.1016/j.dib.2023.110008).
 2. NIEVAS OFFIDANI, Mauro Andrés; DELRIEUX, Claudio Augusto. *The MultiCaRe Dataset: A Multimodal Case Report Dataset with Clinical Cases, Labeled Images and Captions from Open Access PMC Articles.* Zenodo, 2023. DOI: [10.5281/zenodo.10079370](https://doi.org/10.5281/zenodo.10079370).
 3. DRIVENDATA. *Cookiecutter Data Science.* Disponível em: [https://cookiecutter-data-science.drivendata.org/](https://cookiecutter-data-science.drivendata.org/). Acesso em: 14 set. 2026.
+4. JI, Shaoxiong et al. A Survey on Knowledge Graphs: Representation, Acquisition, and Applications. IEEE Transactions on Neural Networks and Learning Systems, v. 33, n. 2, p. 494–514, 1 fev. 2022. DOI:(https://doi.org/10.1109/TNNLS.2021.3070843)

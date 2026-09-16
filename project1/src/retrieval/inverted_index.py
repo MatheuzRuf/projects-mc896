@@ -119,8 +119,8 @@ def finalize_index(
     """
     Calcula IDF para cada termo e marca stopwords.
 
-    - `idf_threshold`: marca como stopword termos com `idf < idf_threshold`.
-    - `max_df_frac`: marca como stopword termos com (`df / total_docs`) >= `max_df_frac`.
+    - `idf_threshold`: marca como stopword termos com `idf < idf_threshold (padrão = 0.1)`.
+    - `max_df_frac`: marca como stopword termos com (`df / total_docs`) >= `max_df_frac ` (padrão = 0.8).
 
     Ao menos um dos thresholds deve ser fornecido; se ambos forem None,
     apenas calcula e armazena os idf sem marcar stopwords.

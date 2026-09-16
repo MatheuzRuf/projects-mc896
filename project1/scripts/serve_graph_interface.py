@@ -17,12 +17,17 @@ def main() -> None:
     parser.add_argument("--port", default=8000, type=int)
     parser.add_argument(
         "--nodes",
-        default=base_dir / "output" / "nodes.csv",
+        default=base_dir / "data" / "processed" / "nodes.csv",
         type=Path,
     )
     parser.add_argument(
         "--edges",
-        default=base_dir / "output" / "edges.csv",
+        default=base_dir / "data" / "processed" / "edges.csv",
+        type=Path,
+    )
+    parser.add_argument(
+        "--cases",
+        default=base_dir / "data" / "raw" / "cases.csv",
         type=Path,
     )
     args = parser.parse_args()
@@ -31,6 +36,7 @@ def main() -> None:
         nodes_path=args.nodes,
         edges_path=args.edges,
         static_dir=base_dir / "src" / "visualization" / "web",
+        cases_path=args.cases,
         host=args.host,
         port=args.port,
     )

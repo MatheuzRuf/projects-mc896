@@ -62,7 +62,7 @@ Os tipos de nós são diferenciados por cor e as arestas exibem os nomes das rel
 python scripts/serve_graph_interface.py
 ```
 
-Depois, acesse `http://127.0.0.1:8000`. A página permite selecionar um `case_id`, visualizar nós por tipo e mostrar ou ocultar rótulos das relações. Uma porta diferente pode ser informada com `--port`:
+Depois, acesse `http://127.0.0.1:8000`. Uma porta diferente pode ser informada com `--port`. A página permite selecionar um `case_id`, visualizar nós por tipo e mostrar ou ocultar rótulos das relações. A interface na parte inferior da página, permite visualização dos textos originais ligados a cada `case_id`, o texto normalizado e os tokens vinculados, além da visualização das stopwords filtradas e da matriz TF-IDF (reduzida). A interface também permite realizar buscas utilizando boolean retrieval ou boolean ranked.
 
 ```bash
 python scripts/serve_graph_interface.py --port 8080

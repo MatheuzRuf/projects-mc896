@@ -42,6 +42,17 @@ const edgesLayer = document.querySelector("#edges");
 const edgeTextLayer = document.querySelector("#edge-text");
 const legendElement = document.querySelector("#legend");
 
+// inspector elements
+const originalTextEl = document.querySelector("#original-text");
+const normalizedTextEl = document.querySelector("#normalized-text");
+const tokensEl = document.querySelector("#tokens");
+const stopwordsEl = document.querySelector("#stopwords");
+const tfidfTableEl = document.querySelector("#tfidf-table");
+const queryInput = document.querySelector("#query-input");
+const queryMode = document.querySelector("#query-mode");
+const runQueryButton = document.querySelector("#run-query");
+const queryResultsEl = document.querySelector("#query-results");
+
 let currentGraph = null;
 let baseViewBox = { x: 0, y: 0, width: 1400, height: 900 };
 let viewBox = { ...baseViewBox };
@@ -268,9 +279,92 @@ async function loadGraph() {
     currentGraph = graph;
     renderGraph(graph);
     statusElement.textContent = `Caso ${graph.case_id}`;
+    // carregar dados do caso para o painel
+    await loadCaseDetails(caseId);
   } catch (error) {
     statusElement.className = "error";
     statusElement.textContent = error.message;
+  }
+}
+
+async function loadCaseDetails(caseId) {
+  try {
+    const resp = await fetch(`/api/case_details?case_id=${encodeURIComponent(caseId)}`);
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Erro ao carregar detalhes do caso.');
+
+    originalTextEl.textContent = data.original_text || '';
+    normalizedTextEl.textContent = data.normalized_text || '';
+
+    tokensEl.replaceChildren();
+    (data.tokens || []).forEach(t => {
+      const span = document.createElement('span');
+      span.textContent = t;
+      tokensEl.append(span);
+    });
+
+    stopwordsEl.replaceChildren();
+    (data.stopwords || []).forEach(t => {
+      const span = document.createElement('span');
+      span.textContent = t;
+      stopwordsEl.append(span);
+    });
+
+    // carregar tfidf (limitar visualização para evitar tabelas enormes)
+    await loadTfidfPreview();
+  } catch (err) {
+    console.warn(err);
+  }
+}
+
+async function loadTfidfPreview() {
+  try {
+    const resp = await fetch('/api/tfidf');
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Erro ao obter tf-idf');
+
+    tfidfTableEl.replaceChildren();
+
+    const terms = data.terms || [];
+    const docs = data.documents || [];
+
+    // show small preview: first 30 terms and up to 8 documents
+    const maxTerms = 30;
+    const maxDocs = 8;
+    const rows = Math.min(terms.length, maxTerms);
+    const cols = Math.min(docs.length, maxDocs);
+
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    headRow.append(document.createElement('th'));
+    for (let j = 0; j < cols; j++) {
+      const th = document.createElement('th');
+      th.textContent = docs[j];
+      headRow.append(th);
+    }
+    thead.append(headRow);
+    table.append(thead);
+
+    const tbody = document.createElement('tbody');
+    for (let i = 0; i < rows; i++) {
+      const tr = document.createElement('tr');
+      const termCell = document.createElement('td');
+      termCell.textContent = terms[i];
+      tr.append(termCell);
+      for (let j = 0; j < cols; j++) {
+        const td = document.createElement('td');
+        const val = (data.matrix && data.matrix[i] && data.matrix[i][j]) || 0;
+        td.textContent = Number(val).toFixed(3);
+        tr.append(td);
+      }
+      tbody.append(tr);
+    }
+
+    table.append(tbody);
+    tfidfTableEl.append(table);
+  } catch (err) {
+    console.warn(err);
   }
 }
 
@@ -340,3 +434,32 @@ edgeLabelsCheckbox.addEventListener("change", () => {
 });
 
 loadCases();
+
+runQueryButton.addEventListener('click', async () => {
+  const q = queryInput.value.trim();
+  if (!q) return;
+  const mode = queryMode.value;
+  queryResultsEl.replaceChildren();
+  try {
+    const resp = await fetch(`/api/retrieve?q=${encodeURIComponent(q)}&mode=${encodeURIComponent(mode)}&k=20`);
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Erro na busca');
+
+    (data.results || []).forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'result-item';
+      const button = document.createElement('button');
+      button.textContent = `${r.case_id} ${r.score ? `(${Number(r.score).toFixed(3)})` : ''}`;
+      button.addEventListener('click', () => {
+        caseSelect.value = r.case_id;
+        loadGraph();
+      });
+      div.append(button);
+      queryResultsEl.append(div);
+    });
+  } catch (err) {
+    const errDiv = document.createElement('div');
+    errDiv.textContent = err.message;
+    queryResultsEl.append(errDiv);
+  }
+});
