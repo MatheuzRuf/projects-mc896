@@ -53,6 +53,44 @@
       <h2>Tipos de nós</h2>
       <div id="legend" class="legend"></div>
     </section>
+    <aside class="inspector">
+      <h2>Inspecionar Caso</h2>
+      <div class="inspector-section">
+        <label for="original-text">Texto original</label>
+        <pre id="original-text" class="inspector-pre"></pre>
+      </div>
+      <div class="inspector-section">
+        <label for="normalized-text">Texto normalizado</label>
+        <pre id="normalized-text" class="inspector-pre"></pre>
+      </div>
+      <div class="inspector-row">
+        <div class="inspector-section small">
+          <label>Tokens</label>
+          <div id="tokens" class="inspector-list"></div>
+        </div>
+        <div class="inspector-section small">
+          <label>Stopwords filtradas</label>
+          <div id="stopwords" class="inspector-list"></div>
+        </div>
+      </div>
+      <div class="inspector-section">
+        <label for="tfidf-table">TF‑IDF (termos × documentos)</label>
+        <div id="tfidf-table" class="inspector-table"></div>
+      </div>
+
+      <div class="inspector-section">
+        <label for="query-input">Consulta</label>
+        <input id="query-input" placeholder="ex: fever AND cough or 'fever'" />
+        <div class="control-row">
+          <select id="query-mode">
+            <option value="ranked">Ranked (tf-idf)</option>
+            <option value="boolean">Boolean (AND/OR/NOT)</option>
+          </select>
+          <button id="run-query">Buscar</button>
+        </div>
+        <div id="query-results" class="inspector-list"></div>
+      </div>
+    </aside>
   </main>
 
   <script src="/app.js"></script>
