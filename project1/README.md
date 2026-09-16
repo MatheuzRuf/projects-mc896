@@ -81,7 +81,6 @@ Serão implementados **Boolean Retrieval**, **TF-IDF** e **Vector Space Model** 
 ---
 
 # Projeto Extração de Informações Clínicas e Construção de Grafo de Conhecimento
-# Project Clinical Information Extraction and Knowledge Graph Construction
 
 ## Visão Geral
 
