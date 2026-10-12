@@ -21,6 +21,21 @@ from project2_from_project1.src.mcrc_converter import (
     sha256_file,
     verify_mcrc_artifact,
 )
+from project2_from_project1.src.leakage_audit import (
+    AuditDecision,
+    LeakageAuditError,
+    LeakageAuditReport,
+    ProtectedCollection,
+    TrainingEligibilityError,
+    audit_external_corpus,
+    build_protected_collection,
+    load_leakage_report,
+    load_protected_collection,
+    release_for_training,
+    require_training_eligible,
+    write_leakage_report,
+    write_protected_collection,
+)
 
 __all__ = [
     "AnnotatedRelation",
@@ -38,6 +53,19 @@ __all__ = [
     "load_verified_mcrc_pickle",
     "sha256_file",
     "verify_mcrc_artifact",
+    "AuditDecision",
+    "LeakageAuditError",
+    "LeakageAuditReport",
+    "ProtectedCollection",
+    "TrainingEligibilityError",
+    "audit_external_corpus",
+    "build_protected_collection",
+    "load_leakage_report",
+    "load_protected_collection",
+    "release_for_training",
+    "require_training_eligible",
+    "write_leakage_report",
+    "write_protected_collection",
     "load_jsonl",
     "write_jsonl",
 ]
