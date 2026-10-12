@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from project1.src.extraction import Entity, extract_entities
-from project1.src.preprocessing import load_cases
-from project1.src.vocab import load_vocabulary
-from project1.paths import CASES_PATH, VOCAB_DIR
+from project2_from_project1.src.extraction import Entity, extract_entities
+from project2_from_project1.src.preprocessing import load_cases
+from project2_from_project1.src.vocab import load_vocabulary
+from project2_from_project1.paths import VOCAB_DIR
 
 
 VOCABULARY_DIR = VOCAB_DIR
-SAMPLE_CASES_PATH = CASES_PATH
+SAMPLE_CASES_PATH = Path(__file__).parent / "fixtures" / "sample_cases.csv"
 
 # Vocabulários relevantes para extração de entidades "core" (Disease,
 # Symptom, Exam, Treatment/Medication, AnatomicalSite), conforme a issue.

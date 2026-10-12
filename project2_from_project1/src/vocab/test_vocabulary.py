@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from project1.src.vocab import VocabularyEntry, load_vocabulary
-from project1.paths import VOCAB_DIR
+from project2_from_project1.src.vocab import VocabularyEntry, load_vocabulary
+from project2_from_project1.paths import VOCAB_DIR
 
 
 VOCABULARY_DIR = VOCAB_DIR

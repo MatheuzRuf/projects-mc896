@@ -1,7 +1,7 @@
 import re
 
-from project1.src.graph.schema import Edge, Relation
-from project1.src.extraction.entities import Entity
+from project2_from_project1.src.graph.schema import Edge, Relation
+from project2_from_project1.src.extraction.entities import Entity
 
 NEGATION_PATTERN = re.compile(
     r"(?:\bno\b|\bwithout\b|\bdenied\b|\babsence of\b|\bnegative for\b)"

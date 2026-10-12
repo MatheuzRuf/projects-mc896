@@ -1,8 +1,8 @@
 import argparse
 from pathlib import Path
 
-from project1.paths import ASSETS_DIR, EDGES_PATH, NODES_PATH
-from project1.src.visualization import visualize_case
+from project2_from_project1.paths import ASSETS_DIR, EDGES_PATH, NODES_PATH
+from project2_from_project1.src.visualization import visualize_case
 
 def main() -> None:
     """Gera uma visualizacao basica de um caso clinico e salva em PNG."""

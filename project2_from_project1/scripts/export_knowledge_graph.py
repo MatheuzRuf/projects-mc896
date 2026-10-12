@@ -1,6 +1,6 @@
-from project1.src.graph.build import export_graph_from_cases, load_entity_vocabulary
-from project1.src.preprocessing.dataset import preprocess_cases
-from project1.paths import CASES_PATH, PROCESSED_DIR, VOCAB_DIR
+from project2_from_project1.src.graph.build import export_graph_from_cases, load_entity_vocabulary
+from project2_from_project1.src.preprocessing.dataset import preprocess_cases
+from project2_from_project1.paths import CASES_PATH, PROCESSED_DIR, VOCAB_DIR
 
 def main() -> None:
     cases_path = CASES_PATH # casos brutos

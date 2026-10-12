@@ -1,4 +1,4 @@
-"""Caminhos centrais do project1, independentes do diretório de execução."""
+"""Caminhos centrais do project2_from_project1, independentes do diretório de execução."""
 from pathlib import Path
 
 PROJECT_DIR = Path(__file__).resolve().parent

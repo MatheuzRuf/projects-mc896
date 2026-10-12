@@ -1,6 +1,6 @@
-from project1.src.graph.build import build_case_graph
-from project1.src.graph.schema import NodeType, Relation
-from project1.src.vocab import VocabularyEntry
+from project2_from_project1.src.graph.build import build_case_graph
+from project2_from_project1.src.graph.schema import NodeType, Relation
+from project2_from_project1.src.vocab import VocabularyEntry
 
 
 def test_build_case_graph_creates_patient_and_patient_relations():

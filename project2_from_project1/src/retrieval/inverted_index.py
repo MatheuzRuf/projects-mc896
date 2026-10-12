@@ -1,10 +1,10 @@
-from project1.src.preprocessing.dataset import preprocess_cases
-from project1.src.retrieval.linked_lists import InvertedIndexNode
-from project1.src.retrieval.linked_lists import extract_doc_key
+from project2_from_project1.src.preprocessing.dataset import preprocess_cases
+from project2_from_project1.src.retrieval.linked_lists import InvertedIndexNode
+from project2_from_project1.src.retrieval.linked_lists import extract_doc_key
 from pathlib import Path
 from collections import Counter
-from project1.src.RankedSearch.rankedsearch import InverseDocumentFrequency
-from project1.paths import CASES_PATH
+from project2_from_project1.src.RankedSearch.rankedsearch import InverseDocumentFrequency
+from project2_from_project1.paths import CASES_PATH
 
 class InvertedIndex:
     def __init__(self, term: str):

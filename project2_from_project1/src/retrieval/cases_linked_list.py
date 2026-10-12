@@ -1,7 +1,7 @@
-from project1.src.preprocessing.dataset import preprocess_cases
-from project1.src.retrieval.linked_lists import CasesLinkedListNode
-from project1.src.retrieval.linked_lists import extract_doc_key
-from project1.paths import CASES_PATH
+from project2_from_project1.src.preprocessing.dataset import preprocess_cases
+from project2_from_project1.src.retrieval.linked_lists import CasesLinkedListNode
+from project2_from_project1.src.retrieval.linked_lists import extract_doc_key
+from project2_from_project1.paths import CASES_PATH
 from pathlib import Path
 
 class CasesLinkedList:

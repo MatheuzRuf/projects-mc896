@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mc896-projects"
 version = "0.1.0"
-description = "Projetos da disciplina MC896 (monorepo: project1, project2)"
+description = "Projetos da disciplina MC896 (monorepo: project1, project2 e project2_from_project1)"
 requires-python = ">=3.10"
 dynamic = ["dependencies"]
 
@@ -17,7 +17,15 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["project1*", "project2*"]
+include = ["project1*", "project2*", "project2_from_project1*"]
+
+[tool.setuptools.package-data]
+project2_from_project1 = ["vocabularies/*.csv", "src/visualization/web/*"]
 
 [tool.pytest.ini_options]
-testpaths = ["project1/tests", "project1/src/vocab"]
+testpaths = [
+    "project1/tests",
+    "project1/src/vocab",
+    "project2_from_project1/tests",
+    "project2_from_project1/src/vocab",
+]

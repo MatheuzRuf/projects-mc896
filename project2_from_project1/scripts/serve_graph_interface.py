@@ -1,8 +1,8 @@
 import argparse
 from pathlib import Path
 
-from project1.paths import CASES_PATH, EDGES_PATH, NODES_PATH, WEB_DIR
-from project1.src.visualization.web_server import serve_graph_interface
+from project2_from_project1.paths import CASES_PATH, EDGES_PATH, NODES_PATH, WEB_DIR
+from project2_from_project1.src.visualization.web_server import serve_graph_interface
 
 def main() -> None:
     """Inicia servidor web para visualização do grafo de conhecimento."""

@@ -1,4 +1,4 @@
-from project1.src.graph import Node, NodeType, Edge, Relation
+from project2_from_project1.src.graph import Node, NodeType, Edge, Relation
 
 
 def test_create_node():

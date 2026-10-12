@@ -1,6 +1,6 @@
-from project1.src.extraction.entities import Entity
-from project1.src.extraction.relations import extract_case_relations
-from project1.src.graph.schema import Relation
+from project2_from_project1.src.extraction.entities import Entity
+from project2_from_project1.src.extraction.relations import extract_case_relations
+from project2_from_project1.src.graph.schema import Relation
 
 
 def test_extract_case_relations_builds_patient_links():

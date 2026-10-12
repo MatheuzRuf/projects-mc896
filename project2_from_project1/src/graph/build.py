@@ -1,17 +1,17 @@
 from pathlib import Path
 
-from project1.src.Regex.measurement_adapter import (
+from project2_from_project1.src.Regex.measurement_adapter import (
     DURATION_UNITS,
     SIZE_UNITS,
     extract_structured_measurements,
     is_dose_unit,
 )
-from project1.src.extraction import Entity, extract_entities
-from project1.src.extraction.relations import _dedupe_edges, extract_case_relations
-from project1.src.graph.export import save_edges, save_nodes
-from project1.src.graph.schema import Edge, Node, NodeType, Relation
-from project1.src.vocab import load_vocabulary
-from project1.paths import VOCAB_DIR
+from project2_from_project1.src.extraction import Entity, extract_entities
+from project2_from_project1.src.extraction.relations import _dedupe_edges, extract_case_relations
+from project2_from_project1.src.graph.export import save_edges, save_nodes
+from project2_from_project1.src.graph.schema import Edge, Node, NodeType, Relation
+from project2_from_project1.src.vocab import load_vocabulary
+from project2_from_project1.paths import VOCAB_DIR
 
 
 ENTITY_FILES = [

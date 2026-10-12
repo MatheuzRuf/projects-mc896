@@ -1,6 +1,6 @@
 """Adaptador de alto nível para o ranked retrieval existente."""
 
-from project1.src.RankedSearch.rankedsearch import RankedSearch, TF_IDF
+from project2_from_project1.src.RankedSearch.rankedsearch import RankedSearch, TF_IDF
 
 def ranked_search(
     inverted_index,

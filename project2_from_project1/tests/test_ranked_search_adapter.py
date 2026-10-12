@@ -1,7 +1,7 @@
 import math
 
-from project1.src.RankedSearch.rankedsearch import InverseDocumentFrequency, TermFrequency
-from project1.src.RankedSearch.search_adapter import ranked_search
+from project2_from_project1.src.RankedSearch.rankedsearch import InverseDocumentFrequency, TermFrequency
+from project2_from_project1.src.RankedSearch.search_adapter import ranked_search
 
 
 class FakeInvertedIndex:
