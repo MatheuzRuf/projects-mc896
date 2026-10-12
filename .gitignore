@@ -127,3 +127,13 @@ Desktop.ini
 *.log
 *.tmp
 *.bak
+
+# project2_from_project1: corpora and generated/large artifacts
+project2_from_project1/data/raw/
+project2_from_project1/data/processed/
+project2_from_project1/data/external/
+project2_from_project1/models/
+project2_from_project1/artifacts/
+project2_from_project1/assets/slides/*.pdf
+project2_from_project1/**/*.pkl
+project2_from_project1/**/*.pickle

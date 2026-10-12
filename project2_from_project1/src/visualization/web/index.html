@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Knowledge Graph</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header>
+    <div>
+      <p class="eyebrow">MC896 · Projeto 1</p>
+      <h1>Knowledge Graph</h1>
+      <p class="subtitle">Visualização local dos casos clínicos processados.</p>
+    </div>
+    <div class="controls">
+      <label for="case-select">Caso clínico</label>
+      <div class="control-row">
+        <select id="case-select"></select>
+        <button id="reload-button" type="button">Carregar</button>
+      </div>
+      <label class="checkbox-label">
+        <input id="edge-labels" type="checkbox">
+        Mostrar relações
+      </label>
+      <div class="zoom-controls" aria-label="Controles de zoom">
+        <button id="zoom-out" type="button" title="Diminuir zoom">−</button>
+        <button id="zoom-reset" type="button">Ajustar</button>
+        <button id="zoom-in" type="button" title="Aumentar zoom">+</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="summary" aria-live="polite">
+      <span id="status">Carregando casos...</span>
+      <span id="stats"></span>
+    </section>
+    <p class="navigation-help">Use a roda do mouse para aplicar zoom e arraste o fundo para navegar.</p>
+    <section class="graph-card">
+      <svg id="graph" viewBox="0 0 1400 900" role="img" aria-label="Knowledge graph do caso selecionado">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z"></path>
+          </marker>
+        </defs>
+        <g id="edges"></g>
+        <g id="edge-text"></g>
+        <g id="nodes"></g>
+      </svg>
+    </section>
+    <section>
+      <h2>Tipos de nós</h2>
+      <div id="legend" class="legend"></div>
+    </section>
+    <aside class="inspector">
+      <h2>Inspecionar Caso</h2>
+      <div class="inspector-section">
+        <label for="original-text">Texto original</label>
+        <pre id="original-text" class="inspector-pre"></pre>
+      </div>
+      <div class="inspector-section">
+        <label for="normalized-text">Texto normalizado</label>
+        <pre id="normalized-text" class="inspector-pre"></pre>
+      </div>
+      <div class="inspector-row">
+        <div class="inspector-section small">
+          <label>Tokens</label>
+          <div id="tokens" class="inspector-list"></div>
+        </div>
+        <div class="inspector-section small">
+          <label>Stopwords filtradas</label>
+          <div id="stopwords" class="inspector-list"></div>
+        </div>
+      </div>
+      <div class="inspector-section">
+        <label for="tfidf-table">TF‑IDF (termos × documentos)</label>
+        <div id="tfidf-table" class="inspector-table"></div>
+      </div>
+
+      <div class="inspector-section">
+        <label for="query-input">Consulta</label>
+        <input id="query-input" placeholder="ex: fever AND cough or 'fever'" />
+        <div class="control-row">
+          <select id="query-mode">
+            <option value="ranked">Ranked (tf-idf)</option>
+            <option value="boolean">Boolean (AND/OR/NOT)</option>
+          </select>
+          <button id="run-query">Buscar</button>
+        </div>
+        <div id="query-results" class="inspector-list"></div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
