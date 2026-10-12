@@ -132,6 +132,7 @@ Desktop.ini
 project2_from_project1/data/raw/
 project2_from_project1/data/processed/
 project2_from_project1/data/external/
+project2_from_project1/data/secure/
 project2_from_project1/models/
 project2_from_project1/artifacts/
 project2_from_project1/assets/slides/*.pdf

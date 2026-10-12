@@ -4,12 +4,12 @@
 
 **Blocked by:** 06 — Produzir o dataset supervisionado congelado; 07 — Avaliar previsões pelo contrato comum.
 
-**Status:** ready-for-agent
+**Status:** complete
 
-- [ ] Uma interface documentada executa a preparação desde o corpus seguro e a coleção protegida até o dataset congelado.
-- [ ] Uma interface documentada avalia previsões compatíveis contra o ouro preparado.
-- [ ] A execução reúne configuração, semente, versões, hashes, partições, contagens, política de negativos, métricas, matriz de confusão, tempos e relatório de leakage.
-- [ ] Uma nova execução com as mesmas entradas reproduz os artefatos determinísticos esperados.
-- [ ] Dados brutos, textos clínicos, modelos e artefatos volumosos permanecem fora do controle de versão.
-- [ ] A suíte automatizada comprova as duas costuras principais e os invariantes focados.
-- [ ] O relatório final declara o marco pronto sem alegar treinamento definitivo de kNN, regra experimental, híbrido, POS tagging ou dependency parsing.
+- [x] Uma interface documentada executa a preparação desde o corpus seguro e a coleção protegida até o dataset congelado.
+- [x] Uma interface documentada avalia previsões compatíveis contra o ouro preparado.
+- [x] A execução reúne configuração, semente, versões, hashes, partições, contagens, política de negativos, métricas, matriz de confusão, tempos e relatório de leakage.
+- [x] Uma nova execução com as mesmas entradas reproduz os artefatos determinísticos esperados.
+- [x] Dados brutos, textos clínicos, modelos e artefatos volumosos permanecem fora do controle de versão.
+- [x] A suíte automatizada comprova as duas costuras principais e os invariantes focados.
+- [x] O relatório final declara o marco pronto sem alegar treinamento definitivo de kNN, regra experimental, híbrido, POS tagging ou dependency parsing.
