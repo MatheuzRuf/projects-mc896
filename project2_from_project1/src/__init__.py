@@ -36,6 +36,16 @@ from project2_from_project1.src.leakage_audit import (
     write_leakage_report,
     write_protected_collection,
 )
+from project2_from_project1.src.mcrc_suitability import (
+    MCRCSuitabilityError,
+    MCRCSuitabilityReport,
+    SuitabilityCriteria,
+    SuitabilityDecision,
+    assess_mcrc_suitability,
+    assess_mcrc_suitability_from_files,
+    load_mcrc_suitability_report,
+    write_mcrc_suitability_report,
+)
 
 __all__ = [
     "AnnotatedRelation",
@@ -66,6 +76,14 @@ __all__ = [
     "require_training_eligible",
     "write_leakage_report",
     "write_protected_collection",
+    "MCRCSuitabilityError",
+    "MCRCSuitabilityReport",
+    "SuitabilityCriteria",
+    "SuitabilityDecision",
+    "assess_mcrc_suitability",
+    "assess_mcrc_suitability_from_files",
+    "load_mcrc_suitability_report",
+    "write_mcrc_suitability_report",
     "load_jsonl",
     "write_jsonl",
 ]
