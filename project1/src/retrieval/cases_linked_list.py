@@ -1,6 +1,7 @@
-from src.preprocessing.dataset import preprocess_cases
-from src.retrieval.linked_lists import CasesLinkedListNode
-from src.retrieval.linked_lists import extract_doc_key
+from project1.src.preprocessing.dataset import preprocess_cases
+from project1.src.retrieval.linked_lists import CasesLinkedListNode
+from project1.src.retrieval.linked_lists import extract_doc_key
+from project1.paths import CASES_PATH
 from pathlib import Path
 
 class CasesLinkedList:
@@ -51,6 +52,6 @@ def build_cases_list_from_cases(path: str | Path) -> CasesLinkedList:
     return cases_list
 
 if __name__ == "__main__":
-    PATH = Path("sample/cases.csv")
+    PATH = CASES_PATH
     cases_list = build_cases_list_from_cases(path=PATH)
     cases_list.print_list()

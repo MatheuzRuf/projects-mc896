@@ -4,12 +4,12 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
-from src.visualization.graph import load_case_graph
-from src.preprocessing.dataset import preprocess_cases
-from src.retrieval.inverted_index import build_index_from_cases, finalize_index
-from src.RankedSearch.rankedsearch import TF_IDF, RankedSearch
-from src.retrieval.cases_linked_list import build_cases_list_from_cases
-from src.retrieval.boolean_retrieval import AND as BOOL_AND, OR as BOOL_OR, NOT as BOOL_NOT
+from project1.src.visualization.graph import load_case_graph
+from project1.src.preprocessing.dataset import preprocess_cases
+from project1.src.retrieval.inverted_index import build_index_from_cases, finalize_index
+from project1.src.RankedSearch.rankedsearch import TF_IDF, RankedSearch
+from project1.src.retrieval.cases_linked_list import build_cases_list_from_cases
+from project1.src.retrieval.boolean_retrieval import AND as BOOL_AND, OR as BOOL_OR, NOT as BOOL_NOT
 
 def list_case_ids(nodes_path: str | Path) -> list[str]:
     """Lista os case_ids na mesma ordem em que aparecem em nodes.csv."""

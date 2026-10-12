@@ -1,12 +1,8 @@
 import argparse
-import sys
 from pathlib import Path
 
-base_dir = Path(__file__).resolve().parent.parent
-if str(base_dir) not in sys.path:
-    sys.path.insert(0, str(base_dir))
-
-from src.visualization import visualize_case
+from project1.paths import ASSETS_DIR, EDGES_PATH, NODES_PATH
+from project1.src.visualization import visualize_case
 
 def main() -> None:
     """Gera uma visualizacao basica de um caso clinico e salva em PNG."""
@@ -19,17 +15,17 @@ def main() -> None:
     )
     parser.add_argument(
         "--nodes",
-        default=base_dir / "data" / "processed" / "nodes.csv",
+        default=NODES_PATH,
         type=Path,
     )
     parser.add_argument(
         "--edges",
-        default=base_dir / "data" / "processed" / "edges.csv",
+        default=EDGES_PATH,
         type=Path,
     )
     parser.add_argument(
         "--output",
-        default=base_dir / "assets" / "images" / "graph.png",
+        default=ASSETS_DIR / "images" / "graph.png",
         type=Path,
     )
     args = parser.parse_args()

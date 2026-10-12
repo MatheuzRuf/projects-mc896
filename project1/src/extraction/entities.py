@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass, field
 
-from src.vocab import VocabularyEntry
+from project1.src.vocab import VocabularyEntry
 
 @dataclass
 class Entity:

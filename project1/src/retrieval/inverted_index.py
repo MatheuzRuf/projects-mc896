@@ -1,9 +1,10 @@
-from src.preprocessing.dataset import preprocess_cases
-from src.retrieval.linked_lists import InvertedIndexNode
-from src.retrieval.linked_lists import extract_doc_key
+from project1.src.preprocessing.dataset import preprocess_cases
+from project1.src.retrieval.linked_lists import InvertedIndexNode
+from project1.src.retrieval.linked_lists import extract_doc_key
 from pathlib import Path
 from collections import Counter
-from src.RankedSearch.rankedsearch import InverseDocumentFrequency
+from project1.src.RankedSearch.rankedsearch import InverseDocumentFrequency
+from project1.paths import CASES_PATH
 
 class InvertedIndex:
     def __init__(self, term: str):
@@ -145,7 +146,7 @@ def finalize_index(
     return inverted_index
 
 if __name__ == "__main__":
-    PATH = Path("data/raw/cases.csv")
+    PATH = CASES_PATH
     cases = preprocess_cases(PATH)
     total_docs = len([c for c in cases if c.get("case_id")])
     n_stopwords = 0

@@ -4,7 +4,7 @@ import threading
 from http.server import ThreadingHTTPServer
 from urllib.request import urlopen
 
-from src.visualization.web_server import create_request_handler, list_case_ids
+from project1.src.visualization.web_server import create_request_handler, list_case_ids
 
 
 def _write_graph_csvs(tmp_path):

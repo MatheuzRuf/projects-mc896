@@ -1,5 +1,5 @@
-from src.Regex.measurement_adapter import extract_structured_measurements
-from src.extraction.entities import Entity
+from project1.src.Regex.measurement_adapter import extract_structured_measurements
+from project1.src.extraction.entities import Entity
 
 
 def test_extracts_values_reference_range_and_case_insensitive_interpretation():

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mc896-projects"
+version = "0.1.0"
+description = "Projetos da disciplina MC896 (monorepo: project1, project2)"
+requires-python = ">=3.10"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["project1*", "project2*"]
+
+[tool.pytest.ini_options]
+testpaths = ["project1/tests", "project1/src/vocab"]

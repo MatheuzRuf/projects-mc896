@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-from src.preprocessing import preprocess_text
+from project1.src.preprocessing import preprocess_text
 
 def RankedSearch(vectorizedDocs):
     ranking = []

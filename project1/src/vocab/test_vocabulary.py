@@ -1,9 +1,10 @@
 from pathlib import Path
 
-from src.vocab import VocabularyEntry, load_vocabulary
+from project1.src.vocab import VocabularyEntry, load_vocabulary
+from project1.paths import VOCAB_DIR
 
 
-VOCABULARY_DIR = Path("vocabularies")
+VOCABULARY_DIR = VOCAB_DIR
 
 
 def test_vocabulary_entry():

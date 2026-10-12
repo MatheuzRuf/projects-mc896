@@ -113,8 +113,7 @@ project1/
 ├── README.md                         # apresentação e documentação principal
 ├── LOCAL_INTERFACE.md                # instruções da interface web local
 ├── VISUALIZATION.md                  # instruções da visualização estática
-├── pyproject.toml                    # metadados e requisito de versão do Python
-├── requirements.txt                  # dependências Python
+├── paths.py                          # caminhos centrais (data/, vocabularies/, ...)
 ├── data/
 │   ├── raw/
 │   │   ├── cases.csv                 # textos e identificadores dos casos clínicos
