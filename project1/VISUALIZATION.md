@@ -6,22 +6,23 @@ A visualizacao usa Python, NetworkX e Matplotlib. Ela carrega os arquivos
 
 ## Executar localmente
 
-Na pasta `project1`, instale as dependencias:
+Na raiz do repositório, instale as dependencias e o pacote:
 
 ```bash
 pip install -r requirements.txt
+pip install -e .
 ```
 
 Gere a visualizacao do primeiro caso:
 
 ```bash
-python scripts/visualize_knowledge_graph.py
+python -m project1.scripts.visualize_knowledge_graph
 ```
 
 Ou escolha um caso e outro arquivo de saida:
 
 ```bash
-python scripts/visualize_knowledge_graph.py --case-id PMC5137649_01 --output output/case_graph.png
+python -m project1.scripts.visualize_knowledge_graph --case-id PMC5137649_01 --output output/case_graph.png
 ```
 
 Os tipos de nos sao diferenciados por cor e cada aresta mostra o nome da

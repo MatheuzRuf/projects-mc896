@@ -1,5 +1,5 @@
-from src.retrieval.inverted_index import build_index_from_cases
-from src.retrieval.cases_linked_list import build_cases_list_from_cases
+from project1.src.retrieval.inverted_index import build_index_from_cases
+from project1.src.retrieval.cases_linked_list import build_cases_list_from_cases
 
 def NOT(inverted_index, term, cases_list) -> set[str]:
     """

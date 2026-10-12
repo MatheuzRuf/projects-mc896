@@ -1,12 +1,8 @@
 import argparse
-import sys
 from pathlib import Path
 
-base_dir = Path(__file__).resolve().parent.parent
-if str(base_dir) not in sys.path:
-    sys.path.insert(0, str(base_dir))
-
-from src.visualization.web_server import serve_graph_interface
+from project1.paths import CASES_PATH, EDGES_PATH, NODES_PATH, WEB_DIR
+from project1.src.visualization.web_server import serve_graph_interface
 
 def main() -> None:
     """Inicia servidor web para visualização do grafo de conhecimento."""
@@ -17,17 +13,17 @@ def main() -> None:
     parser.add_argument("--port", default=8000, type=int)
     parser.add_argument(
         "--nodes",
-        default=base_dir / "data" / "processed" / "nodes.csv",
+        default=NODES_PATH,
         type=Path,
     )
     parser.add_argument(
         "--edges",
-        default=base_dir / "data" / "processed" / "edges.csv",
+        default=EDGES_PATH,
         type=Path,
     )
     parser.add_argument(
         "--cases",
-        default=base_dir / "data" / "raw" / "cases.csv",
+        default=CASES_PATH,
         type=Path,
     )
     args = parser.parse_args()
@@ -35,7 +31,7 @@ def main() -> None:
     serve_graph_interface(
         nodes_path=args.nodes,
         edges_path=args.edges,
-        static_dir=base_dir / "src" / "visualization" / "web",
+        static_dir=WEB_DIR,
         cases_path=args.cases,
         host=args.host,
         port=args.port,

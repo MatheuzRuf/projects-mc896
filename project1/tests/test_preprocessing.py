@@ -1,4 +1,4 @@
-from src.preprocessing import (
+from project1.src.preprocessing import (
     normalize_text,
     tokenize,
     remove_stopwords,

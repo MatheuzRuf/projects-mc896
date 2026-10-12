@@ -1,16 +1,17 @@
 from pathlib import Path
 
-from src.Regex.measurement_adapter import (
+from project1.src.Regex.measurement_adapter import (
     DURATION_UNITS,
     SIZE_UNITS,
     extract_structured_measurements,
     is_dose_unit,
 )
-from src.extraction import Entity, extract_entities
-from src.extraction.relations import _dedupe_edges, extract_case_relations
-from src.graph.export import save_edges, save_nodes
-from src.graph.schema import Edge, Node, NodeType, Relation
-from src.vocab import load_vocabulary
+from project1.src.extraction import Entity, extract_entities
+from project1.src.extraction.relations import _dedupe_edges, extract_case_relations
+from project1.src.graph.export import save_edges, save_nodes
+from project1.src.graph.schema import Edge, Node, NodeType, Relation
+from project1.src.vocab import load_vocabulary
+from project1.paths import VOCAB_DIR
 
 
 ENTITY_FILES = [
@@ -196,7 +197,7 @@ def _build_measurement_graph(
     return nodes, edges
 
 
-def load_entity_vocabulary(vocabulary_dir: str | Path = "vocabularies") -> list:
+def load_entity_vocabulary(vocabulary_dir: str | Path = VOCAB_DIR) -> list:
     vocabulary_dir = Path(vocabulary_dir)
     vocabulary = []
 

@@ -6,10 +6,10 @@ JavaScript.
 
 ## Executar
 
-Na pasta `project1`, execute:
+Na raiz do repositório (após `pip install -e .`), execute:
 
 ```bash
-python scripts/serve_graph_interface.py
+python -m project1.scripts.serve_graph_interface
 ```
 
 Depois abra no navegador:
@@ -21,7 +21,7 @@ http://127.0.0.1:8000
 Para usar outra porta:
 
 ```bash
-python scripts/serve_graph_interface.py --port 8080
+python -m project1.scripts.serve_graph_interface --port 8080
 ```
 
 Para encerrar o servidor, pressione `Ctrl+C` no terminal.

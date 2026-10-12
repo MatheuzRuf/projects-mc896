@@ -1,6 +1,6 @@
 import csv
 
-from src.visualization import load_case_graph
+from project1.src.visualization import load_case_graph
 
 
 def _write_csv(path, columns, rows):

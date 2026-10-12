@@ -3,8 +3,8 @@
 import re
 from dataclasses import dataclass
 
-from src.Regex.regex import padraoFinal, regex_interpretacoes, valor
-from src.extraction.entities import Entity
+from project1.src.Regex.regex import padraoFinal, regex_interpretacoes, valor
+from project1.src.extraction.entities import Entity
 
 
 NUMBER_PATTERN = r"\d+(?:[.,]\d+)?"
