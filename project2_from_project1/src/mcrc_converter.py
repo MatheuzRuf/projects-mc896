@@ -393,7 +393,8 @@ def _convert_document(raw_document: object) -> ClinicalDocument:
         native_label = _native_relation_label(raw_relation, raw_relation_id)
         source_native, target_native = _relation_endpoints(raw_relation, raw_relation_id)
         if source_native not in native_to_mention or target_native not in native_to_mention:
-            raise MCRCConversionError(f"relation {raw_relation_id} references an unknown annotation")
+            #raise MCRCConversionError(f"relation {raw_relation_id} references an unknown annotation")
+            continue  # ignore relations that reference unknown annotations
         canonical_label = _canonical_relation_label(
             native_label,
             native_annotation_types[source_native],
