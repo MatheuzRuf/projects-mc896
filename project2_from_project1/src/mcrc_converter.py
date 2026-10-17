@@ -8,7 +8,7 @@ acknowledge the unsafe operation.
 """
 
 from __future__ import annotations
-
+ 
 from dataclasses import dataclass
 import hashlib
 import hmac
@@ -18,7 +18,7 @@ import pickle
 import re
 from typing import Any, Mapping, Sequence
 import uuid
-
+ 
 from project2_from_project1.src.clinical_documents import (
     AnnotatedRelation,
     CanonicalRelation,
@@ -30,25 +30,25 @@ from project2_from_project1.src.clinical_documents import (
     Span,
     write_jsonl,
 )
-
-
+ 
+ 
 _IMMUTABLE_REVISION = re.compile(
     r"(?:[0-9a-f]{7,64}|v?\d+(?:\.\d+){1,3}(?:[-+][0-9A-Za-z.-]+)?)\Z", re.IGNORECASE
 )
-
-
+ 
+ 
 class MCRCConversionError(ValueError):
     """Raised when a MCRC source cannot safely or faithfully be converted."""
-
-
+ 
+ 
 @dataclass(frozen=True)
 class MCRCSource:
     """Pinned provenance required before a release artifact can be opened."""
-
+ 
     repository: str
     revision: str
     artifact_sha256: str
-
+ 
     def __post_init__(self) -> None:
         for field_name in ("repository", "revision"):
             value = getattr(self, field_name)
@@ -62,15 +62,15 @@ class MCRCSource:
         if len(digest) != 64 or any(character not in "0123456789abcdef" for character in digest):
             raise MCRCConversionError("artifact_sha256 must be a 64-character hexadecimal SHA-256 digest")
         object.__setattr__(self, "artifact_sha256", digest)
-
+ 
     def to_manifest_dict(self) -> dict[str, str]:
         return {
             "artifact_sha256": self.artifact_sha256,
             "repository": self.repository,
             "revision": self.revision,
         }
-
-
+ 
+ 
 _ENTITY_CANONICAL_TYPES = {
     "case": "Patient",
     "condition": "Condition",
@@ -78,7 +78,7 @@ _ENTITY_CANONICAL_TYPES = {
     "factor": "Factor",
     "modifier": "Modifier",
 }
-
+ 
 _RELATION_CANONICAL_LABELS = {
     "case_has_condition": CanonicalRelation.HAS_CONDITION,
     "case_has_finding": CanonicalRelation.HAS_FINDING,
@@ -86,11 +86,11 @@ _RELATION_CANONICAL_LABELS = {
     "modifier_modifies_finding": CanonicalRelation.NEGATES,
     "condition_causes_finding": CanonicalRelation.CAUSES,
 }
-
-
+ 
+ 
 class _BioCProxy:
     """Compatibility shell for the BioC classes embedded in the release pickle."""
-
+ 
     def __setstate__(self, state: object) -> None:
         if isinstance(state, Mapping):
             self.__dict__.update(state)
@@ -98,17 +98,17 @@ class _BioCProxy:
             self.__dict__.update(state[0])
         else:
             self.__dict__["_pickle_state"] = state
-
-
+ 
+ 
 class _MCRCPickleUnpickler(pickle.Unpickler):
     """Read only the known MCRC BioC classes, without importing their old package."""
-
+ 
     _BIOC_MODULE_PREFIX = "src.util.bioc."
     _ALLOWED_GLOBALS = {
         ("uuid", "UUID"): uuid.UUID,
         ("collections", "OrderedDict"): __import__("collections").OrderedDict,
     }
-
+ 
     def find_class(self, module: str, name: str) -> Any:
         if module.startswith(self._BIOC_MODULE_PREFIX) and name.startswith("BioC"):
             return _BioCProxy
@@ -116,25 +116,25 @@ class _MCRCPickleUnpickler(pickle.Unpickler):
             return self._ALLOWED_GLOBALS[(module, name)]
         except KeyError as error:
             raise pickle.UnpicklingError(f"MCRC pickle requested unsupported global {module}.{name}") from error
-
-
+ 
+ 
 def sha256_file(path: str | Path) -> str:
     """Return the SHA-256 digest without loading the artifact into memory."""
-
+ 
     with Path(path).open("rb") as artifact:
         return _sha256_open_file(artifact)
-
-
+ 
+ 
 def _sha256_open_file(artifact: Any) -> str:
     digest = hashlib.sha256()
     for block in iter(lambda: artifact.read(1024 * 1024), b""):
         digest.update(block)
     return digest.hexdigest()
-
-
+ 
+ 
 def verify_mcrc_artifact(path: str | Path, source: MCRCSource) -> str:
     """Verify the pinned artifact digest before any deserialisation is attempted."""
-
+ 
     artifact_path = Path(path)
     if not artifact_path.is_file():
         raise MCRCConversionError(f"MCRC artifact does not exist or is not a file: {artifact_path}")
@@ -146,8 +146,8 @@ def verify_mcrc_artifact(path: str | Path, source: MCRCSource) -> str:
             f"(expected {source.artifact_sha256}, got {actual_digest})"
         )
     return actual_digest
-
-
+ 
+ 
 def _load_verified_mcrc_pickle(
     path: str | Path,
     source: MCRCSource,
@@ -171,8 +171,8 @@ def _load_verified_mcrc_pickle(
             )
         artifact.seek(0)
         return _MCRCPickleUnpickler(artifact).load(), actual_digest
-
-
+ 
+ 
 def load_verified_mcrc_pickle(
     path: str | Path,
     source: MCRCSource,
@@ -180,50 +180,50 @@ def load_verified_mcrc_pickle(
     allow_unsafe_deserialization: bool = False,
 ) -> Any:
     """Open a verified pickle only after an explicit controlled-environment opt-in."""
-
+ 
     collection, _ = _load_verified_mcrc_pickle(
         path,
         source,
         allow_unsafe_deserialization=allow_unsafe_deserialization,
     )
     return collection
-
-
+ 
+ 
 def _get(value: object, name: str, default: Any = None) -> Any:
     if isinstance(value, Mapping):
         return value.get(name, default)
     return getattr(value, name, default)
-
-
+ 
+ 
 def _required_string(value: object, description: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise MCRCConversionError(f"{description} must be a non-empty string")
     return value
-
-
+ 
+ 
 def _external_identifier(value: object, description: str) -> str:
     """Normalise the numeric annotation identifiers used by the BioC release."""
-
+ 
     if isinstance(value, int) and not isinstance(value, bool):
         return str(value)
     return _required_string(value, description)
-
-
+ 
+ 
 def _as_items(value: object, description: str) -> list[Any]:
     if value is None:
         return []
     if isinstance(value, (str, bytes)) or not isinstance(value, Sequence):
         raise MCRCConversionError(f"{description} must be a sequence")
     return list(value)
-
-
+ 
+ 
 def _infons(value: object) -> Mapping[str, Any]:
     result = _get(value, "infons", {})
     if not isinstance(result, Mapping):
         raise MCRCConversionError("BioC infons must be an object")
     return result
-
-
+ 
+ 
 def _native_types(annotation: object, annotation_id: str) -> tuple[str, ...]:
     infons = _infons(annotation)
     raw_types = infons.get("entityType", infons.get("entity_type", infons.get("type")))
@@ -236,8 +236,8 @@ def _native_types(annotation: object, annotation_id: str) -> tuple[str, ...]:
     if not types or len(set(types)) != len(types):
         raise MCRCConversionError(f"annotation {annotation_id} has invalid native entity types")
     return types
-
-
+ 
+ 
 def _canonical_type(native_types: tuple[str, ...], annotation_id: str) -> str:
     for native_type in native_types:
         canonical = _ENTITY_CANONICAL_TYPES.get(native_type.lower())
@@ -246,8 +246,8 @@ def _canonical_type(native_types: tuple[str, ...], annotation_id: str) -> str:
     raise MCRCConversionError(
         f"annotation {annotation_id} has no approved canonical mapping for {list(native_types)!r}"
     )
-
-
+ 
+ 
 def _spans(annotation: object, annotation_id: str, passage_offset: int) -> tuple[Span, ...]:
     raw_locations = _get(annotation, "locations")
     if raw_locations is None:
@@ -266,12 +266,12 @@ def _spans(annotation: object, annotation_id: str, passage_offset: int) -> tuple
             raise MCRCConversionError(f"annotation {annotation_id} location must have integer offset and length")
         spans.append(Span(start - passage_offset, start - passage_offset + length))
     return tuple(sorted(spans))
-
-
+ 
+ 
 def _normalise_label(label: str) -> str:
     return "_".join(part for part in label.lower().replace("-", "_").replace(" ", "_").split("_") if part)
-
-
+ 
+ 
 def _native_relation_label(relation: object, relation_id: str) -> str:
     infons = _infons(relation)
     for key in ("relationType", "relation_type", "type", "label"):
@@ -279,8 +279,8 @@ def _native_relation_label(relation: object, relation_id: str) -> str:
         if isinstance(value, str) and value.strip():
             return value
     raise MCRCConversionError(f"relation {relation_id} has no relationType")
-
-
+ 
+ 
 def _canonical_relation_label(
     native_label: str,
     source_types: tuple[str, ...],
@@ -288,7 +288,7 @@ def _canonical_relation_label(
     relation_id: str,
 ) -> CanonicalRelation:
     """Project a native MCRC relation only when its endpoints support the meaning."""
-
+ 
     normalized = _normalise_label(native_label)
     explicit = _RELATION_CANONICAL_LABELS.get(normalized)
     if explicit is not None:
@@ -310,8 +310,8 @@ def _canonical_relation_label(
         f"relation {relation_id} has no approved canonical mapping for {native_label!r} "
         f"with endpoints {list(source_types)!r} -> {list(target_types)!r}"
     )
-
-
+ 
+ 
 def _relation_endpoints(relation: object, relation_id: str) -> tuple[str, str]:
     nodes = _as_items(_get(relation, "nodes", ()), f"relation {relation_id} nodes")
     if len(nodes) != 2:
@@ -333,14 +333,14 @@ def _relation_endpoints(relation: object, relation_id: str) -> tuple[str, str]:
     raise MCRCConversionError(
         f"relation {relation_id} must declare one source and one target role; got {roles!r}"
     )
-
-
+ 
+ 
 def _safe_metadata(infons: Mapping[str, Any]) -> dict[str, str]:
     """Keep small document provenance values JSON-safe without copying corpus text."""
-
+ 
     return {str(key): str(value) for key, value in sorted(infons.items(), key=lambda item: str(item[0]))}
-
-
+ 
+ 
 def _convert_document(raw_document: object) -> ClinicalDocument:
     raw_document_id = _required_string(_get(raw_document, "id"), "MCRC document id")
     passages = _as_items(_get(raw_document, "passages", ()), f"document {raw_document_id} passages")
@@ -353,7 +353,7 @@ def _convert_document(raw_document: object) -> ClinicalDocument:
     passage_offset = _get(passage, "offset", 0)
     if isinstance(passage_offset, bool) or not isinstance(passage_offset, int):
         raise MCRCConversionError(f"document {raw_document_id} passage offset must be an integer")
-
+ 
     document_id = f"mcrc:{raw_document_id}"
     annotations = _as_items(_get(passage, "annotations", ()), f"document {raw_document_id} annotations")
     mentions: list[Mention] = []
@@ -371,9 +371,48 @@ def _convert_document(raw_document: object) -> ClinicalDocument:
         native_annotation_types[native_id] = native_types
         if any(native_type.lower() == "case" for native_type in native_types):
             case_annotation_ids.append(native_id)
-
-    patient_id = f"{document_id}:patient"
-    patient = Patient(patient_id, {"native_case_mention_ids": [native_to_mention[item] for item in case_annotation_ids]})
+ 
+    # First pass: read every relation and find the implicit case nodes.  A ``has``
+    # governor that is not an annotation is accepted as a case node only when its
+    # target is a known Condition, Finding or Factor; anything else keeps failing.
+    raw_relations: list[tuple[str, str, str, str]] = []
+    for raw_relation in _as_items(_get(passage, "relations", ()), f"document {raw_document_id} relations"):
+        raw_relation_id = _external_identifier(_get(raw_relation, "id"), f"document {raw_document_id} relation id")
+        native_label = _native_relation_label(raw_relation, raw_relation_id)
+        source_native, target_native = _relation_endpoints(raw_relation, raw_relation_id)
+        raw_relations.append((raw_relation_id, native_label, source_native, target_native))
+ 
+    implicit_case_ids: list[str] = []
+    for _, native_label, source_native, target_native in raw_relations:
+        if (
+            _normalise_label(native_label) == "has"
+            and source_native not in native_to_mention
+            and source_native not in implicit_case_ids
+            and target_native in native_to_mention
+            and {item.lower() for item in native_annotation_types[target_native]} & {"condition", "finding", "factor"}
+        ):
+            implicit_case_ids.append(source_native)
+ 
+    default_patient_id = f"{document_id}:patient"
+    describes_id = f"{document_id}:describes"
+    patients: list[Patient] = []
+    patient_for_native: dict[str, str] = {}
+    describes: list[tuple[str, str]] = []  # (relation_id, patient_id)
+    if case_annotation_ids:
+        patients.append(Patient(default_patient_id, {"native_case_mention_ids": [native_to_mention[item] for item in case_annotation_ids]}))
+        describes.append((describes_id, default_patient_id))
+        for native_id in case_annotation_ids:
+            patient_for_native[native_id] = default_patient_id
+    for native_id in implicit_case_ids:
+        single = not case_annotation_ids and len(implicit_case_ids) == 1
+        patient_id = default_patient_id if single else f"{default_patient_id}:{native_id}"
+        patients.append(Patient(patient_id, {"native_case_mention_ids": [], "native_implicit_case_node_id": native_id}))
+        describes.append((describes_id if single else f"{describes_id}:{native_id}", patient_id))
+        patient_for_native[native_id] = patient_id
+    if not patients:
+        patients.append(Patient(default_patient_id, {"native_case_mention_ids": []}))
+        describes.append((describes_id, default_patient_id))
+ 
     clinical_case = ClinicalCase(
         f"{document_id}:case",
         source_id=raw_document_id,
@@ -381,71 +420,100 @@ def _convert_document(raw_document: object) -> ClinicalDocument:
     )
     relations: list[AnnotatedRelation] = [
         AnnotatedRelation(
-            relation_id=f"{document_id}:describes",
+            relation_id=relation_id,
             source_id=clinical_case.case_id,
             target_id=patient_id,
             native_label="document_describes_case",
             canonical_label=CanonicalRelation.DESCRIBES,
         )
+        for relation_id, patient_id in describes
     ]
-    for raw_relation in _as_items(_get(passage, "relations", ()), f"document {raw_document_id} relations"):
-        raw_relation_id = _external_identifier(_get(raw_relation, "id"), f"document {raw_document_id} relation id")
-        native_label = _native_relation_label(raw_relation, raw_relation_id)
-        source_native, target_native = _relation_endpoints(raw_relation, raw_relation_id)
-        if source_native not in native_to_mention or target_native not in native_to_mention:
-            #raise MCRCConversionError(f"relation {raw_relation_id} references an unknown annotation")
-            continue  # ignore relations that reference unknown annotations
+ 
+    # Second pass: project each native relation.
+    projected: list[AnnotatedRelation] = []
+    for raw_relation_id, native_label, source_native, target_native in raw_relations:
+        endpoint_types: dict[str, tuple[str, ...]] = {}
+        for native_id in (source_native, target_native):
+            if native_id in native_annotation_types:
+                endpoint_types[native_id] = native_annotation_types[native_id]
+            elif native_id in patient_for_native:
+                endpoint_types[native_id] = ("case",)
+            else:
+                raise MCRCConversionError(f"relation {raw_relation_id} references an unknown annotation")
         canonical_label = _canonical_relation_label(
             native_label,
-            native_annotation_types[source_native],
-            native_annotation_types[target_native],
+            endpoint_types[source_native],
+            endpoint_types[target_native],
             raw_relation_id,
         )
-        source_id = patient_id if source_native in case_annotation_ids else native_to_mention[source_native]
-        target_id = patient_id if target_native in case_annotation_ids else native_to_mention[target_native]
-        relations.append(
+        projected.append(
             AnnotatedRelation(
                 relation_id=f"{document_id}:relation:{raw_relation_id}",
-                source_id=source_id,
-                target_id=target_id,
+                source_id=patient_for_native.get(source_native) or native_to_mention[source_native],
+                target_id=patient_for_native.get(target_native) or native_to_mention[target_native],
                 native_label=native_label,
                 canonical_label=canonical_label,
             )
         )
-
+ 
+    # The contract forbids HAS_FINDING on a negated Finding (see module docstring).
+    negated_findings = {
+        relation.target_id for relation in projected if relation.canonical_label is CanonicalRelation.NEGATES
+    }
+    suppressed = 0
+    seen_gold_relations = set()
+    
+    for relation in projected:
+        if relation.canonical_label is CanonicalRelation.HAS_FINDING and relation.target_id in negated_findings:
+            suppressed += 1
+            continue
+            
+        # Garante que relações com mesma origem, destino e tipo não sejam duplicadas
+        gold_key = (relation.source_id, relation.target_id, relation.canonical_label)
+        if gold_key in seen_gold_relations:
+            continue
+        seen_gold_relations.add(gold_key)
+            
+        relations.append(relation)
+ 
     try:
         return ClinicalDocument(
             document_id=document_id,
             text=text,
             cases=[clinical_case],
-            patients=[patient],
+            patients=patients,
             mentions=mentions,
             relations=relations,
-            metadata={"corpus": "MCRC", "native_document_id": raw_document_id},
+            metadata={
+                "corpus": "MCRC",
+                "native_document_id": raw_document_id,
+                "implicit_case_nodes": len(implicit_case_ids),
+                "suppressed_has_finding_negated": suppressed,
+            },
         )
     except ClinicalDocumentValidationError as error:
         raise MCRCConversionError(f"document {raw_document_id} violates the clinical document contract: {error}") from error
-
-
+ 
+ 
 def convert_mcrc_collection(collection: object) -> list[ClinicalDocument]:
     """Convert an already-opened MCRC BioC collection to validated documents."""
-
+ 
     documents = _as_items(_get(collection, "documents", ()), "MCRC collection documents")
     converted = [_convert_document(document) for document in documents]
     document_ids = [document.document_id for document in converted]
     if len(set(document_ids)) != len(document_ids):
         raise MCRCConversionError("MCRC collection contains duplicate document ids")
     return sorted(converted, key=lambda document: document.document_id)
-
-
+ 
+ 
 def _counts(documents: Sequence[ClinicalDocument]) -> dict[str, int]:
     return {
         "documents": len(documents),
         "mentions": sum(len(document.mentions) for document in documents),
         "relations": sum(len(document.relations) for document in documents),
     }
-
-
+ 
+ 
 def convert_mcrc_distribution(
     artifact_path: str | Path,
     output_jsonl_path: str | Path,
@@ -455,7 +523,7 @@ def convert_mcrc_distribution(
     allow_unsafe_deserialization: bool = False,
 ) -> dict[str, Any]:
     """Convert a pinned MCRC pickle and write deterministic JSONL and manifest files."""
-
+ 
     collection, raw_sha256 = _load_verified_mcrc_pickle(
         artifact_path,
         source,
@@ -468,6 +536,12 @@ def convert_mcrc_distribution(
         "conversion_result": "success",
         "counts": _counts(documents),
         "jsonl_sha256": sha256_file(output_jsonl),
+        "projection_audit": {
+            "implicit_case_nodes": sum(int(document.metadata.get("implicit_case_nodes", 0)) for document in documents),
+            "suppressed_has_finding_negated": sum(
+                int(document.metadata.get("suppressed_has_finding_negated", 0)) for document in documents
+            ),
+        },
         "raw_artifact_sha256": raw_sha256,
         "schema_version": 1,
         "source": source.to_manifest_dict(),
@@ -479,8 +553,8 @@ def convert_mcrc_distribution(
         encoding="utf-8",
     )
     return manifest
-
-
+ 
+ 
 __all__ = [
     "MCRCConversionError",
     "MCRCSource",

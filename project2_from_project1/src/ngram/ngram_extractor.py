@@ -5,8 +5,12 @@ import json
 from project2_from_project1.src.preprocessing.text import tokenize
 
 def generate_ngrams(tokens: list[str]) -> tuple[Counter, Counter, Counter]:
-    """gera dicionários de frequência para unigramas, bigramas e trigramas"""
-
+    """
+    gera dicionários de frequência para unigramas, bigramas e trigramas"
+    
+    params:
+        tokens: lista de tokens
+    """
     # unigramas: conta cada token isoladamente
     unigrams = Counter(tokens)
     
@@ -19,27 +23,78 @@ def generate_ngrams(tokens: list[str]) -> tuple[Counter, Counter, Counter]:
     return unigrams, bigrams, trigrams
 
 # OBS: JSONL é um formato de arquivo onde cada linha é um objeto JSON válido
-def process_corpus_ngrams(jsonl_path: str) -> tuple[Counter, Counter, Counter]:
+def process_corpus_ngrams(fold_path: str, corpus_path: str) -> tuple[Counter, Counter, Counter]:
     """
-    lê um arquivo JSONL (ex: fold-XX-train.jsonl), extrai os textos 
-    de contexto e acumula as frequências globais de n-gramas
+    lê um arquivo JSONL de treino ou validação, extrai os n-gramas 
+    e retorna contadores globais de unigramas, bigramas e trigramas
+
+    params:
+        fold_path: caminho para o arquivo JSONL do fold (treino ou validação)
+        corpus_path: caminho do arquivo JSONL que possui o texto bruto
     """
     global_unigrams = Counter()
     global_bigrams = Counter()
     global_trigrams = Counter()
+
+    documents_by_id = {} # armazena os documentos do corpus para acesso rápido pelo document_id
+    with open(corpus_path, "r", encoding="utf-8") as f:
+        for line in f:
+            if not line.strip():
+                continue
+
+            doc = json.loads(line)
+            documents_by_id[doc["document_id"]] = doc
     
-    with open(jsonl_path, 'r', encoding='utf-8') as file:
-        for line in file:
-            if not line.strip(): # ignora linhas vazias
+    with open(fold_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            if not line.strip(): 
                 continue
                 
-            data = json.loads(line)
+            candidate = json.loads(line) # cada linha é um candidato de relação
+            doc_id = candidate["document_id"] # recupera o document_id do candidato
             
-            text = data.get("context_text", "") # adaptar o nome da chave quando possuir o arquivo JSONL real
-            if not text:
+            # usa a "Chave Estrangeira" para recuperar o documento completo
+            document = documents_by_id[doc_id]
+            full_text = document["text"] # texto bruto
+            
+            # encontra as posições exatas (spans) da origem e do destino no texto
+            # (o corpus armazena as menções com seus spans, então podemos recuperar o texto exato)
+            mentions_by_id = {m["mention_id"]: m for m in document["mentions"]}
+
+            if candidate["source_id"] not in mentions_by_id or candidate["target_id"] not in mentions_by_id:
+                # pula candidatos cujos relacionamentos envolvam nós lógicos (como Patient sem texto base)
                 continue
             
-            tokens = tokenize(text)
+            source_mention = mentions_by_id[candidate["source_id"]]
+            target_mention = mentions_by_id[candidate["target_id"]]
+            
+            # span tem o formato [start, end] correspondente aos caracteres no full_text
+            src_start, src_end = source_mention["spans"][0] 
+            tgt_start, tgt_end = target_mention["spans"][0]
+            
+            source_text = full_text[src_start:src_end]
+            target_text = full_text[tgt_start:tgt_end]
+            
+            # determina qual entidade vem primeiro no texto para pegar o contexto entre elas
+            if src_end <= tgt_start:
+                context_start = src_end
+                context_end = tgt_start
+            else:
+                context_start = tgt_end
+                context_end = src_start
+                
+            context_text = full_text[context_start:context_end].strip()
+            
+            # se as entidades estiverem coladas ou sobrepostas, o contexto é vazio
+            if not context_text:
+                 continue
+                 
+            tokens = tokenize(context_text)
+            
+            # evita extrair n-gramas se não houver tokens suficientes
+            if not tokens:
+                continue
+
             uni, bi, tri = generate_ngrams(tokens)
             
             global_unigrams.update(uni)
@@ -50,22 +105,10 @@ def process_corpus_ngrams(jsonl_path: str) -> tuple[Counter, Counter, Counter]:
 
 if __name__ == "__main__":
     # teste
-    text = "pneumonia secondary to aspiration"
-    tokens = tokenize(text)
-    uni, bi, tri = generate_ngrams(tokens)
-    
-    print("--- Teste de Extração de N-grams ---")
-    print(f"Texto original: '{text}'\n")
-    print(f"Tokens: {tokens}\n")
-    
-    print("Unigramas Encontrados:")
-    for gram, count in uni.items():
-        print(f"  {gram}: {count}")
-        
-    print("\nBigramas Encontrados:")
-    for gram, count in bi.items():
-        print(f"  {gram}: {count}")
-        
-    print("\nTrigramas Encontrados:")
-    for gram, count in tri.items():
-        print(f"  {gram}: {count}")
+    corpus_path = "project2_from_project1/data/secure/mcrc.jsonl"
+    fold_path = "project2_from_project1/artifacts/first-milestone/frozen-dataset/fold-01-train.jsonl"
+
+    unigrams, bigrams, trigrams = process_corpus_ngrams(fold_path, corpus_path)
+    print("Unigrams:", unigrams.most_common(10))
+    print("Bigrams:", bigrams.most_common(10))
+    print("Trigrams:", trigrams.most_common(10))
