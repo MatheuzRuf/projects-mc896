@@ -7,7 +7,13 @@
 
 **Blocked by:** 01 — Expandir os contratos supervisionados versionados.
 
-**Status:** ready-for-agent
+**Status:** blocked-human-review
+
+**Implementation note (2026-10-18):** o fluxo versionado, os validadores e o
+pacote local de revisão estão implementados. O pacote atual contém 233 casos e
+está vinculado ao corpus `5104d36f…a9b` e ao plano `fecd718e…3e57`. O ticket
+permanece aberto até dois revisores humanos independentes concluírem os votos,
+resolverem divergências e produzirem `annotations/entity-gold-v1/adjudication.jsonl`.
 
 - [ ] O corpus lossless permanece byte a byte inalterado e a projeção é produzida em artefato separado.
 - [ ] Tokens e sentenças preservam offsets e não criam falsos limites nas abreviações e unidades auditadas.
