@@ -1,8 +1,21 @@
+from __future__ import annotations
+
 from collections import Counter
+from collections.abc import Iterable, Sequence
 import json
+from typing import Literal, overload
 
 # função de tokenização aproveitada do projeto 1, sem remover stopwords (usa regex)
 from project2_from_project1.src.preprocessing.text import tokenize
+
+
+NgramCounts = tuple[
+    Counter[str],
+    Counter[tuple[str, str]],
+    Counter[tuple[str, str, str]],
+]
+NgramFeature = tuple[int, tuple[str, ...]]
+
 
 def generate_ngrams(tokens: list[str]) -> tuple[Counter, Counter, Counter]:
     """
@@ -21,6 +34,67 @@ def generate_ngrams(tokens: list[str]) -> tuple[Counter, Counter, Counter]:
     trigrams = Counter(zip(tokens, tokens[1:], tokens[2:]))
     
     return unigrams, bigrams, trigrams
+
+
+def build_ngram_vocabulary(ngram_counters: Iterable[NgramCounts]) -> tuple[NgramFeature, ...]:
+    """Cria um esquema determinístico de características para contadores de n-gramas."""
+    features: set[NgramFeature] = set()
+
+    for unigrams, bigrams, trigrams in ngram_counters:
+        features.update((1, (token,)) for token in unigrams)
+        features.update((2, bigram) for bigram in bigrams)
+        features.update((3, trigram) for trigram in trigrams)
+
+    return tuple(sorted(features))
+
+
+def _iter_ngram_feature_counts(ngram_counts: NgramCounts):
+    unigrams, bigrams, trigrams = ngram_counts
+    yield from (((1, (token,)), count) for token, count in unigrams.items())
+    yield from (((2, gram), count) for gram, count in bigrams.items())
+    yield from (((3, gram), count) for gram, count in trigrams.items())
+
+
+@overload
+def vectorize_ngrams(
+    ngram_counts: NgramCounts,
+    vocabulary: Sequence[NgramFeature],
+    *,
+    sparse: Literal[False] = False,
+) -> list[int]: ...
+
+
+@overload
+def vectorize_ngrams(
+    ngram_counts: NgramCounts,
+    vocabulary: Sequence[NgramFeature],
+    *,
+    sparse: Literal[True],
+) -> dict[int, int]: ...
+
+
+def vectorize_ngrams(
+    ngram_counts: NgramCounts,
+    vocabulary: Sequence[NgramFeature],
+    *,
+    sparse: bool = False,
+) -> list[int] | dict[int, int]:
+    """Retorna frequências na ordem do vocabulário; opcionalmente, apenas colunas não zero."""
+    feature_positions = {feature: index for index, feature in enumerate(vocabulary)}
+    if sparse:
+        return {
+            position: count
+            for feature, count in _iter_ngram_feature_counts(ngram_counts)
+            if (position := feature_positions.get(feature)) is not None and count != 0
+        }
+
+    vector = [0] * len(vocabulary)
+    for feature, count in _iter_ngram_feature_counts(ngram_counts):
+        position = feature_positions.get(feature)
+        if position is not None:
+            vector[position] = count
+    return vector
+
 
 # OBS: JSONL é um formato de arquivo onde cada linha é um objeto JSON válido
 def process_corpus_ngrams(fold_path: str, corpus_path: str) -> tuple[Counter, Counter, Counter]:
