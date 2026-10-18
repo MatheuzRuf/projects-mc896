@@ -15,6 +15,10 @@ from project2_from_project1.src.ngrams.pipeline import (
     run_ngram_knn_from_files,
     train_and_predict_ngram_knn,
 )
+from project2_from_project1.src.ngrams.model_selection import (
+    finalize_selected_ngram_knn,
+    select_ngram_knn_from_folds,
+)
 from project2_from_project1.src.relation_evaluation import load_relation_predictions
 from project2_from_project1.src.supervised_dataset import SupervisedCandidate
 
@@ -223,3 +227,122 @@ def test_file_pipeline_writes_predictions_and_auditable_manifest(tmp_path):
     assert manifest["prediction_examples"] == 1
     assert manifest["artifact_hashes"]["predictions_jsonl_sha256"]
     assert manifest["model_version"] == "test-model-1"
+
+
+def test_model_selection_uses_validation_folds_without_opening_test(tmp_path):
+    positive_one = _document(1, "Patient reports pain clearly.")
+    negative_one = _document(2, "Routine observation mentions pain incidentally.")
+    positive_two = _document(3, "Patient reports pain persistently.")
+    negative_two = _document(4, "Routine review mentions pain incidentally.")
+    documents = [positive_one, negative_one, positive_two, negative_two]
+    corpus = tmp_path / "corpus.jsonl"
+    frozen = tmp_path / "frozen"
+    output = tmp_path / "selection"
+    frozen.mkdir()
+    write_jsonl(documents, corpus)
+    _write_candidates(
+        frozen / "fold-01-train.jsonl",
+        [
+            _candidate(positive_one, CanonicalRelation.HAS_FINDING),
+            _candidate(negative_one, CanonicalRelation.NO_RELATION),
+        ],
+    )
+    _write_candidates(
+        frozen / "fold-01-validation.jsonl",
+        [
+            _candidate(positive_two, CanonicalRelation.HAS_FINDING),
+            _candidate(negative_two, CanonicalRelation.NO_RELATION),
+        ],
+    )
+    _write_candidates(
+        frozen / "fold-02-train.jsonl",
+        [
+            _candidate(positive_two, CanonicalRelation.HAS_FINDING),
+            _candidate(negative_two, CanonicalRelation.NO_RELATION),
+        ],
+    )
+    _write_candidates(
+        frozen / "fold-02-validation.jsonl",
+        [
+            _candidate(positive_one, CanonicalRelation.HAS_FINDING),
+            _candidate(negative_one, CanonicalRelation.NO_RELATION),
+        ],
+    )
+    # A malformed test partition would fail if model selection tried to open it.
+    (frozen / "test.jsonl").write_text("not json\n", encoding="utf-8")
+
+    summary = select_ngram_knn_from_folds(
+        corpus,
+        frozen,
+        output,
+        neighbor_values=(1,),
+        maximum_ngram_orders=(1, 3),
+        minimum_positive_support=1,
+        model_version="selection-test",
+    )
+
+    assert summary["folds"] == ["fold-01", "fold-02"]
+    assert summary["test_partition_used"] is False
+    assert len(summary["configurations"]) == 2
+    assert summary["best_configuration"]["n_neighbors"] == 1
+    assert summary["best_configuration"]["maximum_ngram_order"] in (1, 3)
+    assert (output / "model-selection-summary.json").is_file()
+
+
+def test_finalization_builds_full_development_train_and_evaluates_test(tmp_path):
+    documents = [
+        _document(1, "Patient reports pain clearly."),
+        _document(2, "Routine observation mentions pain incidentally."),
+        _document(3, "Patient reports pain persistently."),
+        _document(4, "Routine review mentions pain incidentally."),
+        _document(5, "Patient reports pain acutely."),
+        _document(6, "Routine note mentions pain incidentally."),
+    ]
+    corpus = tmp_path / "corpus.jsonl"
+    frozen = tmp_path / "frozen"
+    selection_path = tmp_path / "selection.json"
+    output = tmp_path / "final"
+    frozen.mkdir()
+    write_jsonl(documents, corpus)
+    for fold, indices in ((1, (0, 1)), (2, (2, 3))):
+        candidates = [
+            _candidate(documents[indices[0]], CanonicalRelation.HAS_FINDING),
+            _candidate(documents[indices[1]], CanonicalRelation.NO_RELATION),
+        ]
+        _write_candidates(frozen / f"fold-{fold:02d}-validation.jsonl", candidates)
+        _write_candidates(frozen / f"fold-{fold:02d}-train.jsonl", candidates)
+    _write_candidates(
+        frozen / "test.jsonl",
+        [
+            _candidate(documents[4], CanonicalRelation.HAS_FINDING),
+            _candidate(documents[5], CanonicalRelation.NO_RELATION),
+        ],
+    )
+    selection_path.write_text(
+        json.dumps(
+            {
+                "best_configuration": {
+                    "maximum_ngram_order": 1,
+                    "n_neighbors": 1,
+                },
+                "model_version": "selection-test",
+                "seed": 42,
+                "test_partition_used": False,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    summary = finalize_selected_ngram_knn(
+        corpus,
+        frozen,
+        selection_path,
+        output,
+        minimum_positive_support=1,
+    )
+
+    assert summary["test_partition_used_once_after_selection"] is True
+    assert summary["training_manifest"]["document_count"] == 4
+    assert summary["training_manifest"]["candidate_count"] == 4
+    assert (output / "final-test.predictions.jsonl").is_file()
+    assert (output / "final-test.evaluation.json").is_file()

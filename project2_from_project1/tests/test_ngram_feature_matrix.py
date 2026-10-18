@@ -88,6 +88,30 @@ def test_fit_transform_preserves_bigram_and_trigram_features():
     assert result.y is None
 
 
+def test_maximum_ngram_order_filters_vocabulary_without_changing_counts():
+    example = _example(
+        "doc-a",
+        _counts(
+            {"pain": 2},
+            {("chest", "pain"): 1},
+            {("reports", "chest", "pain"): 1},
+        ),
+    )
+
+    unigrams = NgramFeatureVectorizer(maximum_ngram_order=1).fit_transform([example])
+    up_to_bigrams = NgramFeatureVectorizer(maximum_ngram_order=2).fit_transform([example])
+
+    assert unigrams.vocabulary == ((1, ("pain",)),)
+    assert unigrams.X.toarray().tolist() == [[2]]
+    assert [feature[0] for feature in up_to_bigrams.vocabulary] == [1, 2]
+
+
+@pytest.mark.parametrize("value", [0, 4, True, 1.5])
+def test_rejects_invalid_maximum_ngram_order(value):
+    with pytest.raises(ValueError, match="must be 1, 2, or 3"):
+        NgramFeatureVectorizer(maximum_ngram_order=value)
+
+
 def test_transform_uses_training_vocabulary_and_ignores_validation_only_features():
     train = [
         _example("train-a", _counts({"patient": 2})),

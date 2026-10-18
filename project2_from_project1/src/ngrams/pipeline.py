@@ -45,10 +45,12 @@ class NgramKNNRun:
     training_examples: int
     prediction_examples: int
     n_neighbors: int
+    maximum_ngram_order: int
 
     def manifest_dict(self) -> dict[str, Any]:
         return {
-            "feature_family": "word-count-ngrams-1-3",
+            "feature_family": f"word-count-ngrams-1-{self.maximum_ngram_order}",
+            "maximum_ngram_order": self.maximum_ngram_order,
             "method": "ngram-knn-cosine-uniform",
             "n_neighbors": self.n_neighbors,
             "prediction_examples": self.prediction_examples,
@@ -123,6 +125,7 @@ def train_and_predict_ngram_knn(
     prediction_candidates: Sequence[SupervisedCandidate],
     *,
     n_neighbors: int = 3,
+    maximum_ngram_order: int = 3,
     model_version: str = "ngram-knn-v1",
 ) -> NgramKNNRun:
     """Fit on one frozen training partition and classify another partition."""
@@ -142,7 +145,7 @@ def train_and_predict_ngram_knn(
         documents, prediction_candidates, include_labels=False
     )
 
-    vectorizer = NgramFeatureVectorizer()
+    vectorizer = NgramFeatureVectorizer(maximum_ngram_order=maximum_ngram_order)
     training_matrix = vectorizer.fit_transform(training_examples)
     if training_matrix.X.shape[1] == 0:
         raise NgramKNNPipelineError(
@@ -229,7 +232,8 @@ def train_and_predict_ngram_knn(
                 method="ngram-knn-cosine-uniform",
                 evidence={
                     "candidate_relation": candidate.candidate_relation.value,
-                    "feature_family": "word-count-ngrams-1-3",
+                    "feature_family": f"word-count-ngrams-1-{maximum_ngram_order}",
+                    "maximum_ngram_order": maximum_ngram_order,
                     "n_neighbors": n_neighbors,
                     "sentence_distance": candidate.sentence_distance,
                 },
@@ -245,6 +249,7 @@ def train_and_predict_ngram_knn(
         training_examples=len(training_examples),
         prediction_examples=len(prediction_examples),
         n_neighbors=n_neighbors,
+        maximum_ngram_order=maximum_ngram_order,
     )
 
 
@@ -263,6 +268,7 @@ def run_ngram_knn_from_files(
     output_predictions_jsonl: str | Path,
     *,
     n_neighbors: int = 3,
+    maximum_ngram_order: int = 3,
     model_version: str = "ngram-knn-v1",
     manifest_path: str | Path | None = None,
 ) -> NgramKNNRun:
@@ -277,6 +283,7 @@ def run_ngram_knn_from_files(
         load_supervised_candidates(training_path),
         load_supervised_candidates(prediction_path),
         n_neighbors=n_neighbors,
+        maximum_ngram_order=maximum_ngram_order,
         model_version=model_version,
     )
     write_relation_predictions(run.predictions, output_path)

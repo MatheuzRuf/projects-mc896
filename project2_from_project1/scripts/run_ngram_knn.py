@@ -27,6 +27,9 @@ def main() -> None:
     parser.add_argument("--manifest", help="Output run manifest; defaults beside predictions")
     parser.add_argument("--evaluation", help="Optional output evaluation JSON")
     parser.add_argument("--n-neighbors", type=int, default=3)
+    parser.add_argument(
+        "--maximum-ngram-order", type=int, choices=(1, 2, 3), default=3
+    )
     parser.add_argument("--model-version", default="ngram-knn-v1")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--minimum-positive-support", type=int, default=5)
@@ -38,6 +41,7 @@ def main() -> None:
         arguments.predict_candidates,
         arguments.predictions,
         n_neighbors=arguments.n_neighbors,
+        maximum_ngram_order=arguments.maximum_ngram_order,
         model_version=arguments.model_version,
         manifest_path=arguments.manifest,
     )
@@ -52,7 +56,8 @@ def main() -> None:
                 minimum_positive_support=arguments.minimum_positive_support,
             ),
             metadata={
-                "feature_family": "word-count-ngrams-1-3",
+                "feature_family": f"word-count-ngrams-1-{arguments.maximum_ngram_order}",
+                "maximum_ngram_order": arguments.maximum_ngram_order,
                 "model_version": arguments.model_version,
                 "n_neighbors": arguments.n_neighbors,
                 "partition": Path(arguments.predict_candidates).name,

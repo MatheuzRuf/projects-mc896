@@ -7,6 +7,12 @@ from project2_from_project1.src.ngrams.feature_matrix import (
     NgramFeatureVectorizer,
 )
 from project2_from_project1.src.ngrams.knn_classifier import NgramKNNClassifier
+from project2_from_project1.src.ngrams.model_selection import (
+    NgramKNNSelectionError,
+    build_final_training_partition,
+    finalize_selected_ngram_knn,
+    select_ngram_knn_from_folds,
+)
 from project2_from_project1.src.ngrams.ngrams_extractor import (
     NgramCounts,
     NgramFeature,
@@ -24,8 +30,12 @@ __all__ = [
     "NgramFeatureMatrix",
     "NgramFeatureVectorizer",
     "NgramKNNClassifier",
+    "NgramKNNSelectionError",
     "build_ngram_vocabulary",
+    "build_final_training_partition",
     "extract_candidate_tokens",
     "generate_ngrams",
+    "finalize_selected_ngram_knn",
+    "select_ngram_knn_from_folds",
     "vectorize_ngrams",
 ]

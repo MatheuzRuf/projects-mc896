@@ -51,7 +51,14 @@ class NgramFeatureVectorizer:
     produce zero rows; transforming an empty batch retains the fitted width.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, maximum_ngram_order: int = 3) -> None:
+        if (
+            isinstance(maximum_ngram_order, bool)
+            or not isinstance(maximum_ngram_order, int)
+            or maximum_ngram_order not in (1, 2, 3)
+        ):
+            raise ValueError("maximum_ngram_order must be 1, 2, or 3")
+        self.maximum_ngram_order = maximum_ngram_order
         self._vocabulary: tuple[NgramFeature, ...] | None = None
 
     @property
@@ -67,8 +74,12 @@ class NgramFeatureVectorizer:
     ) -> NgramFeatureMatrix:
         """Learn features only from this batch, then transform it in order."""
         examples = tuple(examples)
-        vocabulary = build_ngram_vocabulary(
-            example.ngram_counts for example in examples
+        vocabulary = tuple(
+            feature
+            for feature in build_ngram_vocabulary(
+                example.ngram_counts for example in examples
+            )
+            if feature[0] <= self.maximum_ngram_order
         )
         result = self._transform(examples, vocabulary)
         self._vocabulary = vocabulary
