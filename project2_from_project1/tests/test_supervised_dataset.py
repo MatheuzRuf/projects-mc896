@@ -20,6 +20,7 @@ from project2_from_project1.src.supervised_dataset import (
     build_frozen_supervised_dataset,
     build_frozen_supervised_dataset_from_files,
     generate_candidates,
+    gold_outside_window,
     write_frozen_supervised_dataset,
 )
 
@@ -70,9 +71,24 @@ def test_candidates_respect_type_compatibility_and_include_adjacent_sentence_gol
     }
 
 
-def test_gold_relation_outside_window_fails_closed():
-    with pytest.raises(SupervisedDatasetError, match="sentence window"):
-        generate_candidates(_document("mcrc:one"), CandidatePolicy(maximum_sentence_distance=0))
+def test_gold_relation_outside_window_is_reported_not_candidate():
+    document, policy = _document("mcrc:one"), CandidatePolicy(maximum_sentence_distance=0)
+    outside = gold_outside_window(document, policy)
+    assert [relation.canonical_label.value for relation in outside] == ["CAUSES"]
+    candidates = generate_candidates(document, policy)
+    assert all(candidate.gold_relation_id != outside[0].relation_id for candidate in candidates)
+    assert gold_outside_window(document, CandidatePolicy(maximum_sentence_distance=None)) == ()
+
+
+def test_manifest_counts_gold_outside_window():
+    documents = [_document(f"mcrc:{index}", extra_findings=10) for index in range(6)]
+    dataset = build_frozen_supervised_dataset(
+        documents,
+        _approved([item.document_id for item in documents]),
+        candidate_policy=CandidatePolicy(maximum_sentence_distance=0),
+        partition_policy=PartitionPolicy(seed=23, folds=3),
+    )
+    assert dict(dataset.gold_outside_window)["CAUSES"] == 6
 
 
 def test_document_grouped_partitions_exclude_non_eligible_and_limit_train_negatives():

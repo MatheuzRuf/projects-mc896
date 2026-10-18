@@ -1,13 +1,10 @@
-from __future__ import annotations
-
 from collections import Counter
 from collections.abc import Iterable, Sequence
 import json
 from typing import Literal, overload
 
 # função de tokenização aproveitada do projeto 1, sem remover stopwords (usa regex)
-from project2_from_project1.src.preprocessing.text import tokenize
-
+from project2_from_project1.src.preprocessing.text import tokenize, normalize_text
 
 NgramCounts = tuple[
     Counter[str],
@@ -16,6 +13,9 @@ NgramCounts = tuple[
 ]
 NgramFeature = tuple[int, tuple[str, ...]]
 
+# janela de contexto (em palavras e em caracteres) usada quando só uma das menções tem texto
+CONTEXT_WINDOW_WORDS = 4
+CONTEXT_WINDOW_CHARS = 200
 
 def generate_ngrams(tokens: list[str]) -> tuple[Counter, Counter, Counter]:
     """
@@ -35,7 +35,6 @@ def generate_ngrams(tokens: list[str]) -> tuple[Counter, Counter, Counter]:
     
     return unigrams, bigrams, trigrams
 
-
 def build_ngram_vocabulary(ngram_counters: Iterable[NgramCounts]) -> tuple[NgramFeature, ...]:
     """Cria um esquema determinístico de características para contadores de n-gramas."""
     features: set[NgramFeature] = set()
@@ -47,13 +46,11 @@ def build_ngram_vocabulary(ngram_counters: Iterable[NgramCounts]) -> tuple[Ngram
 
     return tuple(sorted(features))
 
-
 def _iter_ngram_feature_counts(ngram_counts: NgramCounts):
     unigrams, bigrams, trigrams = ngram_counts
     yield from (((1, (token,)), count) for token, count in unigrams.items())
     yield from (((2, gram), count) for gram, count in bigrams.items())
     yield from (((3, gram), count) for gram, count in trigrams.items())
-
 
 @overload
 def vectorize_ngrams(
@@ -63,7 +60,6 @@ def vectorize_ngrams(
     sparse: Literal[False] = False,
 ) -> list[int]: ...
 
-
 @overload
 def vectorize_ngrams(
     ngram_counts: NgramCounts,
@@ -71,7 +67,6 @@ def vectorize_ngrams(
     *,
     sparse: Literal[True],
 ) -> dict[int, int]: ...
-
 
 def vectorize_ngrams(
     ngram_counts: NgramCounts,
@@ -95,6 +90,50 @@ def vectorize_ngrams(
             vector[position] = count
     return vector
 
+def _window_tokens(full_text: str, start: int, end: int) -> list[str]:
+    # palavras antes e depois da menção, para candidatos cujo outro nó não tem texto (como Patient)
+    left = full_text[max(0, start - CONTEXT_WINDOW_CHARS):start].split()[-CONTEXT_WINDOW_WORDS:]
+    right = full_text[end:end + CONTEXT_WINDOW_CHARS].split()[:CONTEXT_WINDOW_WORDS]
+    normalized = normalize_text(" ".join([*left, full_text[start:end], *right]))
+    return tokenize(normalized)
+
+def extract_candidate_tokens(candidate: dict, full_text: str, mentions_by_id: dict) -> list[str]:
+    """
+    retorna os tokens de contexto de um candidato de relação
+
+    params:
+        candidate: registro do candidato (source_id e target_id)
+        full_text: texto bruto do documento
+        mentions_by_id: menções do documento indexadas por mention_id
+    """
+    # encontra as posições exatas (spans) da origem e do destino no texto
+    # (o corpus armazena as menções com seus spans, então podemos recuperar o texto exato)
+    # span tem o formato [start, end] correspondente aos caracteres no full_text
+    spans = sorted(
+        tuple(mentions_by_id[candidate[key]]["spans"][0])
+        for key in ("source_id", "target_id")
+        if candidate[key] in mentions_by_id
+    )
+
+    # nós lógicos (como Patient sem texto base) não possuem menção; sem nenhuma menção com texto não há contexto
+    if not spans:
+        return []
+
+    # candidato com nó lógico (como Patient sem texto base): usa a janela ao redor da única menção com texto
+    if len(spans) == 1:
+        return _window_tokens(full_text, *spans[0])
+
+    # determina qual entidade vem primeiro no texto para pegar o contexto entre elas
+    first, second = spans
+    if first[1] <= second[0]:
+        normalized = normalize_text(full_text[first[1]:second[0]].strip())
+        tokens = tokenize(normalized)
+        if tokens:
+            return tokens
+
+    # se as entidades estiverem coladas ou sobrepostas, o contexto é vazio; usa o trecho que cobre as duas
+    normalized = normalize_text(full_text[first[0]:max(first[1], second[1])])
+    return tokenize(normalized)
 
 # OBS: JSONL é um formato de arquivo onde cada linha é um objeto JSON válido
 def process_corpus_ngrams(fold_path: str, corpus_path: str) -> tuple[Counter, Counter, Counter]:
@@ -111,6 +150,7 @@ def process_corpus_ngrams(fold_path: str, corpus_path: str) -> tuple[Counter, Co
     global_trigrams = Counter()
 
     documents_by_id = {} # armazena os documentos do corpus para acesso rápido pelo document_id
+    mentions_by_document = {}
     with open(corpus_path, "r", encoding="utf-8") as f:
         for line in f:
             if not line.strip():
@@ -118,6 +158,7 @@ def process_corpus_ngrams(fold_path: str, corpus_path: str) -> tuple[Counter, Co
 
             doc = json.loads(line)
             documents_by_id[doc["document_id"]] = doc
+            mentions_by_document[doc["document_id"]] = {m["mention_id"]: m for m in doc["mentions"]}
     
     with open(fold_path, 'r', encoding='utf-8') as f:
         for line in f:
@@ -130,40 +171,8 @@ def process_corpus_ngrams(fold_path: str, corpus_path: str) -> tuple[Counter, Co
             # usa a "Chave Estrangeira" para recuperar o documento completo
             document = documents_by_id[doc_id]
             full_text = document["text"] # texto bruto
-            
-            # encontra as posições exatas (spans) da origem e do destino no texto
-            # (o corpus armazena as menções com seus spans, então podemos recuperar o texto exato)
-            mentions_by_id = {m["mention_id"]: m for m in document["mentions"]}
 
-            if candidate["source_id"] not in mentions_by_id or candidate["target_id"] not in mentions_by_id:
-                # pula candidatos cujos relacionamentos envolvam nós lógicos (como Patient sem texto base)
-                continue
-            
-            source_mention = mentions_by_id[candidate["source_id"]]
-            target_mention = mentions_by_id[candidate["target_id"]]
-            
-            # span tem o formato [start, end] correspondente aos caracteres no full_text
-            src_start, src_end = source_mention["spans"][0] 
-            tgt_start, tgt_end = target_mention["spans"][0]
-            
-            source_text = full_text[src_start:src_end]
-            target_text = full_text[tgt_start:tgt_end]
-            
-            # determina qual entidade vem primeiro no texto para pegar o contexto entre elas
-            if src_end <= tgt_start:
-                context_start = src_end
-                context_end = tgt_start
-            else:
-                context_start = tgt_end
-                context_end = src_start
-                
-            context_text = full_text[context_start:context_end].strip()
-            
-            # se as entidades estiverem coladas ou sobrepostas, o contexto é vazio
-            if not context_text:
-                 continue
-                 
-            tokens = tokenize(context_text)
+            tokens = extract_candidate_tokens(candidate, full_text, mentions_by_document[doc_id])
             
             # evita extrair n-gramas se não houver tokens suficientes
             if not tokens:
