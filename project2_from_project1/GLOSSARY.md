@@ -64,6 +64,14 @@ _Evitar_: rótulo nativo do corpus
 Primeira versão do vocabulário supervisionado, limitada a `HAS_CONDITION`, `HAS_FINDING`, `HAS_FACTOR`, `NEGATES`, `CAUSES` e `NO_RELATION`.
 _Evitar_: inventário completo do Knowledge Graph
 
+**Esquema canônico inicial de entidades**:
+Primeira versão do vocabulário supervisionado de menções, limitada a `Condition`, `Finding`, `Factor` e `Modifier`, exatamente como sustentado pelo MCRC.
+_Evitar_: inventário completo do Knowledge Graph, tipos legados inferidos sem supervisão
+
+**Expansão semântica posterior**:
+Fase posterior ao fechamento do pipeline end-to-end em que entidades e relações poderão adotar distinções mais específicas do esquema legado, desde que cada distinção possua supervisão ou mapeamento semanticamente justificado e nova avaliação.
+_Evitar_: renomeação por legibilidade, expansão automática de rótulos
+
 **Mapeamento de relações**:
 Correspondência explícita e auditável entre uma relação do esquema nativo e uma relação semanticamente compatível do esquema canônico.
 _Evitar_: renomeação automática, equivalência presumida
@@ -87,6 +95,18 @@ _Evitar_: conceito clínico, nó agregado
 **Menção complexa**:
 Menção clínica que pode ocupar vários intervalos descontínuos, sobrepor-se a outras menções ou possuir mais de um tipo nativo.
 _Evitar_: intervalo envolvente único, tipo nativo descartado
+
+**Segmentação canônica plana**:
+Interpretação global do texto em menções previstas não sobrepostas, cada uma com exatamente um tipo canônico, destinada à extração end-to-end e à projeção no Knowledge Graph.
+_Evitar_: anotação gold original, conjunto arbitrário de spans independentes
+
+**Projeção gold plana**:
+Alvo supervisionado derivado das anotações gold originais por uma política auditável de resolução de duplicidades, sobreposições e conflitos de tipo, sem modificar o corpus de origem.
+_Evitar_: correção do corpus, descarte silencioso de menções
+
+**Menção prevista**:
+Segmento textual contíguo escolhido pelo reconhecedor de entidades, com offsets no texto original e exatamente um tipo canônico.
+_Evitar_: conceito normalizado, token isolado, menção gold
 
 **Conceito clínico**:
 Representação normalizada que pode reunir várias menções equivalentes e originar um único nó no Knowledge Graph.
@@ -143,4 +163,76 @@ _Evitar_: confiança, probabilidade
 **Execução experimental**:
 Rodada reproduzível identificada por sua configuração, seed, versões, hashes dos dados, divisão documental e artefatos de avaliação.
 _Evitar_: execução ad hoc, resultado sem manifest
+
+**Braço experimental end-to-end**:
+Combinação fixa de um reconhecedor de entidades e um classificador de relações executada do texto bruto até as predições estruturadas, mantida na comparação independentemente de superar ou não outro método.
+_Evitar_: modelo promovido, fallback automático, vencedor presumido
+
+**Dicionário canônico**:
+Baseline lexical que reconhece menções usando termos associados aos quatro tipos de entidades do esquema MCRC e que é construído ou adaptado sem consultar a partição avaliada.
+_Evitar_: dicionário legado, vocabulário obtido do teste
+
+**Teto experimental gold-entity**:
+Resultado da classificação de relações quando o método recebe as menções gold, usado para separar erros de relações dos erros de reconhecimento de entidades e não apresentado como execução end-to-end.
+_Evitar_: pipeline completo, resultado de produção
+
+**Adjudicação da projeção gold**:
+Revisão humana independente dos conflitos de sobreposição ou tipo para produzir uma segmentação canônica plana, preservando decisão, justificativa e proveniência sem alterar a anotação original.
+_Evitar_: correção silenciosa, prioridade automática
+
+**Validação cruzada aninhada**:
+Protocolo por documento em que folds externos estimam desempenho e subdivisões internas do treino de cada fold externo selecionam hiperparâmetros, sem consultar a validação externa durante a seleção.
+_Evitar_: reutilizar o mesmo fold para escolher e estimar, validação cruzada simples de seleção
+
+**Correspondência estrita de entidade**:
+Critério em que uma menção prevista só é considerada correta quando seus offsets e seu tipo canônico coincidem exatamente com a projeção gold plana.
+_Evitar_: sobreposição parcial, acerto apenas por token
+
+**Relação end-to-end estrita**:
+Relação prevista cujos dois endpoints, tipos canônicos e rótulo coincidem exatamente com o gold, após reconhecimento real das entidades e sem fornecer candidatos gold ao classificador.
+_Evitar_: avaliação gold-entity, relação com endpoint aproximado
+
+**Tokenização com offsets**:
+Divisão determinística do texto em palavras, números e pontuação na qual cada token conserva seus índices inicial e final no texto original.
+_Evitar_: tokenização destrutiva, token sem posição original
+
+**Segmento externo unitário**:
+Representação canônica de um único token fora de qualquer entidade no semi-Markov CRF, usada para impedir várias segmentações latentes equivalentes da mesma saída.
+_Evitar_: entidade `O`, segmento externo arbitrário
+
+**Predição de entidade**:
+Registro intermediário separado do gold que identifica uma ocorrência prevista por documento, offsets, tipo canônico, sentença, método e versão do modelo.
+_Evitar_: anotação nativa, conceito agregado, menção gold
+
+**Teste externo congelado**:
+Conjunto de documentos ausente das fontes de desenvolvimento, auditado contra duplicidades, anotado sob o mesmo esquema e imutável antes da primeira execução dos modelos comparados.
+_Evitar_: teste MCRC consumido, conjunto ajustado após resultados
+
+**Manifesto experimental**:
+Registro estruturado que liga uma execução ao commit, hashes dos dados e saídas, partições documentais, configuração, dependências, determinismo, convergência e duração.
+_Evitar_: log informal, métricas sem proveniência
+
+**Camada de menção do grafo**:
+Representação em que cada ocorrência textual prevista permanece um nó identificável por documento, offsets e tipo, servindo de base para relações e avaliação estrita.
+_Evitar_: conceito agregado, nó sem proveniência textual
+
+**Camada conceitual do grafo**:
+Projeção posterior que reúne menções semanticamente compatíveis sem remover os IDs, offsets e relações que sustentam cada conceito.
+_Evitar_: agregação precoce, perda da camada de menção
+
+**Conclusão operacional**:
+Estado em que um braço experimental executa integralmente, valida seus contratos e produz todos os artefatos exigidos, independentemente do valor de suas métricas.
+_Evitar_: promoção por F1, sucesso presumido pelo treinamento isolado
+
+**Identidade conceitual tipada**:
+Chave documental formada pelo tipo canônico e pela superfície normalizada com Unicode, `casefold` e espaços consolidados, mantendo tipos distintos mesmo quando o texto é igual.
+_Evitar_: identidade apenas pelo rótulo, fusão entre tipos
+
+**Candidato de relação não rotulado**:
+Par de endpoints previstos compatível com uma relação hipotética e serializado antes da classificação, sem usar `NO_RELATION` como substituto para um rótulo ainda desconhecido.
+_Evitar_: candidato gold, negativo presumido
+
+**Marginal segmental**:
+Posterior atribuída pelo semi-Markov CRF a um segmento e tipo, calculada pelo forward-backward e registrada sem alegação de calibração empírica.
+_Evitar_: confiança calibrada, score bruto de sequência
 

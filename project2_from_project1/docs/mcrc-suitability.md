@@ -29,3 +29,7 @@ ser registrados explicitamente pelas opções `--minimum-*`,
 Uma decisão `rejected` deixa `eligible_document_ids` vazio: a etapa de
 particionamento não deve criar split de treino e o relatório aponta a obtenção
 de acesso autorizado a i2b2/n2c2 ou outro corpus como próximo passo.
+
+A compatibilidade, as restrições de acesso e a decisão de não incorporar esses
+corpora diretamente ao treinamento atual estão registradas em
+[`external-corpora-assessment.md`](external-corpora-assessment.md).
