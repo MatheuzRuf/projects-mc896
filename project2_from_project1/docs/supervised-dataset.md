@@ -21,8 +21,10 @@ documentos aparecem uma única vez em validação e nos treinos dos outros folds
 
 Cada candidato armazena endpoints, tipos, relação compatível, rótulo ouro e
 distância entre sentenças. A janela é inclusiva: `1` permite pares na mesma ou
-em sentenças adjacentes; `-1` remove o limite. Relações ouro fora da janela
-causam erro, em vez de serem silenciosamente descartadas.
+em sentenças adjacentes; `-1` remove o limite. Relações ouro compatíveis em tipo, mas
+fora da janela, não viram candidatos; são contadas por rótulo em
+`gold_outside_window` no manifesto, em vez de serem silenciosamente descartadas.
+Relações incompatíveis em tipo ou duplicadas continuam causando erro.
 
 Todos os candidatos compatíveis são mantidos em validação e teste. Em treino,
 no máximo dois `NO_RELATION` são amostrados por relação positiva, de modo

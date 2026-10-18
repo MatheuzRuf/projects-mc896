@@ -10,7 +10,7 @@ import random
 import re
 from typing import Any, Iterable, Mapping, Sequence
 
-from project2_from_project1.src.clinical_documents import CanonicalRelation, ClinicalDocument, Mention, load_jsonl
+from project2_from_project1.src.clinical_documents import AnnotatedRelation, CanonicalRelation, ClinicalDocument, Mention, load_jsonl
 from project2_from_project1.src.mcrc_suitability import MCRCSuitabilityReport, SuitabilityDecision, load_mcrc_suitability_report
 
 
@@ -165,6 +165,7 @@ class FrozenSupervisedDataset:
     partition_policy: PartitionPolicy
     eligible_document_ids: tuple[str, ...]
     source_jsonl_sha256: str | None = None
+    gold_outside_window: tuple[tuple[str, int], ...] = ()
 
     def __post_init__(self) -> None:
         if len(self.folds) < 2:
@@ -194,6 +195,7 @@ class FrozenSupervisedDataset:
                 "test": _counts(self.test_candidates),
             },
             "eligible_document_ids": list(self.eligible_document_ids),
+            "gold_outside_window": dict(self.gold_outside_window),
             "negative_policy": {
                 "applies_to": "train",
                 "maximum_negatives_per_positive": self.partition_policy.maximum_train_negatives_per_positive,
@@ -238,8 +240,24 @@ def _compatible_pairs(document: ClinicalDocument, policy: CandidatePolicy) -> li
     return sorted(set(pairs))
 
 
+def gold_outside_window(document: ClinicalDocument, policy: CandidatePolicy | None = None) -> tuple[AnnotatedRelation, ...]:
+    """Return supervised gold relations that are type-compatible but lie beyond the sentence window."""
+
+    policy = policy or CandidatePolicy()
+    if policy.maximum_sentence_distance is None:
+        return ()
+    windowed = {(source, target, label) for source, target, label, *_ in _compatible_pairs(document, policy)}
+    unrestricted = {(source, target, label) for source, target, label, *_ in _compatible_pairs(document, CandidatePolicy(None))}
+    beyond = unrestricted - windowed
+    return tuple(
+        relation
+        for relation in document.relations
+        if relation.canonical_label in _SUPERVISED_RELATIONS and (relation.source_id, relation.target_id, relation.canonical_label) in beyond
+    )
+
+
 def generate_candidates(document: ClinicalDocument, policy: CandidatePolicy | None = None) -> tuple[SupervisedCandidate, ...]:
-    """Generate all compatible candidates; never silently drop gold relations."""
+    """Generate all compatible candidates in the window; gold beyond it is reported by gold_outside_window, never hidden."""
 
     if not isinstance(document, ClinicalDocument):
         raise TypeError("generate_candidates accepts a ClinicalDocument")
@@ -248,9 +266,10 @@ def generate_candidates(document: ClinicalDocument, policy: CandidatePolicy | No
         raise TypeError("policy must be a CandidatePolicy")
     compatible = _compatible_pairs(document, policy)
     compatible_keys = {(source, target, label) for source, target, label, *_ in compatible}
+    outside_window = {relation.relation_id for relation in gold_outside_window(document, policy)}
     gold: dict[tuple[str, str, CanonicalRelation], str] = {}
     for relation in document.relations:
-        if relation.canonical_label not in _SUPERVISED_RELATIONS:
+        if relation.canonical_label not in _SUPERVISED_RELATIONS or relation.relation_id in outside_window:
             continue
         key = (relation.source_id, relation.target_id, relation.canonical_label)
         if key not in compatible_keys:
@@ -314,6 +333,10 @@ def build_frozen_supervised_dataset(
     if missing:
         raise SupervisedDatasetError("approved suitability report references documents absent from corpus: " + ", ".join(missing))
     candidates = {document_id: generate_candidates(by_id[document_id], candidate_policy) for document_id in eligible}
+    outside = {label.value: 0 for label in _SUPERVISED_RELATIONS}
+    for document_id in eligible:
+        for relation in gold_outside_window(by_id[document_id], candidate_policy):
+            outside[relation.canonical_label.value] += 1
     test_ids, validation_buckets = _partition_ids(eligible, partition_policy)
     test = tuple(sorted(item for document_id in test_ids for item in candidates[document_id]))
     remaining = set(eligible) - set(test_ids)
@@ -323,7 +346,7 @@ def build_frozen_supervised_dataset(
         train = tuple(item for document_id in train_ids for item in candidates[document_id])
         validation = tuple(sorted(item for document_id in validation_ids for item in candidates[document_id]))
         folds.append(CrossValidationFold(index, train_ids, validation_ids, _sample_train_negatives(train, partition_policy, index), validation))
-    return FrozenSupervisedDataset(test_ids, test, tuple(folds), candidate_policy, partition_policy, eligible, source_jsonl_sha256)
+    return FrozenSupervisedDataset(test_ids, test, tuple(folds), candidate_policy, partition_policy, eligible, source_jsonl_sha256, tuple(sorted(outside.items())))
 
 
 def sha256_file(path: str | Path) -> str:
@@ -365,5 +388,6 @@ def build_frozen_supervised_dataset_from_files(
 
 __all__ = [
     "CandidatePolicy", "CrossValidationFold", "FrozenSupervisedDataset", "PartitionPolicy", "SupervisedCandidate", "SupervisedDatasetError",
-    "build_frozen_supervised_dataset", "build_frozen_supervised_dataset_from_files", "generate_candidates", "sha256_file", "write_frozen_supervised_dataset",
+    "build_frozen_supervised_dataset", "build_frozen_supervised_dataset_from_files", "generate_candidates", "gold_outside_window", "sha256_file",
+    "write_frozen_supervised_dataset",
 ]

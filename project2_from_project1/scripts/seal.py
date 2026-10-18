@@ -1,65 +1,36 @@
 import csv
-import hashlib
-import json
 from pathlib import Path
 
+from project2_from_project1.src.clinical_documents import ClinicalCase, ClinicalDocument, Patient
+from project2_from_project1.src.leakage_audit import build_protected_collection, write_protected_collection
+
+
 def generate_fingerprints(csv_path: str, output_path: str) -> None:
-    """Lê o dataset do Projeto 1 e gera o manifesto seguro validado."""
-    articles = []
-    vistos = set()
-    
-    with open(csv_path, mode='r', encoding='utf-8') as f:
-        reader = csv.DictReader(f)
-        for i, row in enumerate(reader):
-            texto_bruto = row.get("text", "")
-            # O hash precisa obrigatoriamente ter 64 caracteres hexadecimais
-            texto_hash = hashlib.sha256(texto_bruto.encode("utf-8")).hexdigest()
-            article_id = row.get("id", str(i))
-            
-            if article_id in vistos:
-                continue
-            vistos.add(article_id)
-            
-            # 1. Agrupa os identificadores
-            identifiers = {}
-            if row.get("pmid"):
-                identifiers["pmid"] = [row.get("pmid")]
-            if row.get("pmcid"):
-                identifiers["pmcid"] = [row.get("pmcid")]
-            
-            # 2. Monta o fingerprint exato do documento com todas as chaves exigidas
-            document_data = {
-                "document_id": f"{article_id}_doc1",
-                "content_sha256": texto_hash,
-                "token_count": len(texto_bruto.split()),  # Contagem básica para ser int >= 0
-                "shingles": [],                           # Lista vazia atende ao frozenset()
-                "chunks": []                              # Lista vazia atende a tuple de frozensets
-            }
-            
-            # 3. Monta o artigo
-            article_data = {
-                "article_id": article_id,
-                "identifiers": identifiers,
-                "documents": [document_data]
-            }
-            articles.append(article_data)
+    documents = []
+    with open(csv_path, mode="r", encoding="utf-8", newline="") as f:
+        for row in csv.DictReader(f):
+            article_id = row["article_id"].strip()
+            case_id = row["case_id"].strip()
+            documents.append(
+                ClinicalDocument(
+                    document_id=case_id,
+                    text=row["case_text"],
+                    cases=[ClinicalCase(case_id=f"{case_id}:case", source_id=article_id)],
+                    patients=[Patient(f"{case_id}:patient")],
+                    mentions=[],
+                    relations=[],
+                    metadata={"article_id": article_id, "pmcid": article_id},
+                )
+            )
+    if not documents:
+        raise ValueError("O CSV não retornou casos válidos. A coleção não pode ser vazia.")
+    collection = build_protected_collection(documents)
+    write_protected_collection(collection, output_path)
+    print(f"Sucesso! {collection.article_count} artigos ({len(documents)} casos) salvos em {output_path}")
 
-    if not articles:
-        raise ValueError("O CSV não retornou artigos válidos. A coleção não pode ser vazia.")
-
-    payload = {
-        "schema_version": 1,
-        "articles": articles
-    }
-
-    output_file = Path(output_path)
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    output_file.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    
-    print(f"Sucesso! {len(articles)} impressões digitais salvas em {output_path}")
 
 if __name__ == "__main__":
     generate_fingerprints(
-        csv_path="../../project1/data/raw/cases.csv",
-        output_path="../data/secure/multicare.fingerprints.json"
+        csv_path=Path(__file__).resolve().parents[2] / "project1" / "data" / "raw" / "cases.csv",
+        output_path=Path(__file__).resolve().parents[1] / "data" / "secure" / "multicare.fingerprints.json",
     )
