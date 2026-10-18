@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from scipy.sparse import csr_matrix
 
-from project2_from_project1.src.ngram.ngram_extractor import (
+from project2_from_project1.src.ngrams.ngrams_extractor import (
     NgramCounts,
     NgramFeature,
     build_ngram_vocabulary,

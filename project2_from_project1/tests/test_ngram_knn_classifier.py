@@ -4,13 +4,13 @@ import numpy as np
 import pytest
 from scipy.sparse import csr_matrix
 
-from project2_from_project1.src.ngram.feature_matrix import (
+from project2_from_project1.src.ngrams.feature_matrix import (
     CandidateMetadata,
     NgramCandidateExample,
     NgramFeatureVectorizer,
 )
-from project2_from_project1.src.ngram.knn_classifier import NgramKNNClassifier
-from project2_from_project1.src.ngram.ngram_extractor import (
+from project2_from_project1.src.ngrams.knn_classifier import NgramKNNClassifier
+from project2_from_project1.src.ngrams.ngrams_extractor import (
     build_ngram_vocabulary,
     vectorize_ngrams,
 )
@@ -25,6 +25,18 @@ def test_classifier_learns_known_classes_and_returns_one_prediction_per_row():
 
     assert predictions.tolist() == ["alpha", "beta"]
     assert len(predictions) == 2
+
+
+def test_classifier_returns_winning_vote_fraction():
+    classifier = NgramKNNClassifier(n_neighbors=3).fit(
+        [[1, 0], [0.9, 0.1], [0, 1]],
+        ["alpha", "alpha", "beta"],
+    )
+
+    predictions, vote_fractions = classifier.predict_with_vote_fraction([[1, 0]])
+
+    assert predictions.tolist() == ["alpha"]
+    assert vote_fractions.tolist() == pytest.approx([2 / 3])
 
 
 def test_classifier_accepts_sparse_training_and_prediction_matrices():
@@ -107,6 +119,9 @@ def test_predict_rejects_invalid_dimensions_and_feature_count():
 def test_predict_before_fit_fails_explicitly():
     with pytest.raises(RuntimeError, match="has not been fitted"):
         NgramKNNClassifier().predict([[1, 0]])
+
+    with pytest.raises(RuntimeError, match="has not been fitted"):
+        NgramKNNClassifier().predict_with_vote_fraction([[1, 0]])
 
 
 def test_prediction_does_not_require_or_use_validation_labels():

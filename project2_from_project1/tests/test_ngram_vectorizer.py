@@ -1,6 +1,6 @@
 from collections import Counter
 
-from project2_from_project1.src.ngram.ngram_extractor import (
+from project2_from_project1.src.ngrams.ngrams_extractor import (
     build_ngram_vocabulary,
     vectorize_ngrams,
 )

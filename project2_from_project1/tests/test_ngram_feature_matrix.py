@@ -2,12 +2,12 @@ from collections import Counter
 
 import pytest
 
-from project2_from_project1.src.ngram.feature_matrix import (
+from project2_from_project1.src.ngrams.feature_matrix import (
     CandidateMetadata,
     NgramCandidateExample,
     NgramFeatureVectorizer,
 )
-from project2_from_project1.src.ngram.ngram_extractor import vectorize_ngrams
+from project2_from_project1.src.ngrams.ngrams_extractor import vectorize_ngrams
 
 
 def _counts(unigrams=None, bigrams=None, trigrams=None):

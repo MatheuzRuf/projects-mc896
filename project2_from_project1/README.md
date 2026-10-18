@@ -200,7 +200,34 @@ Como o nó `Patient` é implícito e não é anotado no corpus do MCRC, as entid
 
 ## KNN (k-nearest neighbors)
 
-*(a escrever)*
+O classificador recebe uma linha esparsa por par candidato. O vocabulário de
+unigramas, bigramas e trigramas é aprendido exclusivamente no arquivo de
+treino; validação e teste são transformados sem acrescentar características,
+evitando *feature leakage*. A implementação usa uma classificação binária por
+tipo de relação, votação uniforme entre vizinhos e distância cosseno. Assim, um
+candidato `CAUSES`, por exemplo, só pode resultar em `CAUSES` ou
+`NO_RELATION`.
+
+O comando abaixo treina no primeiro fold, gera exatamente uma previsão para
+cada candidato de validação e executa o avaliador comum:
+
+```powershell
+python -m project2_from_project1.scripts.run_ngram_knn `
+  --corpus project2_from_project1/data/secure/mcrc.jsonl `
+  --train-candidates project2_from_project1/artifacts/first-milestone/frozen-dataset/fold-01-train.jsonl `
+  --predict-candidates project2_from_project1/artifacts/first-milestone/frozen-dataset/fold-01-validation.jsonl `
+  --predictions project2_from_project1/artifacts/knn/fold-01.predictions.jsonl `
+  --evaluation project2_from_project1/artifacts/knn/fold-01.evaluation.json `
+  --n-neighbors 3 --model-version ngram-knn-v1
+```
+
+Além das previsões, o comando grava um manifesto com hashes das entradas e da
+saída, tamanho do vocabulário, número de exemplos e configuração do k-NN. O
+campo `neighbor_vote_fraction` registra apenas a fração dos vizinhos que votou
+na classe vencedora; ele não representa confiança calibrada.
+
+Consulte [`docs/ngram-knn.md`](docs/ngram-knn.md) para as fronteiras de
+treino/validação e os critérios necessários antes de avaliar o teste fixo.
 
 ## Knowledge Graph
 

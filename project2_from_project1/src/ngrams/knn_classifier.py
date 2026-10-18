@@ -78,6 +78,41 @@ class NgramKNNClassifier:
             return np.empty(0, dtype=self._model.classes_.dtype)
         return self._model.predict(X)
 
+    def predict_with_vote_fraction(self, X: Any) -> tuple[np.ndarray, np.ndarray]:
+        """Predict labels and return the winning neighbors' vote fraction.
+
+        The fraction is descriptive provenance for uniform-vote k-NN.  It is
+        deliberately not exposed as a calibrated probability or confidence.
+        """
+
+        if self._model is None or self._n_features is None:
+            raise RuntimeError("the k-NN classifier has not been fitted")
+
+        X = self._as_matrix(X, "X")
+        if X.shape[1] != self._n_features:
+            raise ValueError(
+                f"X must have {self._n_features} features; got {X.shape[1]}"
+            )
+        if X.shape[0] == 0:
+            return (
+                np.empty(0, dtype=self._model.classes_.dtype),
+                np.empty(0, dtype=float),
+            )
+
+        predictions = self._model.predict(X)
+        vote_fractions_by_class = self._model.predict_proba(X)
+        class_positions = {
+            label: index for index, label in enumerate(self._model.classes_)
+        }
+        winning_fractions = np.asarray(
+            [
+                vote_fractions_by_class[row, class_positions[label]]
+                for row, label in enumerate(predictions)
+            ],
+            dtype=float,
+        )
+        return predictions, winning_fractions
+
     @staticmethod
     def _as_matrix(matrix: Any, name: str) -> Any:
         if not issparse(matrix):
