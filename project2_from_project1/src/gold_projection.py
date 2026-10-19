@@ -450,6 +450,78 @@ class FlatGoldDocument:
             "sentences": [sentence.to_dict() for sentence in self.sentences],
         }
 
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> "FlatGoldDocument":
+        value = _require_mapping(value, "projection document")
+        _require_exact_fields(value, {"document_id", "mentions", "schema_version", "sentences"}, "projection document")
+        if type(value["schema_version"]) is not int or value["schema_version"] != SCHEMA_VERSION:
+            raise AdjudicationError(f"schema_version must be {SCHEMA_VERSION}")
+        document_id = _non_empty(value["document_id"], "document_id")
+        try:
+            sentences = tuple(
+                OffsetSentence(
+                    item["sentence_index"],
+                    Span.from_dict(item["span"]),
+                    tuple(OffsetToken(Span.from_dict(token)) for token in item["tokens"]),
+                )
+                for item in value["sentences"]
+            )
+        except (KeyError, TypeError, ValueError) as error:
+            raise AdjudicationError(f"invalid projection sentences: {error}") from error
+        if [sentence.sentence_index for sentence in sentences] != list(range(len(sentences))):
+            raise AdjudicationError("projection sentence indices must be contiguous from zero")
+        fields = {
+            "adjudication_case_id", "canonical_type", "mention_id", "source_mention_ids", "span",
+            "sentence_index", "token_end", "token_start", "transformations",
+        }
+        mentions = []
+        for item in value["mentions"]:
+            item = _require_mapping(item, "projection mention")
+            _require_exact_fields(item, fields, "projection mention")
+            try:
+                mention = FlatGoldMention(
+                    document_id, Span.from_dict(item["span"]), item["canonical_type"], item["sentence_index"],
+                    item["token_start"], item["token_end"],
+                    _string_tuple(item["source_mention_ids"], "source_mention_ids"), item["adjudication_case_id"],
+                    _string_tuple(item["transformations"], "transformations"),
+                )
+            except ValueError as error:
+                raise AdjudicationError(f"invalid projection mention: {error}") from error
+            if mention.mention_id != item["mention_id"]:
+                raise AdjudicationError("projection mention_id does not match document, span and type")
+            if any(type(getattr(mention, name)) is not int for name in ("sentence_index", "token_start", "token_end")):
+                raise AdjudicationError("projection mention sentence and token indices must be integers")
+            if mention.canonical_type not in ENTITY_TYPES:
+                raise AdjudicationError(f"projection mention has unsupported type {mention.canonical_type!r}")
+            if not 0 <= mention.sentence_index < len(sentences):
+                raise AdjudicationError("projection mention references an unknown sentence")
+            tokens = sentences[mention.sentence_index].tokens
+            if not (0 <= mention.token_start < mention.token_end <= len(tokens)) or (
+                tokens[mention.token_start].span.start, tokens[mention.token_end - 1].span.end,
+            ) != (mention.span.start, mention.span.end):
+                raise AdjudicationError("projection mention is not aligned to its sentence tokens")
+            mentions.append(mention)
+        for left, right in zip(mentions, mentions[1:]):
+            if (left.span.start, left.span.end) > (right.span.start, right.span.end) or _overlap(left.span, right.span):
+                raise AdjudicationError(f"projection mentions overlap or are unordered in document {document_id}")
+        return cls(document_id, sentences, tuple(mentions))
+
+
+def load_flat_gold_jsonl(path: str | Path) -> tuple[FlatGoldDocument, ...]:
+    """Read a ``flat-gold-v1`` projection strictly, reporting the offending line."""
+    documents = []
+    seen: set[str] = set()
+    for line_number, line in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
+        try:
+            document = FlatGoldDocument.from_dict(json.loads(line))
+        except (json.JSONDecodeError, AdjudicationError) as error:
+            raise AdjudicationError(f"projection JSONL line {line_number}: {error}") from error
+        if document.document_id in seen:
+            raise AdjudicationError(f"projection JSONL line {line_number}: duplicate document {document.document_id!r}")
+        seen.add(document.document_id)
+        documents.append(document)
+    return tuple(documents)
+
 
 def _trim_span(text: str, spans: Sequence[Span]) -> tuple[Span, tuple[str, ...]]:
     envelope = Span(spans[0].start, spans[-1].end)
@@ -1034,7 +1106,8 @@ __all__ = [
     "AdjudicationBinding", "AdjudicationCase", "AdjudicationError", "AdjudicationRecord", "FlatGoldDocument",
     "FlatGoldMention", "MAX_MENTION_TOKENS", "OffsetSentence", "OffsetToken",
     "PROJECTION_VERSION", "ProjectionCandidate", "ProjectionPlan", "ReviewerVote",
-    "build_adjudication_binding", "build_projection_plan", "load_adjudication_jsonl", "project_gold_from_files",
+    "build_adjudication_binding", "build_projection_plan", "load_adjudication_jsonl", "load_flat_gold_jsonl",
+    "project_gold_from_files",
     "segment_sentences", "tokenize_with_offsets", "write_adjudication_jsonl",
     "write_adjudication_review_packet",
 ]

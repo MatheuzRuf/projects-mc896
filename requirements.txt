@@ -6,3 +6,4 @@ networkx>=3.0
 matplotlib>=3.7
 pytest
 datasets
+torch==2.14.1
