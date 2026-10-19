@@ -57,6 +57,25 @@ def test_identifier_and_exact_content_matches_are_excluded():
     assert [record.rule for record in report.records] == ["identifier_match", "content_hash_match"]
 
 
+def test_pubmed_urls_in_document_ids_exclude_matching_numeric_pmids():
+    protected = [
+        _document("mcrc:http://www.ncbi.nlm.nih.gov/pubmed/11592517", "First protected report."),
+        _document("mcrc:https://pubmed.ncbi.nlm.nih.gov/23819319/", "Second protected report."),
+    ]
+    candidates = [
+        _document("candidate-1", "Different wording.", pmid="11592517"),
+        _document("candidate-2", "Other wording.", pmid="23819319"),
+        _document("candidate-3", "Unrelated wording.", pmid="11592518"),
+    ]
+
+    report = audit_external_corpus(candidates, build_protected_collection(protected))
+
+    assert [record.decision for record in report.records] == [
+        AuditDecision.EXCLUDED, AuditDecision.EXCLUDED, AuditDecision.RELEASED,
+    ]
+    assert [record.rule for record in report.records[:2]] == ["identifier_match", "identifier_match"]
+
+
 def test_contained_excerpt_is_quarantined_but_unrelated_document_is_released():
     shared = "patient developed progressive shortness of breath with bilateral pleural effusions"
     protected = _document(

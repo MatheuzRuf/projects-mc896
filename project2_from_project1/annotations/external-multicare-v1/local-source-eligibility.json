@@ -1,0 +1,20 @@
+{
+  "status": "source_eligibility_review_before_final_freeze",
+  "review_date_utc": "2026-10-19",
+  "basis": "Original MultiCaRe case_text and one-index-patient document rule; no model predictions consulted",
+  "exclusions": [
+    {
+      "document_id": "PMC9532611_02",
+      "reason": "One packet narrative combines two unrelated kindreds and patients 4 and 5; it is not one unambiguous patient document."
+    },
+    {
+      "document_id": "PMC9650410_01",
+      "reason": "Organizational ethics and biographical essay about Theranos, not an individual clinical case report."
+    },
+    {
+      "document_id": "PMC9815523_01",
+      "reason": "Aggregate outcomes for a 115-patient cohort, with no individual index patient."
+    }
+  ],
+  "handling": "Keep the original packet and all independent votes unchanged. Exclude these IDs only from the final selected test, and replace sequentially from the documented continuation source."
+}

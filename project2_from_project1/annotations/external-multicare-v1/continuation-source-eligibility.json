@@ -1,0 +1,54 @@
+{
+  "status": "complete",
+  "screened_prefix_document_count": 111,
+  "reviewer_id": "codex-root-source-screen",
+  "reviewer_kind": "model",
+  "method": "Read original case_text for an individual human clinical narrative, blinded to external model predictions; flag cohort, review, veterinary and multipatient source units.",
+  "review_date_utc": "2026-10-19",
+  "exclusions": [
+    {
+      "document_id": "PMC10007705_01",
+      "reason": "Predominantly general COVID-19 background; the only patient-specific content is a single closing sentence, insufficient as a full clinical case narrative."
+    },
+    {
+      "document_id": "PMC10014588_01",
+      "reason": "Comparative MIS-C cohort statistics with no single index-patient narrative; one brief individual anecdote does not define the whole document."
+    },
+    {
+      "document_id": "PMC10014732_01",
+      "reason": "Aggregate pathological and clinical summary of four patients; the source does not identify one index patient for this narrative."
+    },
+    {
+      "document_id": "PMC10014832_01",
+      "reason": "Literature overview of several other authors' case reports, not an original individual case narrative."
+    },
+    {
+      "document_id": "PMC10020343_01",
+      "reason": "Combined treatment-program narrative of two separate participants, incompatible with one patient per document."
+    },
+    {
+      "document_id": "PMC10020368_01",
+      "reason": "Veterinary case describing a Great Dane dog, outside the human clinical study population."
+    },
+    {
+      "document_id": "PMC10020613_01",
+      "reason": "Combined report of two unrelated family probands, incompatible with one patient per document."
+    },
+    {
+      "document_id": "PMC10022815_01",
+      "reason": "Aggregate prevalence comparison among people experiencing homelessness and shelter workers, without an index patient."
+    },
+    {
+      "document_id": "PMC10025402_01",
+      "reason": "Eight-patient case series reported collectively, with no single index-patient narrative."
+    },
+    {
+      "document_id": "PMC10030614_01",
+      "reason": "Multicenter retrospective series of six patients rather than a single index-patient narrative."
+    },
+    {
+      "document_id": "PMC10033294_01",
+      "reason": "Veterinary report of a chinchilla, outside the human clinical study population."
+    }
+  ]
+}

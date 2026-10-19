@@ -6,4 +6,5 @@ networkx>=3.0
 matplotlib>=3.7
 pytest
 datasets
+duckdb>=1.5,<2
 torch==2.14.1

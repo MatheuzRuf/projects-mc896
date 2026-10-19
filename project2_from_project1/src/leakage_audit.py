@@ -45,6 +45,10 @@ _METADATA_ALIASES = {
 _TOKEN = re.compile(r"[^\W_]+", re.UNICODE)
 _PMCID = re.compile(r"(?:^|[^A-Z0-9])(PMC\d+)(?:$|[^A-Z0-9])", re.IGNORECASE)
 _PMID = re.compile(r"^\d+$")
+_PMID_URL = re.compile(
+    r"https?://(?:www\.ncbi\.nlm\.nih\.gov/pubmed/|pubmed\.ncbi\.nlm\.nih\.gov/)(\d+)(?!\d)",
+    re.IGNORECASE,
+)
 _DOI_PREFIX = re.compile(r"^(?:doi:\s*|https?://(?:dx\.)?doi\.org/)", re.IGNORECASE)
 
 
@@ -103,7 +107,10 @@ def _normalise_identifier(kind: str, value: object) -> str | None:
         match = _PMCID.search(raw.upper())
         return match.group(1).upper() if match else None
     if kind == "pmid":
-        return raw if _PMID.fullmatch(raw) else None
+        if _PMID.fullmatch(raw):
+            return raw
+        match = _PMID_URL.search(raw)
+        return match.group(1) if match else None
     if kind == "doi":
         result = _DOI_PREFIX.sub("", raw).strip().rstrip("/.,;")
         return result.casefold() or None
