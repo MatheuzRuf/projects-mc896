@@ -57,19 +57,39 @@ permanecer no diretório ignorado e com acesso controlado. Seu manifesto não
 contém texto clínico e fixa o mesmo vínculo que deve ser copiado para cada
 decisão final.
 
-O arquivo versionado de decisões deve registrar duas revisões humanas feitas
+O arquivo versionado de decisões registra duas revisões feitas
 separadamente, com identificadores distintos e justificativas específicas para
 o caso. O segundo revisor não consulta o voto do primeiro. Quando os votos
-iniciais divergem, os revisores podem registrar um consenso posterior,
-confirmado pelos dois identificadores, ou solicitar um terceiro voto humano
-independente. O terceiro voto pode escolher qualquer conjunto plano válido; o
-resultado final deve reproduzi-lo exatamente.
+iniciais divergem, um terceiro voto independente decide. O terceiro voto pode
+escolher qualquer conjunto plano válido; o resultado final deve reproduzi-lo
+exatamente.
+
+Na versão `flat-gold-v1`, a revisão humana foi considerada inviável e os três
+papéis de revisor foram executados por modelos de linguagem
+(`reviewer_kind = model`), conforme
+[`annotations/entity-gold-v1/README.md`](../annotations/entity-gold-v1/README.md)
+e [`GUIDELINES.md`](../annotations/entity-gold-v1/GUIDELINES.md). A versão de
+leitura dos casos e a coleta das revisões são feitas com:
+
+```powershell
+python -m project2_from_project1.scripts.model_adjudication prepare `
+  --source-jsonl project2_from_project1/data/secure/mcrc.jsonl `
+  --output-json project2_from_project1/artifacts/entity-gold-review-v1/model-review-cases.json
+python -m project2_from_project1.scripts.model_adjudication collect `
+  --packet project2_from_project1/artifacts/entity-gold-review-v1/model-review-cases.json `
+  --review revisao-a.alias.jsonl --reviewer-id model-review-a `
+  --output-jsonl revisao-a.jsonl
+python -m project2_from_project1.scripts.assemble_gold_adjudication `
+  --source-jsonl project2_from_project1/data/secure/mcrc.jsonl `
+  --review-a-jsonl revisao-a.jsonl --review-b-jsonl revisao-b.jsonl `
+  --third-review-jsonl revisao-c.jsonl `
+  --output-jsonl project2_from_project1/annotations/entity-gold-v1/adjudication.jsonl
+```
 
 Cada decisão também carrega um vínculo imutável com o SHA-256 da fonte, o hash
 do plano de candidatos, o limite de tokens e as versões do tokenizador e do
 segmentador. Alterar texto, IDs de origem ou configuração invalida as decisões
-anteriores. Passagens heurísticas ou sugestões de modelo podem auxiliar a
-leitura, mas não são aceitas como votos humanos nem substituem a adjudicação.
+anteriores. Passagens heurísticas não são aceitas como votos.
 
 O carregador rejeita campos ausentes ou extras, casos ausentes, votos sem
 proveniência distinta, candidatos de outro caso, resultados não alinhados,
