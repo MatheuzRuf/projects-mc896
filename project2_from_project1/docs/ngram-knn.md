@@ -1,8 +1,34 @@
 # Pipeline de n-gramas e k-NN
 
-O pipeline classifica relações entre as entidades ouro do dataset congelado.
-Ele não realiza reconhecimento de entidades e não projeta diretamente o
-resultado no Knowledge Graph.
+O pipeline classifica relações entre entidades ouro ou previstas. Ele não
+realiza reconhecimento de entidades nem projeta diretamente o resultado no
+Knowledge Graph.
+
+## Candidatos de entidades previstas
+
+Para uma comparação no mesmo fold, execute os dois braços juntos. Os arquivos
+de entidades devem ser os mesmos usados na geração dos candidatos e os
+manifestos devem identificar as partições do fold. Os parâmetros devem ser os
+já selecionados na validação, sem usar a partição de teste.
+
+```powershell
+python -m project2_from_project1.scripts.run_predicted_ngram_knn `
+  --corpus CORPUS.jsonl --training-candidates FOLD-01-TRAIN.jsonl `
+  --partition-manifest PARTITIONS.json --fold 1 `
+  --dictionary-candidates DICTIONARY/candidates.jsonl `
+  --dictionary-candidate-manifest DICTIONARY/manifest.json `
+  --dictionary-entities DICTIONARY-ENTITIES.jsonl `
+  --crf-candidates CRF/candidates.jsonl --crf-candidate-manifest CRF/manifest.json `
+  --crf-entities CRF-ENTITIES.jsonl --output-dir OUTPUT `
+  --n-neighbors 3 --maximum-ngram-order 3
+```
+
+O vocabulário e os classificadores são ajustados uma vez com candidatos gold de
+treino; os contextos de inferência usam apenas texto e spans previstos. Cada
+braço recebe `predictions.jsonl` e `manifest.json`. O `candidate_id` na
+evidência identifica a entrada de cada decisão, inclusive `NO_RELATION`. Os
+manifestos registram hashes dos artefatos dos dois braços, configuração,
+partições e contagens. Um braço sem candidatos produz um JSONL vazio.
 
 ## Entradas
 

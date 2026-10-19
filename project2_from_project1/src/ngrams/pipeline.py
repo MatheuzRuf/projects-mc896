@@ -30,6 +30,7 @@ from project2_from_project1.src.relation_evaluation import (
     write_relation_predictions,
 )
 from project2_from_project1.src.supervised_dataset import SupervisedCandidate
+from project2_from_project1.src.supervised_contracts import EntityPrediction, RelationCandidate
 
 
 class NgramKNNPipelineError(ValueError):
@@ -74,17 +75,21 @@ def _documents_by_id(documents: Iterable[ClinicalDocument]) -> dict[str, Clinica
 
 def build_candidate_examples(
     documents: Iterable[ClinicalDocument],
-    candidates: Iterable[SupervisedCandidate],
+    candidates: Iterable[SupervisedCandidate | RelationCandidate],
     *,
     include_labels: bool,
+    entity_predictions: Iterable[EntityPrediction] = (),
 ) -> tuple[NgramCandidateExample, ...]:
     """Create exactly one n-gram example for each frozen candidate."""
 
     by_id = _documents_by_id(documents)
+    predicted_by_id = {item.prediction_id: item for item in entity_predictions}
     examples: list[NgramCandidateExample] = []
     for candidate in candidates:
-        if not isinstance(candidate, SupervisedCandidate):
-            raise TypeError("candidates must contain SupervisedCandidate instances")
+        if not isinstance(candidate, (SupervisedCandidate, RelationCandidate)):
+            raise TypeError("unsupported candidate type")
+        if include_labels and not isinstance(candidate, SupervisedCandidate):
+            raise NgramKNNPipelineError("training candidates must have gold labels")
         try:
             document = by_id[candidate.document_id]
         except KeyError as error:
@@ -92,11 +97,19 @@ def build_candidate_examples(
                 f"candidate references missing document {candidate.document_id!r}"
             ) from error
 
-        document_payload = document.to_dict()
-        mentions_by_id = {
-            mention["mention_id"]: mention
-            for mention in document_payload["mentions"]
-        }
+        if isinstance(candidate, RelationCandidate):
+            mentions_by_id = {}
+            for endpoint in ("source", "target"):
+                endpoint_id = getattr(candidate, f"{endpoint}_id")
+                endpoint_type = getattr(candidate, f"{endpoint}_type")
+                if endpoint_type == "Patient":
+                    continue
+                entity = predicted_by_id.get(endpoint_id)
+                if entity is None or entity.document_id != candidate.document_id or entity.canonical_type != endpoint_type or entity.span.end > len(document.text):
+                    raise NgramKNNPipelineError("candidate endpoint does not match a predicted entity")
+                mentions_by_id[endpoint_id] = {"spans": [[entity.span.start, entity.span.end]]}
+        else:
+            mentions_by_id = {mention["mention_id"]: mention for mention in document.to_dict()["mentions"]}
         tokens = extract_candidate_tokens(
             candidate.to_dict(), document.text, mentions_by_id
         )
@@ -106,7 +119,7 @@ def build_candidate_examples(
             target_id=candidate.target_id,
             additional_ids=(
                 ("candidate_relation", candidate.candidate_relation.value),
-                ("gold_relation_id", candidate.gold_relation_id or ""),
+                ("candidate_id", candidate.candidate_id if isinstance(candidate, RelationCandidate) else ""),
             ),
         )
         examples.append(
@@ -122,27 +135,28 @@ def build_candidate_examples(
 def train_and_predict_ngram_knn(
     documents: Iterable[ClinicalDocument],
     training_candidates: Sequence[SupervisedCandidate],
-    prediction_candidates: Sequence[SupervisedCandidate],
+    prediction_candidates: Sequence[SupervisedCandidate | RelationCandidate],
     *,
     n_neighbors: int = 3,
     maximum_ngram_order: int = 3,
     model_version: str = "ngram-knn-v1",
+    entity_predictions: Iterable[EntityPrediction] = (),
 ) -> NgramKNNRun:
     """Fit on one frozen training partition and classify another partition."""
 
     documents = tuple(documents)
     training_candidates = tuple(training_candidates)
     prediction_candidates = tuple(prediction_candidates)
+    if isinstance(n_neighbors, bool) or not isinstance(n_neighbors, int) or n_neighbors < 1:
+        raise ValueError("n_neighbors must be a positive integer")
     if not training_candidates:
         raise NgramKNNPipelineError("training candidates cannot be empty")
-    if not prediction_candidates:
-        raise NgramKNNPipelineError("prediction candidates cannot be empty")
 
     training_examples = build_candidate_examples(
         documents, training_candidates, include_labels=True
     )
     prediction_examples = build_candidate_examples(
-        documents, prediction_candidates, include_labels=False
+        documents, prediction_candidates, include_labels=False, entity_predictions=entity_predictions
     )
 
     vectorizer = NgramFeatureVectorizer(maximum_ngram_order=maximum_ngram_order)
@@ -231,6 +245,7 @@ def train_and_predict_ngram_knn(
                 canonical_label=label,
                 method="ngram-knn-cosine-uniform",
                 evidence={
+                    **({"candidate_id": candidate.candidate_id} if isinstance(candidate, RelationCandidate) else {}),
                     "candidate_relation": candidate.candidate_relation.value,
                     "feature_family": f"word-count-ngrams-1-{maximum_ngram_order}",
                     "maximum_ngram_order": maximum_ngram_order,
