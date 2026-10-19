@@ -162,7 +162,8 @@ def _candidate_key(candidate: SupervisedCandidate) -> tuple[str, str, str]:
 
 
 def _serialize_records(records: Iterable[Mapping[str, Any]]) -> bytes:
-    return ("\n".join(json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":")) for record in records) + "\n").encode("utf-8")
+    lines = [json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":")) for record in records]
+    return ("\n".join(lines) + ("\n" if lines else "")).encode("utf-8")
 
 
 def _sha256_records(records: Iterable[Mapping[str, Any]]) -> str:
