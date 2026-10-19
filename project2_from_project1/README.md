@@ -229,6 +229,14 @@ na classe vencedora; ele não representa confiança calibrada.
 Consulte [`docs/ngram-knn.md`](docs/ngram-knn.md) para as fronteiras de
 treino/validação e os critérios necessários antes de avaliar o teste fixo.
 
+## Estudo end-to-end (texto bruto → entidades → relações → grafo)
+
+O estudo comparativo completo, com dicionário e semi-Markov CRF combinados com
+regras e k-NN, é executado por uma única entrada:
+`python -m project2_from_project1.scripts.run_full_study`. Use `--synthetic DIR`
+para um teste rápido sem dados clínicos. O passo a passo para outra máquina
+está em [`docs/running-the-study.md`](docs/running-the-study.md).
+
 ## Knowledge Graph
 
 ### Nodes
