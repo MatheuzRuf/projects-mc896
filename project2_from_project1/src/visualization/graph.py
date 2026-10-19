@@ -19,6 +19,10 @@ NODE_COLORS = {
     "AnatomicalSite": "#c0392b",
     "Status": "#9b59b6",
     "Course": "#f1c40f",
+    # Supervised schema (graph JSONL v2 exports)
+    "Condition": "#8e44ad",
+    "Factor": "#e67e22",
+    "Modifier": "#7f8c8d",
 }
 
 DEFAULT_NODE_COLOR = "#cccccc"

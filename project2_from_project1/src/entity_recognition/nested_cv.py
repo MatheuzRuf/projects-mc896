@@ -100,6 +100,7 @@ class InnerJob:
     config: TrainingConfig
     output_json: str
     cache_key: str
+    fit: Callable[..., Any] | None = None
 
 
 _PREPARED: dict[tuple[StudyInputs, int], Any] = {}
@@ -134,7 +135,7 @@ def run_inner_job(job: InnerJob) -> dict[str, Any]:
         "torch_threads": torch.get_num_threads(),
     }
     try:
-        model, diagnostics = SemiMarkovCRF.fit(training, job.config)
+        model, diagnostics = (job.fit or SemiMarkovCRF.fit)(training, job.config)
     except NonFiniteTrainingError as error:
         result.update(status="failed_non_finite", failure={"message": str(error), **error.diagnostic},
                       macro_f1=None, training=None)
@@ -171,6 +172,7 @@ class OuterJob:
     outer_index: int
     config: TrainingConfig
     output_dir: str
+    fit: Callable[..., Any] | None = None
 
 
 def run_outer_crf_job(job: OuterJob) -> dict[str, Any]:
@@ -184,9 +186,20 @@ def run_outer_crf_job(job: OuterJob) -> dict[str, Any]:
                         for name, value in prepare_fold(*job.inputs.paths(), job.outer_index).input_hashes.items()):
             return manifest
     try:
-        return run_crf_fold_from_files(*job.inputs.paths(), job.outer_index, output, config=job.config)
+        return run_crf_fold_from_files(*job.inputs.paths(), job.outer_index, output, config=job.config, fit=job.fit)
     except NonFiniteTrainingError:
         return json.loads(manifest_path.read_text(encoding="utf-8"))
+
+
+def _write_failed_outer(directory: Path, outer: int, fold: DocumentFold, reason: str) -> None:
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "manifest.json").write_text(json.dumps({
+        "converged": None, "duration_seconds": 0.0, "failure": {"message": reason, "stage": "inner_l2_selection"},
+        "fold": outer, "method": "semi-markov-crf", "partitions": {
+            "train_document_ids": list(fold.train_document_ids),
+            "validation_document_ids": list(fold.validation_document_ids)},
+        "primary_metric": None, "schema_version": 1, "status": "failed_non_finite", "training": None,
+    }, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
 
 def _metrics(evaluation: Mapping[str, Any]) -> dict[str, Any]:
@@ -236,7 +249,9 @@ def run_nested_study(
     workers: int = 1,
     threads_per_worker: int = 1,
     l2_grid: Sequence[float] = L2_GRID,
+    fit: Callable[..., Any] | None = None,
 ) -> dict[str, Any]:
+    """Run the nested study; ``fit`` overrides the CRF trainer (tests inject failures with it)."""
     if tuple(l2_grid) != L2_GRID:
         raise EntityRecognitionError(f"the pre-registered L2 grid is {L2_GRID}")
     started = time.perf_counter()
@@ -258,7 +273,7 @@ def run_nested_study(
                 key = sha256_text(json.dumps([hash_key, outer, inner.index, inner.train_document_ids,
                                               inner.validation_document_ids, config.to_dict()], sort_keys=True))
                 path = output / "crf" / f"fold-{outer:02d}" / "inner" / f"l2-{l2:g}" / f"inner-{inner.index}.json"
-                jobs.append(InnerJob(inputs, outer, inner, config, str(path), key))
+                jobs.append(InnerJob(inputs, outer, inner, config, str(path), key, fit))
     inner_results = _map(run_inner_job, jobs, workers, threads_per_worker)
 
     selections = {}
@@ -268,7 +283,12 @@ def run_nested_study(
         for result in inner_results:
             if result["outer_fold"] == outer:
                 scores[result["l2"]][result["inner_fold"] - 1] = result["macro_f1"]
-        selections[outer] = select_l2(scores)
+        try:
+            selections[outer] = select_l2(scores)
+        except EntityRecognitionError as error:
+            # Every L2 value failed numerically: the CRF arm of this fold is invalid, with no fallback.
+            selections[outer] = {"selected_l2": None, "failure": str(error),
+                                 "table": {str(l2): {"eligible": False, "inner_macro_f1": values} for l2, values in scores.items()}}
         selection_path = output / "crf" / f"fold-{outer:02d}" / "selection.json"
         selection_path.parent.mkdir(parents=True, exist_ok=True)
         selection_path.write_text(json.dumps({
@@ -278,10 +298,18 @@ def run_nested_study(
                                  for item in plans[outer]],
             "outer_fold": outer,
         }, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-        outer_jobs.append(OuterJob(inputs, outer, TrainingConfig(l2=selections[outer]["selected_l2"],
-                                                                 max_iterations=max_iterations),
-                                   str(output / "crf" / f"fold-{outer:02d}" / "outer")))
-    crf_manifests = _map(run_outer_crf_job, outer_jobs, workers, threads_per_worker)
+        outer_dir = output / "crf" / f"fold-{outer:02d}" / "outer"
+        if selections[outer]["selected_l2"] is None:
+            _write_failed_outer(outer_dir, outer, all_folds[outer], selections[outer]["failure"])
+            outer_jobs.append(None)
+        else:
+            outer_jobs.append(OuterJob(inputs, outer, TrainingConfig(l2=selections[outer]["selected_l2"],
+                                                                     max_iterations=max_iterations),
+                                       str(outer_dir), fit))
+    trained = iter(_map(run_outer_crf_job, [job for job in outer_jobs if job is not None], workers, threads_per_worker))
+    crf_manifests = [next(trained) if job is not None
+                     else json.loads((output / "crf" / f"fold-{outer:02d}" / "outer" / "manifest.json").read_text(encoding="utf-8"))
+                     for outer, job in zip(selected_folds, outer_jobs)]
 
     dictionary_manifests = [
         run_dictionary_fold_from_files(*inputs.paths(), outer, output / "dictionary" / f"fold-{outer:02d}")
@@ -298,7 +326,7 @@ def run_nested_study(
     crf_rows = []
     for outer, manifest in zip(selected_folds, crf_manifests):
         inner_for_fold = [result for result in inner_results if result["outer_fold"] == outer]
-        crf_rows.append(row(manifest, Path(outer_jobs[selected_folds.index(outer)].output_dir), {
+        crf_rows.append(row(manifest, output / "crf" / f"fold-{outer:02d}" / "outer", {
             "converged": manifest.get("converged"),
             "inner_runs": {
                 "converged": sum(bool(result["training"] and result["training"]["converged"]) for result in inner_for_fold),

@@ -24,8 +24,8 @@ def run_from_files(corpus_path, training_path, partition_path, fold_index, arms,
     """
     started = time.perf_counter()
     corpus_path, training_path, partition_path, output_dir = map(Path, (corpus_path, training_path, partition_path, output_dir))
-    if set(arms) != {"dictionary", "crf"}:
-        raise ValueError("arms must contain dictionary and crf")
+    if not arms or not set(arms) <= {"dictionary", "crf"}:
+        raise ValueError("arms must be a non-empty subset of dictionary and crf")
     arms = {name: tuple(map(Path, paths)) for name, paths in arms.items()}
     if any(len(paths) != 3 for paths in arms.values()):
         raise ValueError("each arm requires candidates, manifest and entity predictions")
