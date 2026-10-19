@@ -22,7 +22,7 @@ from project2_from_project1.src.entity_recognition.corpus import (
     normalize_token,
 )
 from project2_from_project1.src.gold_projection import MAX_MENTION_TOKENS
-from project2_from_project1.src.run_manifest import sha256_text
+from project2_from_project1.src.run_manifest import sha256_file, sha256_text
 from project2_from_project1.src.clinical_documents import Span
 from project2_from_project1.src.supervised_contracts import ENTITY_TYPES, EntityPrediction
 
@@ -192,8 +192,8 @@ def write_dictionary(dictionary: CanonicalDictionary, path: str | Path) -> str:
     content = dictionary.to_jsonl()
     output = Path(path)
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(content, encoding="utf-8")
-    return sha256_text(content)
+    output.write_text(content, encoding="utf-8", newline="\n")
+    return sha256_file(output)
 
 
 __all__ = [

@@ -40,7 +40,7 @@ from project2_from_project1.src.gold_projection import (
     TOKENIZER_VERSION,
     load_flat_gold_jsonl,
 )
-from project2_from_project1.src.run_manifest import dependency_versions, git_provenance, sha256_file, sha256_text
+from project2_from_project1.src.run_manifest import dependency_versions, git_provenance, sha256_file
 from project2_from_project1.src.supervised_contracts import (
     EntityPrediction,
     load_contract_jsonl,
@@ -264,8 +264,9 @@ def run_crf_fold_from_files(
     predictions = model.predict(inputs.raw_validation())
     evaluation, hashes = _freeze_and_evaluate(inputs, predictions, output, crf_model.METHOD, crf_model.MODEL_VERSION)
     model_text = json.dumps(model.to_dict(), ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
-    (output / "model.json").write_text(model_text, encoding="utf-8")
-    hashes["model_json_sha256"] = sha256_text(model_text)
+    model_path = output / "model.json"
+    model_path.write_text(model_text, encoding="utf-8", newline="\n")
+    hashes["model_json_sha256"] = sha256_file(model_path)
     manifest = _manifest(
         inputs, status="completed", artifact_hashes=hashes, evaluation=evaluation,
         extra={"converged": training.converged, "features": model.vocabulary.summary(), "training": training.to_dict()},

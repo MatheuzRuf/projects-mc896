@@ -166,6 +166,7 @@ def test_fold_run_writes_contracts_evaluation_and_text_free_manifest(tmp_path):
     assert manifest["partitions"] == {"train_document_ids": ["d1", "d2", "d3"], "validation_document_ids": ["d4"]}
     assert manifest["dictionary"]["abstained_tied_surfaces"] == 1
     assert manifest["artifact_hashes"]["predictions_jsonl_sha256"] == sha256_file(output / "predictions.jsonl")
+    assert manifest["artifact_hashes"]["dictionary_jsonl_sha256"] == sha256_file(output / "dictionary.jsonl")
     assert manifest["artifact_hashes"]["corpus_jsonl_sha256"] == sha256_file(inputs[0])
     assert manifest["primary_metric"]["name"] == "strict_macro_f1"
     assert '"d5"' not in json.dumps(manifest)
