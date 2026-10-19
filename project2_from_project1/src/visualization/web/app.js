@@ -16,6 +16,9 @@ const NODE_COLORS = {
   AnatomicalSite: "#c0392b",
   Status: "#9b59b6",
   Course: "#f1c40f",
+  Condition: "#8e44ad",
+  Factor: "#e67e22",
+  Modifier: "#7f8c8d",
 };
 
 const PRIMARY_TYPES = new Set([
@@ -23,6 +26,9 @@ const PRIMARY_TYPES = new Set([
   "Symptom",
   "Exam",
   "Finding",
+  "Condition",
+  "Factor",
+  "Modifier",
   "Treatment",
   "Medication",
   "Outcome",
@@ -383,6 +389,11 @@ async function loadCases() {
       option.textContent = caseId;
       caseSelect.append(option);
     });
+
+    const requestedCase = new URLSearchParams(window.location.search).get("case_id");
+    if (requestedCase && data.cases.includes(requestedCase)) {
+      caseSelect.value = requestedCase;
+    }
 
     await loadGraph();
   } catch (error) {

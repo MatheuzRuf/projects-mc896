@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relatório técnico — Reconhecimento global de entidades e pipeline clínico end-to-end</title>
+  <style>
+    :root {
+      --ink: #162334;
+      --muted: #566477;
+      --blue: #155e75;
+      --blue2: #0e7490;
+      --light-blue: #e6f4f7;
+      --green: #13795b;
+      --light-green: #e8f5ef;
+      --amber: #a15c00;
+      --light-amber: #fff4dc;
+      --red: #a33a3a;
+      --light-red: #fbeaea;
+      --line: #d5dde5;
+      --paper: #ffffff;
+      --soft: #f5f7f9;
+    }
+    * { box-sizing: border-box; }
+    @page { size: A4; margin: 18mm 16mm 17mm 16mm; }
+    html { font-size: 10.1pt; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.46;
+    }
+    h1, h2, h3 { color: #123047; page-break-after: avoid; }
+    h1 { font-size: 25pt; line-height: 1.08; margin: 0 0 10mm; letter-spacing: -0.4px; }
+    h2 { font-size: 16pt; margin: 0 0 5mm; padding-bottom: 2mm; border-bottom: 2px solid var(--blue2); }
+    h3 { font-size: 11.8pt; margin: 6mm 0 2mm; }
+    p { margin: 0 0 3.2mm; }
+    ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+    li { margin-bottom: 1.3mm; }
+    strong { color: #0e2e44; }
+    code { font-family: Consolas, monospace; font-size: 8.8pt; color: #24435a; }
+    table { width: 100%; border-collapse: collapse; margin: 3mm 0 5mm; font-size: 8.7pt; page-break-inside: auto; }
+    tr { page-break-inside: avoid; page-break-after: auto; }
+    th { background: #15384d; color: white; text-align: left; padding: 2.2mm; font-weight: 600; }
+    td { border-bottom: 1px solid var(--line); padding: 2.1mm; vertical-align: top; }
+    tbody tr:nth-child(even) { background: #f7f9fb; }
+    .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .cover {
+      min-height: 252mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      page-break-after: always;
+      padding: 8mm 3mm 2mm;
+      position: relative;
+    }
+    .cover:before {
+      content: "";
+      position: absolute;
+      left: -16mm; top: -18mm; right: -16mm;
+      height: 70mm;
+      background: linear-gradient(120deg, #0d344b, #0e7490);
+      z-index: -1;
+    }
+    .cover .eyebrow { color: #d7f3f8; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1mm; }
+    .cover h1 { color: white; max-width: 150mm; margin-top: 10mm; }
+    .cover .subtitle { color: #184158; font-size: 14pt; max-width: 155mm; margin-top: 28mm; }
+    .cover-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; margin: 12mm 0; }
+    .cover-stat { border-top: 3px solid var(--blue2); padding-top: 3mm; }
+    .cover-stat .value { font-size: 19pt; font-weight: 750; color: var(--blue); }
+    .cover-stat .label { color: var(--muted); font-size: 8.5pt; }
+    .meta { color: var(--muted); font-size: 9pt; border-top: 1px solid var(--line); padding-top: 4mm; }
+    .page-break { page-break-before: always; }
+    .callout { border-left: 4px solid var(--blue2); background: var(--light-blue); padding: 4mm 5mm; margin: 4mm 0 5mm; page-break-inside: avoid; }
+    .callout.good { border-color: var(--green); background: var(--light-green); }
+    .callout.warn { border-color: var(--amber); background: var(--light-amber); }
+    .callout.risk { border-color: var(--red); background: var(--light-red); }
+    .callout .label { font-size: 8pt; font-weight: 800; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 1mm; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 4mm 0 6mm; }
+    .kpi { border: 1px solid var(--line); border-radius: 2mm; padding: 3mm; background: #fbfcfd; page-break-inside: avoid; }
+    .kpi .v { font-size: 16pt; font-weight: 750; color: var(--blue); }
+    .kpi .t { font-size: 8pt; color: var(--muted); }
+    .tag { display: inline-block; padding: .7mm 2mm; border-radius: 8mm; font-size: 7.6pt; font-weight: 700; white-space: nowrap; }
+    .done { color: #0b6247; background: #dff4e9; }
+    .partial { color: #895000; background: #ffedc2; }
+    .stale { color: #7a3b3b; background: #f7dddd; }
+    .bar-row { display: grid; grid-template-columns: 43mm 1fr 17mm; gap: 3mm; align-items: center; margin: 2.2mm 0; font-size: 8.8pt; }
+    .bar-track { height: 5mm; background: #e9eef2; border-radius: 1mm; overflow: hidden; }
+    .bar { height: 100%; background: linear-gradient(90deg, #0e7490, #22a6bd); }
+    .bar.alt { background: linear-gradient(90deg, #587188, #8095a6); }
+    .bar.gold { background: linear-gradient(90deg, #a15c00, #d99a31); }
+    .small { font-size: 8.3pt; color: var(--muted); }
+    .footnote { font-size: 7.8pt; color: var(--muted); }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+    .priority { display: grid; grid-template-columns: 13mm 1fr; gap: 3mm; margin-bottom: 4mm; page-break-inside: avoid; }
+    .priority .rank { width: 10mm; height: 10mm; border-radius: 50%; background: #15384d; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+    .source-list { font-size: 8.2pt; }
+    .source-list li { overflow-wrap: anywhere; }
+    .verdict { font-size: 13pt; line-height: 1.4; color: #143a50; }
+    .nowrap { white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <div>
+      <div class="eyebrow">Relatório técnico e auditoria do estudo</div>
+      <h1>Reconhecimento global de entidades e pipeline clínico end-to-end</h1>
+      <p class="subtitle">Análise integrada do PRD, das 13 issues, das decisões arquiteturais e dos resultados de desenvolvimento e avaliação externa.</p>
+    </div>
+    <div>
+      <div class="cover-grid">
+        <div class="cover-stat"><div class="value">210</div><div class="label">testes automatizados aprovados</div></div>
+        <div class="cover-stat"><div class="value">63</div><div class="label">documentos na avaliação externa provisória</div></div>
+        <div class="cover-stat"><div class="value">0,1123</div><div class="label">melhor macro-F1 relacional externo end-to-end</div></div>
+      </div>
+      <div class="callout warn">
+        <div class="label">Conclusão de alto nível</div>
+        A implementação de engenharia está funcional, testada e produz o fluxo completo de texto bruto até Knowledge Graph. A conclusão científica final, porém, permanece provisória porque o teste externo não cumpriu a regra de parada pré-registrada e a classe <code>CAUSES</code> ficou abaixo do suporte mínimo.
+      </div>
+    </div>
+    <div class="meta">
+      Projeto MC896 · pacote <code>project2_from_project1</code><br>
+      Data da análise: 19 de outubro de 2026 · Fuso: America/Bahia<br>
+      Escopo: PRD <code>.scratch/global-entity-recognition/spec.md</code>, issues 01–13, ADRs, documentação de resultados e artefatos locais.
+    </div>
+  </section>
+
+  <section>
+    <h2>1. Sumário executivo</h2>
+    <p class="verdict"><strong>O estudo alcançou seu objetivo de engenharia:</strong> existe um pipeline supervisionado, auditável e reproduzível que parte de texto clínico bruto, reconhece entidades, gera candidatos, classifica relações e produz um grafo versionado. O melhor braço observado foi <strong>semi-Markov CRF + k-NN</strong>. O desempenho absoluto, entretanto, ainda é baixo para uso clínico ou produção.</p>
+
+    <div class="kpis">
+      <div class="kpi"><div class="v">0,2415</div><div class="t">macro-F1 externo de entidades — CRF</div></div>
+      <div class="kpi"><div class="v">0,1123</div><div class="t">macro-F1 externo de relações — CRF + k-NN</div></div>
+      <div class="kpi"><div class="v">0,6053</div><div class="t">teto relacional gold + k-NN</div></div>
+      <div class="kpi"><div class="v">95,9%</div><div class="t">FNs relacionais herdados do NER no melhor braço</div></div>
+    </div>
+
+    <h3>Principais acertos</h3>
+    <ul>
+      <li><strong>Separação correta entre gold e previsão:</strong> entidades previstas, candidatos sem rótulo e grafo têm contratos próprios, reduzindo leakage e confusão entre resposta e inferência.</li>
+      <li><strong>Comparação fatorial justa:</strong> dicionário e CRF são combinados com regras e k-NN sob o mesmo contrato; o teto com entidades gold é separado dos braços end-to-end.</li>
+      <li><strong>Rastreabilidade forte:</strong> manifests, hashes, versões, partições e proveniência permitem auditar a execução; os 18 arquivos do pacote externo conferem com o manifesto.</li>
+      <li><strong>Resultados negativos preservados:</strong> o CRF não convergiu no limite de 250 iterações, mas foi avaliado sem fallback, conforme o desenho científico.</li>
+      <li><strong>Cobertura de testes:</strong> a suíte completa executada nesta auditoria terminou com 210 testes aprovados.</li>
+    </ul>
+
+    <h3>Principais problemas</h3>
+    <ul>
+      <li><strong>Gargalo no reconhecimento de entidades:</strong> entre 93,9% e 97,3% dos falsos negativos relacionais externos dos braços end-to-end decorrem de endpoint ausente ou com borda/tipo errado.</li>
+      <li><strong>Baixa generalização:</strong> no CRF externo, a revocação de superfícies não vistas foi 0,066; menções longas (11–40 tokens) tiveram F1 de apenas 0,0166.</li>
+      <li><strong><code>Condition</code> continua quase ausente:</strong> F1 externo de 0,0486 no CRF, limitando <code>HAS_CONDITION</code>.</li>
+      <li><strong>Validação externa incompleta:</strong> há 63 documentos elegíveis e somente 9 relações <code>CAUSES</code>; o plano exigia continuar até 20 por classe ou 100 documentos.</li>
+      <li><strong>Dívida de governança:</strong> as issues 01, 06, 07 e 08 ainda constam como “ready-for-agent”, embora testes, código e issues posteriores indiquem implementação; isso enfraquece a trilha de conclusão.</li>
+    </ul>
+
+    <div class="callout risk">
+      <div class="label">Parecer</div>
+      O sistema está pronto para pesquisa exploratória e iteração metodológica. Não está pronto para alegações clínicas, implantação operacional ou conclusão externa definitiva. A prioridade deve ser melhorar o NER e completar corretamente o conjunto externo antes de ampliar o esquema semântico.
+    </div>
+  </section>
+
+  <section class="page-break">
+    <h2>2. Objetivo e desenho do estudo</h2>
+    <p>O PRD parte de uma limitação central: o pipeline anterior classificava relações usando entidades gold. Assim, bons resultados relacionais não demonstravam capacidade de operar sobre texto bruto. O novo desenho procura medir a cadeia inteira e tornar visível a propagação de erros.</p>
+
+    <h3>Fluxo implementado</h3>
+    <table>
+      <thead><tr><th>Etapa</th><th>Entrada</th><th>Saída principal</th><th>Critério científico</th></tr></thead>
+      <tbody>
+        <tr><td>1. Preparação</td><td>Corpus lossless</td><td>Projeção gold plana</td><td>Fonte original preservada; conflitos adjudicados</td></tr>
+        <tr><td>2. Entidades</td><td>Texto bruto</td><td><code>EntityPrediction</code></td><td>Offsets e tipo exatos</td></tr>
+        <tr><td>3. Candidatos</td><td>Entidades previstas</td><td><code>RelationCandidate</code></td><td>Sem rótulo gold e sem correção posterior</td></tr>
+        <tr><td>4. Relações</td><td>Candidatos previstos</td><td>Rótulo ou <code>NO_RELATION</code></td><td>Mesmo classificador entre reconhecedores</td></tr>
+        <tr><td>5. Grafo</td><td>Entidades e relações previstas</td><td>JSONL v2 em duas camadas</td><td>Menção antes de conceito; proveniência preservada</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Braços comparados</h3>
+    <div class="two-col">
+      <div class="callout">
+        <div class="label">Reconhecimento de entidades</div>
+        <strong>Dicionário canônico:</strong> aprende apenas superfícies do treino, usa tipo majoritário e se abstém em empates.<br><br>
+        <strong>Semi-Markov CRF:</strong> modelo linear segmental, features esparsas, inferência global, L-BFGS full-batch e L2 selecionado por validação aninhada.
+      </div>
+      <div class="callout">
+        <div class="label">Classificação de relações</div>
+        <strong>Regras canônicas:</strong> baseline determinístico ajustado no treino.<br><br>
+        <strong>k-NN de n-gramas:</strong> unigramas e <code>k=1</code>, selecionados previamente. O mesmo modelo do fold recebe candidatos do dicionário e do CRF.
+      </div>
+    </div>
+
+    <h3>Boas escolhas metodológicas</h3>
+    <ul>
+      <li>Folds agrupados por documento e seleção de L2 somente em folds internos.</li>
+      <li>Vocabulários e dicionários aprendidos apenas no treino.</li>
+      <li>Teste MCRC previamente consumido excluído da nova conclusão principal.</li>
+      <li>Métrica primária estrita, sem substituir erros de borda por métricas lenientes.</li>
+      <li>Falha numérica não finita interrompe somente o braço afetado; não há troca silenciosa de algoritmo.</li>
+      <li>Grafo conceitual tratado como avaliação secundária, preservando a camada de menção.</li>
+    </ul>
+
+    <div class="callout warn">
+      <div class="label">Mudança relevante em relação ao PRD</div>
+      O PRD previa dois revisores humanos independentes para a projeção gold plana. Por inviabilidade operacional, a issue 02 adotou três execuções independentes do mesmo modelo de linguagem. A concordância de 98,7% mede consistência do protocolo, mas não substitui concordância entre anotadores humanos e pode compartilhar vieses sistemáticos.
+    </div>
+  </section>
+
+  <section class="page-break">
+    <h2>3. Auditoria das issues</h2>
+    <p>A tabela cruza o estado registrado nas issues com a evidência encontrada em código, testes, documentação e artefatos. “Funcional” significa que a capacidade está coberta por implementação/testes; não significa que o status administrativo esteja correto.</p>
+    <table>
+      <thead><tr><th style="width:8%">Issue</th><th style="width:34%">Entrega</th><th style="width:16%">Status registrado</th><th>Avaliação</th></tr></thead>
+      <tbody>
+        <tr><td>01</td><td>Contratos supervisionados versionados</td><td><span class="tag stale">ready-for-agent</span></td><td><strong>Funcional, status desatualizado.</strong> Contratos e testes existem; é dependência já consumida pelas issues posteriores.</td></tr>
+        <tr><td>02</td><td>Projeção gold plana adjudicada</td><td><span class="tag done">done</span></td><td><strong>Concluída com desvio.</strong> 3.063 menções; adjudicação por modelos, não por humanos.</td></tr>
+        <tr><td>03</td><td>Entidades por dicionário</td><td><span class="tag done">done</span></td><td><strong>Concluída.</strong> Treino por fold, abstenção em empate, maior correspondência e avaliação estrita.</td></tr>
+        <tr><td>04</td><td>Semi-Markov CRF</td><td><span class="tag done">done</span></td><td><strong>Concluída.</strong> DP própria validada por enumeração; treino e falhas estruturadas.</td></tr>
+        <tr><td>05</td><td>Validação cruzada aninhada</td><td><span class="tag done">done</span></td><td><strong>Concluída.</strong> 65 treinos, cinco folds externos, três internos e grade L2 fixa.</td></tr>
+        <tr><td>06</td><td>Candidatos não rotulados</td><td><span class="tag stale">ready-for-agent</span></td><td><strong>Funcional, status desatualizado.</strong> Geração é exercitada pela matriz fatorial e pela suíte.</td></tr>
+        <tr><td>07</td><td>Relações por regras</td><td><span class="tag stale">ready-for-agent</span></td><td><strong>Funcional, status desatualizado.</strong> Resultados e testes do baseline existem.</td></tr>
+        <tr><td>08</td><td>k-NN sobre candidatos previstos</td><td><span class="tag stale">ready-for-agent</span></td><td><strong>Funcional, status desatualizado.</strong> Aplicação comum aos dois reconhecedores foi avaliada.</td></tr>
+        <tr><td>09</td><td>Matriz fatorial end-to-end</td><td><span class="tag done">done</span></td><td><strong>Concluída.</strong> Quatro braços + dois tetos, com atribuição de erros.</td></tr>
+        <tr><td>10</td><td>Knowledge Graph v2</td><td><span class="tag done">done</span></td><td><strong>Concluída.</strong> Camadas de menção/conceito, JSONL canônico e exportações.</td></tr>
+        <tr><td>11</td><td>Orquestração pública</td><td><span class="tag done">done</span></td><td><strong>Concluída em código.</strong> O manifesto de desenvolvimento citado não está presente no workspace atual.</td></tr>
+        <tr><td>12</td><td>Teste externo congelado</td><td><span class="tag partial">in-progress</span></td><td><strong>Incompleta pelo protocolo original.</strong> 63 elegíveis e 9 <code>CAUSES</code>; faltam revisões até o corte aplicável.</td></tr>
+        <tr><td>13</td><td>Avaliação externa final</td><td><span class="tag partial">provisional</span></td><td><strong>Executada como snapshot autorizado.</strong> Não equivale ao teste externo definitivo pré-registrado.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout risk">
+      <div class="label">Problema de consistência do board</div>
+      As issues 06–08 aparecem abertas, mas a issue 09 está concluída e depende diretamente delas. A issue 01 também aparece aberta embora os contratos sejam usados em toda a cadeia. Recomenda-se atualizar status e checklists com links para commits, testes e manifestos; caso contrário, o estado do projeto fica contraditório.
+    </div>
+
+    <h3>Evidência disponível e lacunas locais</h3>
+    <ul>
+      <li>O pacote externo está presente: relatório, modelos congelados, snapshot, predições e manifesto.</li>
+      <li>Os 18 hashes listados no manifesto externo foram recalculados nesta auditoria: <strong>zero divergências</strong>.</li>
+      <li>Os diretórios de desenvolvimento citados nos documentos — <code>entity-nested-cv-v1</code>, <code>relation-factorial-v1</code>, <code>graph-v2</code> e <code>study-v1</code> — não estão presentes no workspace atual. Seus números são recuperáveis pela documentação versionada, mas os artefatos locais não puderam ser reverificados.</li>
+      <li>O manifesto externo registra o commit <code>d4a46af…</code> com <code>dirty=true</code>. Os hashes protegem os arquivos, mas uma execução final de referência deve partir de árvore limpa e tag imutável.</li>
+    </ul>
+  </section>
+
+  <section class="page-break">
+    <h2>4. Resultados de desenvolvimento</h2>
+    <p>Os resultados nos cinco folds externos dos 42 documentos de desenvolvimento são exploratórios. Eles serviram para comparar braços e selecionar configurações sem reabrir o teste MCRC já consumido.</p>
+
+    <h3>Reconhecimento de entidades — macro-F1 estrita</h3>
+    <div class="bar-row"><div>Dicionário</div><div class="bar-track"><div class="bar alt" style="width:42.5%"></div></div><div class="num">0,121</div></div>
+    <div class="bar-row"><div>Semi-Markov CRF</div><div class="bar-track"><div class="bar" style="width:100%"></div></div><div class="num"><strong>0,285</strong></div></div>
+    <p class="small">Escala relativa ao melhor valor desta comparação. Médias ± desvio: dicionário 0,121 ± 0,013; CRF 0,285 ± 0,044.</p>
+
+    <table>
+      <thead><tr><th>Métrica</th><th class="num">Dicionário</th><th class="num">CRF</th><th>Leitura</th></tr></thead>
+      <tbody>
+        <tr><td>Macro-F1 estrita</td><td class="num">0,121</td><td class="num"><strong>0,285</strong></td><td>CRF ≈ 2,4× melhor.</td></tr>
+        <tr><td>Micro-F1</td><td class="num">0,149</td><td class="num"><strong>0,243</strong></td><td>Ganho consistente no agregado.</td></tr>
+        <tr><td>Precisão micro</td><td class="num">0,108</td><td class="num"><strong>0,343</strong></td><td>O contexto reduz fortemente entidades espúrias.</td></tr>
+        <tr><td>Revocação micro</td><td class="num"><strong>0,241</strong></td><td class="num">0,193</td><td>CRF mais conservador.</td></tr>
+        <tr><td>Revocação de superfície OOV</td><td class="num">0,000</td><td class="num"><strong>0,098</strong></td><td>Apenas o CRF generaliza além do léxico observado.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Relações end-to-end — macro-F1</h3>
+    <div class="bar-row"><div>Dicionário + regras</div><div class="bar-track"><div class="bar alt" style="width:25.5%"></div></div><div class="num">0,040</div></div>
+    <div class="bar-row"><div>Dicionário + k-NN</div><div class="bar-track"><div class="bar alt" style="width:40.1%"></div></div><div class="num">0,063</div></div>
+    <div class="bar-row"><div>CRF + regras</div><div class="bar-track"><div class="bar" style="width:88.5%"></div></div><div class="num">0,139</div></div>
+    <div class="bar-row"><div>CRF + k-NN</div><div class="bar-track"><div class="bar" style="width:100%"></div></div><div class="num"><strong>0,157</strong></div></div>
+    <div class="bar-row"><div>Gold + k-NN (teto)</div><div class="bar-track"><div class="bar gold" style="width:100%"></div></div><div class="num">0,517</div></div>
+    <p class="small">Os quatro primeiros valores são end-to-end. O teto gold é diagnóstico e usa escala própria implícita; não deve ser apresentado como sistema operacional.</p>
+
+    <h3>Interpretação</h3>
+    <ul>
+      <li>O CRF supera o dicionário com ambos os classificadores relacionais.</li>
+      <li>O k-NN supera regras tanto no end-to-end quanto no teto com entidades gold.</li>
+      <li>Entre 84% e 90% das relações gold perdidas em desenvolvimento são atribuídas a entidades ausentes ou incorretas.</li>
+      <li><code>CAUSES</code> é inconclusiva em três folds por suporte inferior a cinco.</li>
+      <li>Nenhum dos cinco modelos finais do CRF convergiu em 250 iterações; 1 dos 60 treinos internos convergiu.</li>
+    </ul>
+
+    <div class="callout good">
+      <div class="label">Acerto científico</div>
+      A ausência de convergência não foi ocultada e nenhum braço foi removido por desempenho ruim. Isso preserva a comparação planejada e transforma falhas de otimização e propagação de erro em resultados observáveis.
+    </div>
+  </section>
+
+  <section class="page-break">
+    <h2>5. Resultados externos provisórios</h2>
+    <p>A execução externa usa 63 documentos elegíveis do MultiCaRe. Modelos e configurações foram congelados antes da leitura do gold. O resultado é válido como snapshot externo fornecido, mas não satisfaz a regra pré-registrada para uma conclusão definitiva.</p>
+
+    <table>
+      <thead><tr><th>Braço</th><th>Papel</th><th class="num">F1 macro<br>entidades</th><th class="num">F1 macro<br>relações</th><th class="num">F1 micro<br>arestas KG</th></tr></thead>
+      <tbody>
+        <tr><td>Dicionário + regras</td><td>End-to-end</td><td class="num">0,1373</td><td class="num">0,0458</td><td class="num">0,0578</td></tr>
+        <tr><td>Dicionário + k-NN</td><td>End-to-end</td><td class="num">0,1373</td><td class="num">0,0601</td><td class="num">0,0724</td></tr>
+        <tr><td>CRF + regras</td><td>End-to-end</td><td class="num"><strong>0,2415</strong></td><td class="num">0,1078</td><td class="num">0,0941</td></tr>
+        <tr><td><strong>CRF + k-NN</strong></td><td>End-to-end</td><td class="num"><strong>0,2415</strong></td><td class="num"><strong>0,1123</strong></td><td class="num"><strong>0,1153</strong></td></tr>
+        <tr><td>Gold + regras</td><td>Teto diagnóstico</td><td class="num">—</td><td class="num">0,3265</td><td class="num">—</td></tr>
+        <tr><td>Gold + k-NN</td><td>Teto diagnóstico</td><td class="num">—</td><td class="num">0,6053</td><td class="num">—</td></tr>
+      </tbody>
+    </table>
+
+    <h3>O que os números mostram</h3>
+    <div class="two-col">
+      <div>
+        <div class="callout">
+          <div class="label">Melhor configuração</div>
+          <strong>CRF + k-NN</strong> lidera os braços end-to-end nas relações e no grafo. A diferença para CRF + regras é pequena nas relações (0,1123 contra 0,1078), mas consistente com o desenvolvimento.
+        </div>
+        <div class="callout risk">
+          <div class="label">Propagação de erro</div>
+          No melhor braço, 2.244 de 2.340 falsos negativos relacionais — <strong>95,9%</strong> — são herdados de entidades não reconhecidas ou com borda/tipo incorretos.
+        </div>
+      </div>
+      <div>
+        <div class="callout warn">
+          <div class="label">Generalização</div>
+          O CRF externo reconheceu 930 menções para 2.832 gold. Sua precisão micro foi 0,405, mas a revocação foi 0,133. Em superfícies não vistas, a revocação caiu para 0,066.
+        </div>
+        <div class="callout warn">
+          <div class="label">Suporte insuficiente</div>
+          <code>CAUSES</code> tem apenas 9 ocorrências externas, abaixo do mínimo 20, e é corretamente marcada como inconclusiva em todos os braços.
+        </div>
+      </div>
+    </div>
+
+    <h3>Fragilidades específicas do NER externo</h3>
+    <table>
+      <thead><tr><th>Estrato/tipo no CRF</th><th class="num">F1</th><th>Implicação</th></tr></thead>
+      <tbody>
+        <tr><td><code>Condition</code></td><td class="num">0,0486</td><td>Quase não sustenta <code>HAS_CONDITION</code>.</td></tr>
+        <tr><td><code>Finding</code></td><td class="num">0,1669</td><td>Classe majoritária ainda com baixa cobertura.</td></tr>
+        <tr><td><code>Factor</code></td><td class="num">0,3227</td><td>Desempenho intermediário.</td></tr>
+        <tr><td><code>Modifier</code></td><td class="num">0,4278</td><td>Melhor tipo, embora longe de robustez clínica.</td></tr>
+        <tr><td>Menções de 11–40 tokens</td><td class="num">0,0166</td><td>Quase totalmente perdidas.</td></tr>
+        <tr><td>Superfícies não vistas</td><td class="num">0,1100</td><td>Generalização lexical limitada.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Knowledge Graph</h3>
+    <p>O melhor F1 micro de arestas conceituais foi 0,1153. A agregação conceitual recuperou duas arestas que não estavam corretas no nível estrito de menção. Esse ganho é útil para consumo do grafo, mas não corrige a evidência textual original; por isso a decisão de manter a métrica de menção/relação como primária está correta.</p>
+  </section>
+
+  <section class="page-break">
+    <h2>6. Decisões tomadas: avaliação crítica</h2>
+    <table>
+      <thead><tr><th>Decisão</th><th>Benefício</th><th>Custo ou risco</th><th>Parecer</th></tr></thead>
+      <tbody>
+        <tr><td>Isolar o Project 2 do Project 1</td><td>Evita regressões e mistura de protocolos.</td><td>Duplicação temporária e mais integração.</td><td><span class="tag done">Acertada</span></td></tr>
+        <tr><td>Preservar corpus lossless e derivar gold plano</td><td>Não destrói sobreposições e proveniência.</td><td>Exige adjudicação e tratamento explícito de perdas.</td><td><span class="tag done">Essencial</span></td></tr>
+        <tr><td>Semi-Markov CRF sem embeddings</td><td>Interpretável, alinhado ao objetivo metodológico.</td><td>Representação lexical fraca e baixa generalização.</td><td><span class="tag partial">Boa baseline</span></td></tr>
+        <tr><td>Manter dicionário independente</td><td>Baseline simples e transparente.</td><td>Muitos espúrios e zero recall de formas OOV.</td><td><span class="tag done">Acertada</span></td></tr>
+        <tr><td>Mesmos classificadores entre reconhecedores</td><td>Permite atribuir ganho à etapa de entidades.</td><td>Não otimiza cada cadeia individualmente.</td><td><span class="tag done">Acertada</span></td></tr>
+        <tr><td>JSONL v2 como fonte de verdade</td><td>Contrato auditável e sem limitação do CSV.</td><td>Maior complexidade de consumidores.</td><td><span class="tag done">Acertada</span></td></tr>
+        <tr><td>Avaliar execução CRF não convergida</td><td>Evita viés de publicação e fallback oculto.</td><td>Métrica pode refletir otimização incompleta.</td><td><span class="tag done">Acertada</span></td></tr>
+        <tr><td>Adjudicação gold por modelos</td><td>Viabilizou 233 casos e manteve trilha de votos.</td><td>Mesmo modelo nos papéis pode compartilhar erro sistemático.</td><td><span class="tag partial">Aceitável com ressalva</span></td></tr>
+        <tr><td>Parar revisão externa em 63 elegíveis</td><td>Permitiu obter sinal externo antecipado.</td><td>Quebra a regra de parada; <code>CAUSES</code> inconclusiva.</td><td><span class="tag partial">Somente provisório</span></td></tr>
+        <tr><td>Ordem lexical do teste externo</td><td>Determinística e auditável.</td><td>Não representa amostra aleatória do MultiCaRe.</td><td><span class="tag partial">Limitação declarada</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Problemas de processo e reprodutibilidade</h3>
+    <ol>
+      <li><strong>Árvore Git suja no manifesto externo.</strong> Os hashes permitem verificar a execução, porém o estado <code>dirty=true</code> dificulta reconstruir exatamente a versão do código apenas pelo commit.</li>
+      <li><strong>Artefatos de desenvolvimento ausentes no workspace.</strong> A documentação preserva os resultados, mas não substitui os manifestos e saídas primárias para uma auditoria independente.</li>
+      <li><strong>Status de issues inconsistente.</strong> O board não representa fielmente a implementação já exercitada pelos testes.</li>
+      <li><strong>Incompatibilidade de conversor durante a avaliação externa.</strong> A primeira passagem revelou incompatibilidade com o gold adjudicado; a pontuação foi retomada com predições congeladas e hashes verificados. O procedimento é defensável, mas deve permanecer destacado.</li>
+      <li><strong>Perdas de projeção.</strong> Oito menções externas cruzam fronteiras de sentença e não entram na métrica estrita; oito relações <code>HAS_FINDING</code> são registradas como perdas do grafo.</li>
+    </ol>
+
+    <div class="callout good">
+      <div class="label">Por que o estudo ainda é valioso</div>
+      O baixo F1 não invalida o trabalho: o estudo responde onde a cadeia falha. Ele demonstra que o classificador relacional tem capacidade muito maior quando recebe endpoints corretos e quantifica objetivamente que o NER é o gargalo dominante.
+    </div>
+  </section>
+
+  <section class="page-break">
+    <h2>7. Próximos passos priorizados</h2>
+
+    <div class="priority">
+      <div class="rank">1</div>
+      <div><strong>Concluir o teste externo conforme o protocolo original.</strong><br>Continuar revisores B a partir do candidato 71 e C a partir do 76 até o candidato 110, remontar o prefixo elegível, aplicar a regra de parada e congelar antes de nova inferência. Meta: 100 documentos elegíveis ou 20 relações por classe; classes insuficientes devem permanecer inconclusivas.</div>
+    </div>
+    <div class="priority">
+      <div class="rank">2</div>
+      <div><strong>Estabilizar e diagnosticar a otimização do CRF.</strong><br>Investigar escala de features, regularização, tolerâncias, histórico do L-BFGS, normalização por sequência e curvas de objetivo/gradiente. Fazer ablações nos folds de desenvolvimento, sem tocar no snapshot externo.</div>
+    </div>
+    <div class="priority">
+      <div class="rank">3</div>
+      <div><strong>Atacar revocação de entidades, sobretudo <code>Condition</code>.</strong><br>Analisar os 1.613 casos ausentes em desenvolvimento e os 2.055 externos; separar ausência por comprimento, OOV, sentença e padrão morfológico. Adicionar features contextuais e lexicais permitidas como novo braço versionado, não como alteração silenciosa do baseline.</div>
+    </div>
+    <div class="priority">
+      <div class="rank">4</div>
+      <div><strong>Criar um braço moderno de comparação.</strong><br>Depois de preservar o baseline linear, avaliar encoder contextual biomédico ou modelo span-based com o mesmo gold, folds e contratos. O objetivo é medir o ganho de representação, não substituir retrospectivamente o CRF planejado.</div>
+    </div>
+    <div class="priority">
+      <div class="rank">5</div>
+      <div><strong>Melhorar relações somente após elevar o NER.</strong><br>O teto gold + k-NN de 0,6053 mostra espaço relacional, mas 95,9% dos falsos negativos do melhor braço externo são herdados de entidades. Priorizar o NER terá retorno maior que microajustes no classificador final.</div>
+    </div>
+    <div class="priority">
+      <div class="rank">6</div>
+      <div><strong>Revisar <code>CAUSES</code> e classes raras.</strong><br>Completar suporte externo; considerar amostragem de treino orientada a cobertura, análise de janela e um classificador específico por hipótese. Qualquer mudança deve ser escolhida apenas no desenvolvimento.</div>
+    </div>
+    <div class="priority">
+      <div class="rank">7</div>
+      <div><strong>Fortalecer o gold.</strong><br>Submeter uma amostra estratificada da projeção adjudicada por modelos a revisão humana, priorizando divergências, <code>Condition</code>, spans longos e casos de fronteira. Estimar taxa de erro sistemático antes de tratar <code>flat-gold-v1</code> como referência estável.</div>
+    </div>
+    <div class="priority">
+      <div class="rank">8</div>
+      <div><strong>Fechar a governança da entrega.</strong><br>Atualizar issues 01/06/07/08, registrar critérios cumpridos, publicar manifestos de desenvolvimento, criar tag de release com árvore limpa e reproduzir o manifesto raiz com <code>dirty=false</code>.</div>
+    </div>
+
+    <h3>Plano sugerido por horizonte</h3>
+    <table>
+      <thead><tr><th>Horizonte</th><th>Entregas</th><th>Critério de saída</th></tr></thead>
+      <tbody>
+        <tr><td class="nowrap">Curto prazo</td><td>Corrigir status das issues; arquivar manifestos; tag limpa; completar revisão B/C.</td><td>Board coerente, teste externo congelável e artefatos verificáveis.</td></tr>
+        <tr><td class="nowrap">Próximo ciclo</td><td>Diagnóstico de convergência; ablação de features; análise focal de <code>Condition</code>, OOV e spans longos.</td><td>CRF convergente ou explicação experimental sustentada; ganho validado nos folds.</td></tr>
+        <tr><td class="nowrap">Médio prazo</td><td>Novo braço contextual/span-based; revisão humana amostral do gold.</td><td>Comparação justa sob contratos idênticos e estimativa de qualidade do gold.</td></tr>
+        <tr><td class="nowrap">Após congelamento</td><td>Uma única execução no teste externo definitivo.</td><td>Relatório final com suporte por classe, hashes e árvore limpa.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="page-break">
+    <h2>8. Conclusão</h2>
+    <p>O projeto entregou uma infraestrutura experimental substancialmente mais correta que a abordagem anterior baseada em entidades gold. A principal contribuição não é um F1 alto, mas a capacidade de executar, auditar e decompor o pipeline completo. O semi-Markov CRF superou o dicionário, e o k-NN superou as regras, tanto no desenvolvimento quanto no snapshot externo.</p>
+    <p>Os resultados também são claros sobre o limite atual: o sistema perde a maioria das relações porque não reconhece seus endpoints. O salto de macro-F1 relacional de 0,1123 no melhor end-to-end para 0,6053 com entidades gold confirma que o investimento imediato deve recair sobre entidades, não sobre a camada conceitual do grafo.</p>
+    <p>Em termos de maturidade, a implementação pode ser considerada <strong>concluída como plataforma de pesquisa</strong>. O estudo não deve ser chamado de validação externa definitiva enquanto a issue 12 permanecer incompleta. A próxima versão deve combinar três frentes: encerramento rigoroso do conjunto externo, melhoria sistemática do NER e consolidação da governança/reprodutibilidade.</p>
+
+    <div class="callout risk">
+      <div class="label">Recomendação final</div>
+      Não promover o pipeline para uso clínico. Publicar os números atuais como resultados exploratórios e externos provisórios; concluir a coleta pré-registrada; então avaliar uma versão congelada, sem ajustes posteriores, mantendo <code>CAUSES</code> inconclusiva caso o suporte continue insuficiente.
+    </div>
+
+    <h2 style="margin-top:10mm">Apêndice A — Fontes consultadas</h2>
+    <ul class="source-list">
+      <li>PRD: <code>.scratch/global-entity-recognition/spec.md</code>.</li>
+      <li>Issues: <code>.scratch/global-entity-recognition/issues/01…13.md</code>.</li>
+      <li>Decisões: <code>docs/adr/0001…0012</code>, <code>docs/external-final-scope-decision.md</code> e <code>annotations/entity-gold-v1/README.md</code>.</li>
+      <li>Resultados: <code>docs/entity-recognizer-comparison.md</code>, <code>docs/relation-factorial-results.md</code>, <code>docs/knowledge-graph-v2.md</code>, <code>docs/external-final-evaluation.md</code> e <code>docs/ngram-knn-results.md</code>.</li>
+      <li>Checkpoint externo: <code>docs/external-review-checkpoint.md</code>.</li>
+      <li>Artefatos externos: <code>artifacts/external-final-evaluation-v1/report.json</code> e <code>manifest.json</code>.</li>
+    </ul>
+
+    <h2 style="margin-top:10mm">Apêndice B — Verificações desta auditoria</h2>
+    <table>
+      <thead><tr><th>Verificação</th><th>Resultado</th></tr></thead>
+      <tbody>
+        <tr><td>Suíte completa com ambiente virtual do projeto</td><td><strong>210 passed</strong> em 60,81 s</td></tr>
+        <tr><td>Hashes do manifesto da avaliação externa</td><td><strong>18 verificados; 0 divergências</strong></td></tr>
+        <tr><td>Status do manifesto externo</td><td><code>completed</code></td></tr>
+        <tr><td>Ambiente registrado</td><td>Python 3.14.6; PyTorch 2.14.1+cpu</td></tr>
+        <tr><td>Estado Git registrado</td><td>Commit <code>d4a46af…</code>; <code>dirty=true</code></td></tr>
+      </tbody>
+    </table>
+    <p class="footnote">Este relatório não reproduz texto clínico. Métricas e contagens foram extraídas dos relatórios e manifestos do projeto. O documento distingue resultados end-to-end, tetos diagnósticos e métricas secundárias do grafo.</p>
+  </section>
+</body>
+</html>
